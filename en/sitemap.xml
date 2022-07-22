@@ -2,61 +2,61 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>http://localhost:1313/en/2022-03-18-raft-part2d/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>http://localhost:1313/en/tags/developing-notes/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>http://localhost:1313/en/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/2022-03-18-raft-part2d/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/tags/developing-notes/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
-                        href="http://localhost:1313/"
+                        href="https://wgblikew.github.io/p1nant0m.github.io/"
                         /><xhtml:link
                     rel="alternate"
                     hreflang="en"
-                    href="http://localhost:1313/en/"
+                    href="https://wgblikew.github.io/p1nant0m.github.io/en/"
                     /></url><url>
-            <loc>http://localhost:1313/en/posts/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/posts/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
-                        href="http://localhost:1313/posts/"
+                        href="https://wgblikew.github.io/p1nant0m.github.io/posts/"
                         /><xhtml:link
                     rel="alternate"
                     hreflang="en"
-                    href="http://localhost:1313/en/posts/"
+                    href="https://wgblikew.github.io/p1nant0m.github.io/en/posts/"
                     /></url><url>
-            <loc>http://localhost:1313/en/tags/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/tags/</loc><lastmod>2022-03-18T09:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
-                        href="http://localhost:1313/tags/"
+                        href="https://wgblikew.github.io/p1nant0m.github.io/tags/"
                         /><xhtml:link
                     rel="alternate"
                     hreflang="en"
-                    href="http://localhost:1313/en/tags/"
+                    href="https://wgblikew.github.io/p1nant0m.github.io/en/tags/"
                     /></url><url>
-            <loc>http://localhost:1313/en/tags/crypto/</loc><lastmod>2021-10-20T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/tags/crypto/</loc><lastmod>2021-10-20T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
-                        href="http://localhost:1313/tags/crypto/"
+                        href="https://wgblikew.github.io/p1nant0m.github.io/tags/crypto/"
                         /><xhtml:link
                     rel="alternate"
                     hreflang="en"
-                    href="http://localhost:1313/en/tags/crypto/"
+                    href="https://wgblikew.github.io/p1nant0m.github.io/en/tags/crypto/"
                     /></url><url>
-            <loc>http://localhost:1313/en/tags/cryptohack/</loc><lastmod>2021-10-20T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>http://localhost:1313/en/2021-10-20-forbbiden-fruit/</loc><lastmod>2021-10-20T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>http://localhost:1313/en/about/</loc><priority>0</priority><xhtml:link
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/tags/cryptohack/</loc><lastmod>2021-10-20T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/2021-10-20-forbbiden-fruit/</loc><lastmod>2021-10-20T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/about/</loc><priority>0</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
-                        href="http://localhost:1313/about/"
+                        href="https://wgblikew.github.io/p1nant0m.github.io/about/"
                         /><xhtml:link
                     rel="alternate"
                     hreflang="en"
-                    href="http://localhost:1313/en/about/"
+                    href="https://wgblikew.github.io/p1nant0m.github.io/en/about/"
                     /></url><url>
-            <loc>http://localhost:1313/en/categories/</loc><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://wgblikew.github.io/p1nant0m.github.io/en/categories/</loc><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
-                        href="http://localhost:1313/categories/"
+                        href="https://wgblikew.github.io/p1nant0m.github.io/categories/"
                         /><xhtml:link
                     rel="alternate"
                     hreflang="en"
-                    href="http://localhost:1313/en/categories/"
+                    href="https://wgblikew.github.io/p1nant0m.github.io/en/categories/"
                     /></url></urlset>

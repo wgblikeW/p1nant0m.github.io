@@ -14,12 +14,12 @@ Snapshot(index int, snapshot []byte)
 The index argument indicates the highest log entry that&rsquo;s reflected in the snapshot. Raft should discard its log entries before that point. You&rsquo;ll need to revise your Raft code to operate while storing only the tail of the log.
 You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper that allows a Raft leader to tell a lagging Raft peer to replace its state with a snapshot. You will likely need to think through how InstallSnapshot should interact with the state and rules in Figure 2." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://localhost:1313/en/2022-03-18-raft-part2d/" /><meta property="og:image" content="http://localhost:1313/logo.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://wgblikew.github.io/p1nant0m.github.io/en/2022-03-18-raft-part2d/" /><meta property="og:image" content="https://wgblikew.github.io/logo.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-03-18T09:00:00+00:00" />
 <meta property="article:modified_time" content="2022-03-18T09:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://localhost:1313/logo.png"/>
+<meta name="twitter:image" content="https://wgblikew.github.io/logo.png"/>
 
 <meta name="twitter:title" content="6.824-RaftLab-Part2D-Development Quicknotes"/>
 <meta name="twitter:description" content="Overview This topic can be found under Lab2 instruction.
@@ -33,9 +33,9 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
 <meta name="application-name" content="我的网站">
 <meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/en/2022-03-18-raft-part2d/" /><link rel="prev" href="http://localhost:1313/en/2021-10-20-forbbiden-fruit/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://wgblikew.github.io/p1nant0m.github.io/en/2022-03-18-raft-part2d/" /><link rel="prev" href="https://wgblikew.github.io/p1nant0m.github.io/en/2021-10-20-forbbiden-fruit/" /><link rel="stylesheet" href="/p1nant0m.github.io/css/style.min.css"><link rel="preload" href="/p1nant0m.github.io/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/p1nant0m.github.io/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/p1nant0m.github.io/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/p1nant0m.github.io/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -43,9 +43,9 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:1313\/en\/2022-03-18-raft-part2d\/"
+            "@id": "https:\/\/wgblikew.github.io\/p1nant0m.github.io\/en\/2022-03-18-raft-part2d\/"
         },"genre": "posts","keywords": "Developing Notes","wordcount":  1110 ,
-        "url": "http:\/\/localhost:1313\/en\/2022-03-18-raft-part2d\/","datePublished": "2022-03-18T09:00:00+00:00","dateModified": "2022-03-18T09:00:00+00:00","publisher": {
+        "url": "https:\/\/wgblikew.github.io\/p1nant0m.github.io\/en\/2022-03-18-raft-part2d\/","datePublished": "2022-03-18T09:00:00+00:00","dateModified": "2022-03-18T09:00:00+00:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
                 "@type": "Person",
@@ -58,10 +58,10 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
         <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
     <div class="header-wrapper">
         <div class="header-title">
-            <a href="/en/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+            <a href="/p1nant0m.github.io/en/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
         </div>
         <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/en/posts/"> Posts </a><a class="menu-item" href="/en/tags/"> Tags </a><a class="menu-item" href="/en/categories/"> Categories </a><a class="menu-item" href="/en/about/"> About </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+            <div class="menu-inner"><a class="menu-item" href="/en/p1nant0m.github.io/posts/"> Posts </a><a class="menu-item" href="/en/p1nant0m.github.io/tags/"> Tags </a><a class="menu-item" href="/en/p1nant0m.github.io/categories/"> Categories </a><a class="menu-item" href="/en/p1nant0m.github.io/about/"> About </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
                         <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
                         <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
                             <i class="fas fa-search fa-fw" aria-hidden="true"></i>
@@ -76,7 +76,7 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
                     <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
                 </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
                     <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/2022-03-18-raft-part2d/" selected>English</option></select>
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/p1nant0m.github.io/en/2022-03-18-raft-part2d/" selected>English</option></select>
                 </a></div>
         </div>
     </div>
@@ -84,7 +84,7 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
     <div class="header-container">
         <div class="header-wrapper">
             <div class="header-title">
-                <a href="/en/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+                <a href="/p1nant0m.github.io/en/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
             </div>
             <div class="menu-toggle" id="menu-toggle-mobile">
                 <span></span><span></span><span></span>
@@ -106,11 +106,11 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
                     <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
                         Cancel
                     </a>
-                </div><a class="menu-item" href="/en/posts/" title="">Posts</a><a class="menu-item" href="/en/tags/" title="">Tags</a><a class="menu-item" href="/en/categories/" title="">Categories</a><a class="menu-item" href="/en/about/" title="">About</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                </div><a class="menu-item" href="/en/p1nant0m.github.io/posts/" title="">Posts</a><a class="menu-item" href="/en/p1nant0m.github.io/tags/" title="">Tags</a><a class="menu-item" href="/en/p1nant0m.github.io/categories/" title="">Categories</a><a class="menu-item" href="/en/p1nant0m.github.io/about/" title="">About</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
                 <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
             </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
                     <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/en/2022-03-18-raft-part2d/" selected>English</option></select>
+                    <select class="language-select" onchange="location = this.value;"><option value="/p1nant0m.github.io/en/2022-03-18-raft-part2d/" selected>English</option></select>
                 </a></div>
     </div>
 </header><div class="search-dropdown desktop">
@@ -123,7 +123,7 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
             <h2 class="toc-title">Contents</h2>
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">6.824-RaftLab-Part2D-Development Quicknotes</h1><h2 class="single-subtitle">Quicknotes in developing RaftLab Part2D</h2><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/en/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><span class="post-author"><a href="/p1nant0m.github.io/en/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
             <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-03-18">2022-03-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1110 words&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;6 minutes&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
@@ -151,7 +151,7 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/raft.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/raft.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/raft.png" data-sub-html="<h2>KeyValue-Store Server Architecture</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/raft.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/raft.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/raft.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/raft.png 2x"
             data-sizes="auto"
@@ -183,7 +183,7 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/figure13.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/figure13.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/figure13.png" data-sub-html="<h2>Figure 13</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/figure13.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/figure13.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/figure13.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/figure13.png 2x"
             data-sizes="auto"
@@ -260,27 +260,27 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/en/2022-03-18-raft-part2d/index.md" target="_blank">Read Markdown</a>
+                            <a class="link-to-markdown" href="/p1nant0m.github.io/en/2022-03-18-raft-part2d/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://localhost:1313/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes" data-via="p1nant0m" data-hashtags="Developing Notes"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://localhost:1313/en/2022-03-18-raft-part2d/" data-hashtag="Developing Notes"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://localhost:1313/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://localhost:1313/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://wgblikew.github.io/p1nant0m.github.io/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes" data-via="p1nant0m" data-hashtags="Developing Notes"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://wgblikew.github.io/p1nant0m.github.io/en/2022-03-18-raft-part2d/" data-hashtag="Developing Notes"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://wgblikew.github.io/p1nant0m.github.io/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://wgblikew.github.io/p1nant0m.github.io/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i data-svg-src="/p1nant0m.github.io/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://wgblikew.github.io/p1nant0m.github.io/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
             </div>
         </div>
     </div>
 
     <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/en/tags/developing-notes/">Developing Notes</a></section>
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/p1nant0m.github.io/en/tags/developing-notes/">Developing Notes</a></section>
         <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/en/">Home</a></span>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/p1nant0m.github.io/en/">Home</a></span>
         </section>
     </div>
 
-    <div class="post-nav"><a href="/en/2021-10-20-forbbiden-fruit/" class="prev" rel="prev" title="Forbbiden Fruit"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Forbbiden Fruit</a></div>
+    <div class="post-nav"><a href="/p1nant0m.github.io/en/2021-10-20-forbbiden-fruit/" class="prev" rel="prev" title="Forbbiden Fruit"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Forbbiden Fruit</a></div>
 </div>
 </article></div>
             </main><footer class="footer">
         <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/en/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/p1nant0m.github.io/en/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
 
@@ -289,5 +289,5 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
             </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
                 <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
             </a>
-        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"Got it!","link":"Learn more","message":"This website uses Cookies to improve your experience."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/en/index.json","maxResultLength":10,"noResultsFound":"No results found","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+        </div><link rel="stylesheet" href="/p1nant0m.github.io/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/p1nant0m.github.io/lib/katex/katex.min.css"><link rel="stylesheet" href="/p1nant0m.github.io/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/p1nant0m.github.io/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/katex/katex.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"Got it!","link":"Learn more","message":"This website uses Cookies to improve your experience."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/p1nant0m.github.io/en/index.json","maxResultLength":10,"noResultsFound":"No results found","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/p1nant0m.github.io/js/theme.min.js"></script></body>
 </html>

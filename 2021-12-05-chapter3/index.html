@@ -7,21 +7,21 @@
         <title>·密码学原理课程 —— Private-Key Cryptography Ⅰ - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="·密码学原理课程 —— Private-Key Cryptography Ⅰ" />
 <meta property="og:description" content="Private-Key (Symmetric) Cryptography 章节思维导图 在本章节中，我们开始介绍两大密码学方向中的私钥/对称密码学（Private-Key/Symmetric Cryptography）方向。 （1）我们将会从弱化完善保密理论安全性开始，得到一个在实践生产中能够被接受并且符合实际人们对安全性需求的安全定义（computational secrecy）。 （2）接着我们从 computational secrecy 出发，给出一种最为基本的安全性定义—— EAV-Security（窃听者" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://localhost:1313/2021-12-05-chapter3/" /><meta property="og:image" content="http://localhost:1313/logo.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://wgblikew.github.io/p1nant0m.github.io/2021-12-05-chapter3/" /><meta property="og:image" content="https://wgblikew.github.io/logo.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-02T12:00:00+00:00" />
 <meta property="article:modified_time" content="2021-12-02T12:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://localhost:1313/logo.png"/>
+<meta name="twitter:image" content="https://wgblikew.github.io/logo.png"/>
 
 <meta name="twitter:title" content="·密码学原理课程 —— Private-Key Cryptography Ⅰ"/>
 <meta name="twitter:description" content="Private-Key (Symmetric) Cryptography 章节思维导图 在本章节中，我们开始介绍两大密码学方向中的私钥/对称密码学（Private-Key/Symmetric Cryptography）方向。 （1）我们将会从弱化完善保密理论安全性开始，得到一个在实践生产中能够被接受并且符合实际人们对安全性需求的安全定义（computational secrecy）。 （2）接着我们从 computational secrecy 出发，给出一种最为基本的安全性定义—— EAV-Security（窃听者"/>
 <meta name="application-name" content="我的网站">
 <meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/2021-12-05-chapter3/" /><link rel="prev" href="http://localhost:1313/2021-11-26-chapter2/" /><link rel="next" href="http://localhost:1313/2022-03-16-infosec-2/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://wgblikew.github.io/p1nant0m.github.io/2021-12-05-chapter3/" /><link rel="prev" href="https://wgblikew.github.io/p1nant0m.github.io/2021-11-26-chapter2/" /><link rel="next" href="https://wgblikew.github.io/p1nant0m.github.io/2022-03-16-infosec-2/" /><link rel="stylesheet" href="/p1nant0m.github.io/css/style.min.css"><link rel="preload" href="/p1nant0m.github.io/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/p1nant0m.github.io/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/p1nant0m.github.io/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/p1nant0m.github.io/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -29,9 +29,9 @@
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "http:\/\/localhost:1313\/2021-12-05-chapter3\/"
+            "@id": "https:\/\/wgblikew.github.io\/p1nant0m.github.io\/2021-12-05-chapter3\/"
         },"genre": "posts","keywords": "CourseOfCryptography","wordcount":  8553 ,
-        "url": "http:\/\/localhost:1313\/2021-12-05-chapter3\/","datePublished": "2021-12-02T12:00:00+00:00","dateModified": "2021-12-02T12:00:00+00:00","publisher": {
+        "url": "https:\/\/wgblikew.github.io\/p1nant0m.github.io\/2021-12-05-chapter3\/","datePublished": "2021-12-02T12:00:00+00:00","dateModified": "2021-12-02T12:00:00+00:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
                 "@type": "Person",
@@ -44,10 +44,10 @@
         <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
     <div class="header-wrapper">
         <div class="header-title">
-            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+            <a href="/p1nant0m.github.io/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
         </div>
         <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+            <div class="menu-inner"><a class="menu-item" href="/p1nant0m.github.io/posts/"> 文章 </a><a class="menu-item" href="/p1nant0m.github.io/tags/"> 标签 </a><a class="menu-item" href="/p1nant0m.github.io/categories/"> 分类 </a><a class="menu-item" href="/p1nant0m.github.io/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
                         <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
                         <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
                             <i class="fas fa-search fa-fw" aria-hidden="true"></i>
@@ -62,7 +62,7 @@
                     <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
                 </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
                     <i class="fa fa-globe" aria-hidden="true"></i>                      
-                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2021-12-05-chapter3/" selected>简体中文</option></select>
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/p1nant0m.github.io/2021-12-05-chapter3/" selected>简体中文</option></select>
                 </a></div>
         </div>
     </div>
@@ -70,7 +70,7 @@
     <div class="header-container">
         <div class="header-wrapper">
             <div class="header-title">
-                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+                <a href="/p1nant0m.github.io/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
             </div>
             <div class="menu-toggle" id="menu-toggle-mobile">
                 <span></span><span></span><span></span>
@@ -92,11 +92,11 @@
                     <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
                         取消
                     </a>
-                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                </div><a class="menu-item" href="/p1nant0m.github.io/posts/" title="">文章</a><a class="menu-item" href="/p1nant0m.github.io/tags/" title="">标签</a><a class="menu-item" href="/p1nant0m.github.io/categories/" title="">分类</a><a class="menu-item" href="/p1nant0m.github.io/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
                 <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
             </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
                     <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
-                    <select class="language-select" onchange="location = this.value;"><option value="/2021-12-05-chapter3/" selected>简体中文</option></select>
+                    <select class="language-select" onchange="location = this.value;"><option value="/p1nant0m.github.io/2021-12-05-chapter3/" selected>简体中文</option></select>
                 </a></div>
     </div>
 </header><div class="search-dropdown desktop">
@@ -109,7 +109,7 @@
             <h2 class="toc-title">目录</h2>
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">·密码学原理课程 —— Private-Key Cryptography Ⅰ</h1><h2 class="single-subtitle">密码学原理专栏——非对称密码学，计算可证明安全，安全的基本定义，语义安全，构造EAV-Secure的加密方案</h2><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><span class="post-author"><a href="/p1nant0m.github.io/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
             <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-12-02">2021-12-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 8553 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 18 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
@@ -142,7 +142,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/Private-Key%20%28Symmetric%29%20Cryptography.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/Private-Key%20(Symmetric)%20Cryptography.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/Private-Key%20(Symmetric)%20Cryptography.png" data-sub-html="<h2>章节思维导图</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/Private-Key%20%28Symmetric%29%20Cryptography.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/Private-Key%20%28Symmetric%29%20Cryptography.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/Private-Key%20%28Symmetric%29%20Cryptography.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/Private-Key%20%28Symmetric%29%20Cryptography.png 2x"
             data-sizes="auto"
@@ -185,7 +185,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204144257582.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204144257582.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204144257582.png" data-sub-html="<h2>&ldquo;可忽略的量&quot;准确定义</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204144257582.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204144257582.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204144257582.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204144257582.png 2x"
             data-sizes="auto"
@@ -197,7 +197,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204150743544.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204150743544.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204150743544.png" data-sub-html="<h2>&ldquo;可忽略的量&quot;的运算特性</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204150743544.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204150743544.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204150743544.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204150743544.png 2x"
             data-sizes="auto"
@@ -212,7 +212,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204153118011.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204153118011.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204153118011.png" data-sub-html="<h2>使用渐近的方法定义密码方案的计算安全性</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204153118011.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204153118011.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204153118011.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204153118011.png 2x"
             data-sizes="auto"
@@ -244,7 +244,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204193702132.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204193702132.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204193702132.png" data-sub-html="<h2>通用地定义对称加密方案</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204193702132.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204193702132.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204193702132.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204193702132.png 2x"
             data-sizes="auto"
@@ -273,7 +273,7 @@
 <p><figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204223939359.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204223939359.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204223939359.png" data-sub-html="<h2>定义敌手不可区分性实验</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204223939359.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204223939359.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204223939359.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204223939359.png 2x"
             data-sizes="auto"
@@ -284,7 +284,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224348561.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224348561.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224348561.png" data-sub-html="<h2>交互实验框图</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224348561.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224348561.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224348561.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224348561.png 2x"
             data-sizes="auto"
@@ -295,7 +295,7 @@
 <p><figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224136017.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224136017.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224136017.png" data-sub-html="<h2>充要条件</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224136017.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224136017.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224136017.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224136017.png 2x"
             data-sizes="auto"
@@ -306,7 +306,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224508993.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224508993.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224508993.png" data-sub-html="<h2>等价定义形式</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224508993.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224508993.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224508993.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211204224508993.png 2x"
             data-sizes="auto"
@@ -320,7 +320,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205094002014.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205094002014.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205094002014.png" data-sub-html="<h2>THEOREM 3.10</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205094002014.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205094002014.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205094002014.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205094002014.png 2x"
             data-sizes="auto"
@@ -344,7 +344,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105335894.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105335894.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105335894.png" data-sub-html="<h2>THEOREM 3.11</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105335894.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105335894.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105335894.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105335894.png 2x"
             data-sizes="auto"
@@ -356,7 +356,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105510386.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105510386.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105510386.png" data-sub-html="<h2>语义安全定义</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105510386.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105510386.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105510386.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205105510386.png 2x"
             data-sizes="auto"
@@ -368,7 +368,7 @@
 <figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205110017829.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205110017829.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205110017829.png" data-sub-html="<h2>THEOREM 3.13</h2>">
         <img
             class="lazyload"
-            src="/svg/loading.min.svg"
+            src="/p1nant0m.github.io/svg/loading.min.svg"
             data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205110017829.png"
             data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205110017829.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205110017829.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211205110017829.png 2x"
             data-sizes="auto"
@@ -383,28 +383,28 @@
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/2021-12-05-chapter3/index.md" target="_blank">阅读原始文档</a>
+                            <a class="link-to-markdown" href="/p1nant0m.github.io/2021-12-05-chapter3/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="http://localhost:1313/2021-12-05-chapter3/" data-title="·密码学原理课程 —— Private-Key Cryptography Ⅰ" data-via="p1nant0m" data-hashtags="CourseOfCryptography"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="http://localhost:1313/2021-12-05-chapter3/" data-hashtag="CourseOfCryptography"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/2021-12-05-chapter3/" data-title="·密码学原理课程 —— Private-Key Cryptography Ⅰ"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="http://localhost:1313/2021-12-05-chapter3/" data-title="·密码学原理课程 —— Private-Key Cryptography Ⅰ"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="http://localhost:1313/2021-12-05-chapter3/" data-title="·密码学原理课程 —— Private-Key Cryptography Ⅰ"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://wgblikew.github.io/p1nant0m.github.io/2021-12-05-chapter3/" data-title="·密码学原理课程 —— Private-Key Cryptography Ⅰ" data-via="p1nant0m" data-hashtags="CourseOfCryptography"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://wgblikew.github.io/p1nant0m.github.io/2021-12-05-chapter3/" data-hashtag="CourseOfCryptography"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://wgblikew.github.io/p1nant0m.github.io/2021-12-05-chapter3/" data-title="·密码学原理课程 —— Private-Key Cryptography Ⅰ"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://wgblikew.github.io/p1nant0m.github.io/2021-12-05-chapter3/" data-title="·密码学原理课程 —— Private-Key Cryptography Ⅰ"><i data-svg-src="/p1nant0m.github.io/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://wgblikew.github.io/p1nant0m.github.io/2021-12-05-chapter3/" data-title="·密码学原理课程 —— Private-Key Cryptography Ⅰ"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
             </div>
         </div>
     </div>
 
     <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/courseofcryptography/">CourseOfCryptography</a></section>
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/p1nant0m.github.io/tags/courseofcryptography/">CourseOfCryptography</a></section>
         <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/p1nant0m.github.io/">主页</a></span>
         </section>
     </div>
 
-    <div class="post-nav"><a href="/2021-11-26-chapter2/" class="prev" rel="prev" title="·密码学原理课程 —— Perfectly Secret Encryption"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>·密码学原理课程 —— Perfectly Secret Encryption</a>
-            <a href="/2022-03-16-infosec-2/" class="next" rel="next" title="InfoSec-Lab2-apollo">InfoSec-Lab2-apollo<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+    <div class="post-nav"><a href="/p1nant0m.github.io/2021-11-26-chapter2/" class="prev" rel="prev" title="·密码学原理课程 —— Perfectly Secret Encryption"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>·密码学原理课程 —— Perfectly Secret Encryption</a>
+            <a href="/p1nant0m.github.io/2022-03-16-infosec-2/" class="next" rel="next" title="InfoSec-Lab2-apollo">InfoSec-Lab2-apollo<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">
         <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/p1nant0m.github.io/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
 
@@ -413,5 +413,5 @@
             </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
                 <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
             </a>
-        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+        </div><link rel="stylesheet" href="/p1nant0m.github.io/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/p1nant0m.github.io/lib/katex/katex.min.css"><link rel="stylesheet" href="/p1nant0m.github.io/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/p1nant0m.github.io/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/katex/katex.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/p1nant0m.github.io/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/p1nant0m.github.io/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/p1nant0m.github.io/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/p1nant0m.github.io/js/theme.min.js"></script></body>
 </html>
