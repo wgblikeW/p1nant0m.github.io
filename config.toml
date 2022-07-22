@@ -95,7 +95,7 @@ defaultContentLanguage = "zh-cn"
 # 默认每页列表显示的文章数目
 paginate = 12
 # 谷歌分析代号 [UA-XXXXXXXX-X]
-googleAnalytics = ""
+googleAnalytics = "G-CX84EW6PHH"
 # 版权描述，仅仅用于 SEO
 copyright = ""
 
