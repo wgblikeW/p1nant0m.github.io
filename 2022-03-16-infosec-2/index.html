@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>InfoSec-Lab2-apollo - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="InfoSec-Lab2-apollo" />
+<meta property="og:description" content="Architecture Design 模拟实现128位信息的加密通信过程。 实验设计包含三方：A，B，C。A与B之间进行128位信息的加密交换。C负责为A和B各生成一对公私钥对，并分别把对应的私钥传给A和B，并把他们的公钥公开。实现本实验需求的架构设计如下图所示， 项目数据流图 Protocol Design 在该实验需求中，ServerA与ServerB之间使用Asymmetric Encryption Scheme进行加密通信，ServerC充当密钥签发中心，负责为ServerA与" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/2022-03-16-infosec-2/" /><meta property="og:image" content="http://localhost:1313/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-03-16T20:00:00+00:00" />
+<meta property="article:modified_time" content="2022-03-16T20:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://localhost:1313/logo.png"/>
+
+<meta name="twitter:title" content="InfoSec-Lab2-apollo"/>
+<meta name="twitter:description" content="Architecture Design 模拟实现128位信息的加密通信过程。 实验设计包含三方：A，B，C。A与B之间进行128位信息的加密交换。C负责为A和B各生成一对公私钥对，并分别把对应的私钥传给A和B，并把他们的公钥公开。实现本实验需求的架构设计如下图所示， 项目数据流图 Protocol Design 在该实验需求中，ServerA与ServerB之间使用Asymmetric Encryption Scheme进行加密通信，ServerC充当密钥签发中心，负责为ServerA与"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/2022-03-16-infosec-2/" /><link rel="prev" href="http://localhost:1313/2021-12-05-chapter3/" /><link rel="next" href="http://localhost:1313/2022-07-18-xdp-tutorial/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "InfoSec-Lab2-apollo",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/2022-03-16-infosec-2\/"
+        },"genre": "posts","keywords": "project","wordcount":  3830 ,
+        "url": "http:\/\/localhost:1313\/2022-03-16-infosec-2\/","datePublished": "2022-03-16T20:00:00+00:00","dateModified": "2022-03-16T20:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2022-03-16-infosec-2/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2022-03-16-infosec-2/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">InfoSec-Lab2-apollo</h1><h2 class="single-subtitle">信息安全技术实验课程Lab2</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-03-16">2022-03-16</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3830 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#architecture-design">Architecture Design</a></li>
+    <li><a href="#protocol-design">Protocol Design</a>
+      <ul>
+        <li><a href="#serverckey-distribution-center">ServerC——Key Distribution Center</a>
+          <ul>
+            <li><a href="#kdc与client间通信的报文格式"><strong>KDC与Client间通信的报文格式</strong></a></li>
+          </ul>
+        </li>
+        <li><a href="#communication-peers">Communication Peers</a></li>
+      </ul>
+    </li>
+    <li><a href="#implementation">Implementation</a></li>
+    <li><a href="#helpful-commands">Helpful Commands</a></li>
+    <li><a href="#chatting">Chatting</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="architecture-design">Architecture Design</h2>
+<p>模拟实现128位信息的加密通信过程。</p>
+<p>实验设计包含三方：A，B，C。A与B之间进行128位信息的加密交换。C负责为A和B各生成一对公私钥对，并分别把对应的私钥传给A和B，并把他们的公钥公开。实现本实验需求的架构设计如下图所示，</p>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" data-sub-html="<h2>项目数据流图</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" />
+    </a><figcaption class="image-caption">项目数据流图</figcaption>
+    </figure>
+<h2 id="protocol-design">Protocol Design</h2>
+<p>在该实验需求中，ServerA与ServerB之间使用Asymmetric Encryption Scheme进行加密通信，ServerC充当密钥签发中心，负责为ServerA与ServerB生成公私钥对，并将私钥分发给对应的Client。ServerA与ServerB的地位是等价的，都是希望进行加密通信的对等主体，也都是向KDC申请密钥的主体，在下述分析过程中不再区分ServerA与ServerB，我们统称为通信方。</p>
+<h3 id="serverckey-distribution-center">ServerC——Key Distribution Center</h3>
+<p>ServerC中KDC的常驻守护进程监听来自<code>443</code>端口的请求，负责为到访的Client签发公私钥对，并为其提供其所想要进行加密通信方的网络地址以及该主体对应的公钥。</p>
+<ul>
+<li>集群中所有主体在进行加密通信之前都需要先在KDC中进行注册。KDC会为发起请求的Client签发一对公私钥并记录下该Client信息接收端的网络地址信息与其对应的公钥信息。</li>
+<li>该注册过程我们假设是在高权限安全环境下进行的，也就是意味着能够进行注册的用户都是合法的。</li>
+<li>KDC与Client之间通信基于TLS（或使用协议一中的认证密钥交换方案建立会话密钥），因此KDC向Client发送的私钥敏感信息是受到保护的。</li>
+<li>KDC假设所有的Client都能够保存好自己被分配的私钥，若私钥遗失则无法从Client端发起重置密钥的请求（无法验证Client身份），此时必须联系KDC管理员申请重置密钥。</li>
+<li>拥有合法私钥的Client可以向KDC发起重置密钥请求，但是这并不被推荐。因为其它的Client在本地缓存了对等方的公钥，这个公钥在这时已经失效了。此时它需要重新访问KDC获取其最新的公钥，以实现与该Client的加密通信。</li>
+<li>KDC使用自签名证书来证书自己的合法身份，在本次实验中为了方便起见就不将该自签名证书添加至系统证书根信任链中，我们通过在客户端中设置<code>InsecureSkipVerify: true</code> 来免除系统对证书的校验。</li>
+</ul>
+<h4 id="kdc与client间通信的报文格式"><strong>KDC与Client间通信的报文格式</strong></h4>
+<p>Client 请求报文 (向KDC注册自身)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[0x00-0x01] Action (0x01) 向KDC表示这是一个请求注册报文
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x01-0x0b] ClientName_Hasing_Hex_Truncated_10
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x0b-0x1f] padding_receiverAddr
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x1f-0x24] padding_receiverPort
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x24-0x25] EOF Bytes (0x00)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>KDC响应报文</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[0x00-0x80] PrivateKey
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Client请求报文</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[0x00-0x01] Action (0x02) 向KDC表示这是一个请求获取通信方公钥与网络地址信息的报文
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x01-0x0b] ClientName_Hasing_Hex_Truncated_10
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x01-0x15] RemoteServer_Hasing_Hex_Truncated_10
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x15-0x35] Signature of ClientName_Hasing _Hex_Truncated_10
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>KDC响应报文</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[0x00-0x01] ValidMark (0x01表示请求Client与其想要进行通信的对象已经在KDC注册并且签名通过验证)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x01-0x15] TargetServer.receiverAddr **Padding**
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x15-0x1a] targetServer.receiverPort **Padding**
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[0x1a-0x9a] TargetServer.receiverPublicKey
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="communication-peers">Communication Peers</h3>
+<p>在本实验需求中，ServerA与ServerB都是希望进行加密通信的主体，它们向KDC注册自身并通过KDC发现其它同僚。现以ServerA想要向ServerB发起一次加密通信的过程为例，讲解本实验设计。</p>
+<p>ServerA若想要与ServerB进行通信，就必须在KDC中注册自身，同理，ServerB也需要在KDC中注册自身，这样ServerA与ServerB就加入了这个集群之中。</p>
+<ul>
+<li>ServerA通过TLS加密保护的信道接收由KDC生成的私钥并将其保存至本地。</li>
+<li>ServerA事先知道ServerB在这个集群中的唯一标识符（Identification）。通过这个标识符，ServerA能够向KDC发起一次询问，请求ServerB所在的网络地址、ServerB信息接收端所监听的端口以及ServerB的公钥等相关信息。于此同时，ServerA向KDC发送的报文中携带了ServerA对其Identification的签名用以证明它是该集群中的合法成员。</li>
+<li>ServerA若能够通过KDC的验证则会收到来自KDC的响应。该响应报文中包含了ServerB的网络地址以及其公钥等信息。</li>
+<li>ServerA利用ServerB的网络地址向其发起一次TCP连接，可以注意到该TCP连接并没有使用TLS进行保护，所有在这个连接中传输的数据都是未经加密的。</li>
+<li>ServerA使用ServerB的公钥对其要发送给ServerB的数据进行加密，并将加密后的数据推入TCP建立的信道之中。</li>
+<li>ServerB监听到来自ServerA的连接请求，与ServerA建立起TCP连接，并接收由ServerA中传输过来的加密数据</li>
+<li>ServerB使用自己的私钥对来自ServerA的加密数据进行解密，并将解密后的明文写入文件和标准输出流中（写入文件中的数据以16进制的形式表示，至于输出流中的数据是转换为ASCII字符后进行展示，我们这里假设传输的数据都是可打印字符）</li>
+<li>这样ServerA与ServerB之间一次加密通信过程就完成了。</li>
+</ul>
+<h2 id="implementation">Implementation</h2>
+<p>本实验基于Golang Cobra框架实现了一个CLI应用，具体的代码可参考仓库。这里仅给出使用本CLI应用进行ServerA与ServerB加密通信，以及KDC密钥签发的过程。</p>
+<p>首先我们需要启动KDC的守护进程，该进程在443端口监听来自Client的请求，为客户端提供密钥签发注册以及远程服务器发现的服务。</p>
+<p>使用命令：<code>sudo ./kdc</code> 启动KDC服务，监听443端口。</p>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20220315221341126.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20220315221341126.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20220315221341126.png" data-sub-html="<h2>启动 KDC 服务</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20220315221341126.png"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20220315221341126.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20220315221341126.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20220315221341126.png 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20220315221341126.png" />
+    </a><figcaption class="image-caption">启动 KDC 服务</figcaption>
+    </figure>
+<p>使用命令：<code>./apollo regist -k localhost -l 443 -t localhost -p 7070 -n serverA -f privateK_A.key </code> 向KDC发起注册请求，其中<code>-k</code> 表示KDC的<code>Hostname</code> ；<code>-l</code> 表示KDC服务的监听端口；<code>-t</code> 表示ServerA Receiver的<code>Hostname</code> ；<code>-p</code> 表示ServerA Receiver服务的监听端口；<code>-n</code> 表述ServerA在集群中的标识符；<code>-f</code> 表述存储KDC签发私钥的文件路径。</p>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_1_1.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_1_1.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_1_1.png" data-sub-html="<h2>向KDC发起注册请求</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_1_1.png"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_1_1.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_1_1.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_1_1.png 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_1_1.png" />
+    </a><figcaption class="image-caption">向KDC发起注册请求</figcaption>
+    </figure>
+<p>同理，使用命令：<code>./apollo regist -k localhost -l 443 -t localhost -p 7071 -n serverB -f privateK_B.key</code> 向KDC注册ServerB。</p>
+<p>我们可以在KDC输出的日志中看到相关的注册信息，</p>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_22.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_22.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_22.png" data-sub-html="<h2>在KDC输出的日志中查看相关的注册信息</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_22.png"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_22.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_22.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_22.png 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_22.png" />
+    </a><figcaption class="image-caption">在KDC输出的日志中查看相关的注册信息</figcaption>
+    </figure>
+<p>紧接着我们令ServerA向KDC获取ServerB的网络地址信息以及公钥，使用命令：<code>./apollo getremote --cn serverA -r serverB -f remote_B -p ./privateK_A.key</code> 。其中，<code>--cn</code> 表示当前Client在集群中的标识符，<code>-r</code> 标识ServerA想要请求的ServerB在集群中的标识符，<code>-f</code> 表示若KDC成功验证ServerA的合法性返回的ServerB网络地址以及公钥信息保存的文件路径，<code>-p</code> 表示ServerA对应的私钥文件，该文件用于对于唯一标识进行签名，表明ServerA的合法性。该命令的执行结果如下，</p>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_33.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_33.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_33.png" data-sub-html="<h2>ServerA向KDC获取ServerB的网络地址信息以及公钥</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_33.png"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_33.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_33.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_33.png 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_33.png" />
+    </a><figcaption class="image-caption">ServerA向KDC获取ServerB的网络地址信息以及公钥</figcaption>
+    </figure>
+<p>利用上述过程获取到的信息，ServerA与ServerB已经能够进行通信了，首先我们创建一个文件<code>helloB</code> 并在其中写入如下内容，</p>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_44.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_44.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_44.png" data-sub-html="<h2>向待发送文件写入内容</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_44.png"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_44.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_44.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_44.png 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_44.png" />
+    </a><figcaption class="image-caption">向待发送文件写入内容</figcaption>
+    </figure>
+<p>使用命令：<code>./apollo setupreceiver --privk-file=privateK_B.key --listen-port=7071</code> 开启ServerB Receiver服务，如下所示，</p>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_55.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_55.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_55.png" data-sub-html="<h2>开启ServerB Receiver服务</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_55.png"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_55.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_55.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_55.png 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_55.png" />
+    </a><figcaption class="image-caption">开启ServerB Receiver服务</figcaption>
+    </figure>
+<p>使用命令：<code>./apollo send --remote-info=./remote_B --sending-file=./helloB</code> 向ServerB Receiver发送加密数据，如下所示，</p>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_66.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_66.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_66.png" data-sub-html="<h2>向ServerB Receiver发送加密数据</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_66.png"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_66.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_66.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_66.png 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_66.png" />
+    </a><figcaption class="image-caption">向ServerB Receiver发送加密数据</figcaption>
+    </figure>
+<p>在 ServerB Receiver 端我们可以看见解密后的内容如下所示，</p>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_77.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_77.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_77.png" data-sub-html="<h2>在 ServerB Receiver 端 查看解密后的内容</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_77.png"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_77.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_77.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_77.png 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image_77.png" />
+    </a><figcaption class="image-caption">在 ServerB Receiver 端 查看解密后的内容</figcaption>
+    </figure>
+<p>至此我们便完成了ServerA与ServerB依靠KDC的密钥分发与服务发现实现利用Asymmetric Encryption Scheme进行加密通信的需求。</p>
+<h2 id="helpful-commands">Helpful Commands</h2>
+<p><strong>Openssl Usage</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl"><span class="c1"># TLS Client tools</span>
+</span></span><span class="line"><span class="cl">openssl s_client -connect localhost:443
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># generate a private key with the correct length</span>
+</span></span><span class="line"><span class="cl">openssl genrsa -out server.key <span class="m">2048</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># optional: create a self-signed certificate</span>
+</span></span><span class="line"><span class="cl">openssl req -new -x509 -key server.key -out server.pem -days <span class="m">3650</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>RegistA</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl">./apollo regist -k localhost -l <span class="m">443</span> -t localhost -p <span class="m">7070</span> -n serverA -f privateK_A.key
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>RegistB</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl">./apollo regist -k localhost -l <span class="m">443</span> -t localhost -p <span class="m">7071</span> -n serverB -f privateK_B.key
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>GetRemoteInfo</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl">./apollo getremote --cn serverA -r serverB -f remote_B -p ./privateK_A.key
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Send</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl">./apollo send --remote-info<span class="o">=</span>./remote_B --sending-file<span class="o">=</span>./helloB
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Setupreceiver</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="line"><span class="cl">./apollo setupreceiver --privk-file<span class="o">=</span>privateK_B.key --listen-port<span class="o">=</span><span class="m">7071</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="chatting">Chatting</h2>
+<p>这个实验的设置确实有点一头雾水。你既然选择实现一个KDC（Key Distribution Center）作为一个密钥签发与管理中心，那么就意味着这是一个中心化的密钥管理存储解决方案，那为什么还要选择Asymmetric Encryption Scheme去做呢？作为KDC应该去实现Symmetric Encryption Scheme为End-to-End提供会话密钥与存储服务，当用户A需要与用户B进行加密通信时，KDC应该为这两个用户生成这样一个密钥并为他们维护这样一个密钥。当然这里简化了KDC与用户进行交互授权认证的过程，具体的可以参考<a href="https://web.mit.edu/kerberos/#what_is" target="_blank" rel="noopener noreffer ">kerberos</a>协议。</p>
+<p>再者使用Asymmetric Encryption Scheme去加密数据效率是不高的，并且对于数据量较大的场景来说原生的加密方案将无法使用（比如RSA方案中，所加密的数据必须能够映射到所使用的群中的一个元素）Asymmetric Encryption Scheme最典型的应用场景是数字签名和密钥交换。比如我们可以在本实验的场景之下，将ServerC直接移除，仅依靠ServerA与ServerB就可以实现加密通信。ServerA与ServerB可以使用DHKE方案去为通信双方在公开信道下生成一个“秘密”，将该“秘密”经过sha256散列之后作为AES_GCM的密钥，使用Symmetric Encryption Scheme去实现双方的加密通信。这便是TLS/SSL的高度简化版本，有关TLS/SSL的规范可以<a href="https://datatracker.ietf.org/doc/html/rfc5246" target="_blank" rel="noopener noreffer ">点击这里</a>。</p>
+<blockquote>
+<p>A typical operation with a KDC involves a request from a user to use some service. The KDC will use cryptographic techniques to authenticate requesting users as themselves. It will also check whether an individual user has the right to access the service requested. If the authenticated user meets all prescribed conditions, the KDC can issue a ticket permitting access.</p>
+<p>KDCs mostly operate with <a href="https://en.wikipedia.org/wiki/Symmetric_encryption" target="_blank" rel="noopener noreffer ">symmetric encryption</a>.</p>
+<p>&ndash; From WiKi</p>
+</blockquote>
+<p>吐槽归吐槽，本实验刚好让我实践一下刚刚接触的Cobra框架，虽然用到的东西不多，使用方法也不够优雅，可能还有些凌乱，但能进行一次实践终归是有裨益的。害，不知什么时候能够将6.824的Raft K/V写完呢？</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-03-16</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2022-03-16-infosec-2/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="http://localhost:1313/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo" data-via="p1nant0m" data-hashtags="project"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="http://localhost:1313/2022-03-16-infosec-2/" data-hashtag="project"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="http://localhost:1313/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="http://localhost:1313/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/project/">project</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2021-12-05-chapter3/" class="prev" rel="prev" title="·密码学原理课程 —— Private-Key Cryptography Ⅰ"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>·密码学原理课程 —— Private-Key Cryptography Ⅰ</a>
+            <a href="/2022-07-18-xdp-tutorial/" class="next" rel="next" title="XDP-tutorial 学习如何编写 eBPF XDP 程序">XDP-tutorial 学习如何编写 eBPF XDP 程序<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

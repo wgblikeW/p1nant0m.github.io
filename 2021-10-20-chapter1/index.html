@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>·密码学原理课程 —— Introduction - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="·密码学原理课程 —— Introduction" />
+<meta property="og:description" content="Course Overview Cryptology: Science concerned with data communication and storage in secure and usually secret form. Cryptography (密码学) Cryptanalysis (密码分析学) Our goals: the basic principles of modern cryptography mathematical assumptions (数学假设) security proof (安全证明) some standard (secure) constructions (一些现行标准密码方案的构造) Textbook: Introduction to MODERN CRYPTOGRAPHY 3rd edition Course Structure Introduction To Modern Cryptography Symmetric Asymmetric Encryption Private-Key Encryption Public-Key Encryption Authentication Message Authentication Codes Digital Signature 课程由古典密码学开始，讲述经典的古典密码（Caesar Cipher &amp; Vigenère Cipher）以及从其中所抽象出来的编码思想（单表置换密码与多表置换密码）。这个时期的密码更像是个人的灵光乍现（heuristi" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/2021-10-20-chapter1/" /><meta property="og:image" content="http://localhost:1313/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-11-20T12:00:00+00:00" />
+<meta property="article:modified_time" content="2021-11-20T12:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://localhost:1313/logo.png"/>
+
+<meta name="twitter:title" content="·密码学原理课程 —— Introduction"/>
+<meta name="twitter:description" content="Course Overview Cryptology: Science concerned with data communication and storage in secure and usually secret form. Cryptography (密码学) Cryptanalysis (密码分析学) Our goals: the basic principles of modern cryptography mathematical assumptions (数学假设) security proof (安全证明) some standard (secure) constructions (一些现行标准密码方案的构造) Textbook: Introduction to MODERN CRYPTOGRAPHY 3rd edition Course Structure Introduction To Modern Cryptography Symmetric Asymmetric Encryption Private-Key Encryption Public-Key Encryption Authentication Message Authentication Codes Digital Signature 课程由古典密码学开始，讲述经典的古典密码（Caesar Cipher &amp; Vigenère Cipher）以及从其中所抽象出来的编码思想（单表置换密码与多表置换密码）。这个时期的密码更像是个人的灵光乍现（heuristi"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/2021-10-20-chapter1/" /><link rel="prev" href="http://localhost:1313/2021-10-20-justdecrypt/" /><link rel="next" href="http://localhost:1313/2021-11-26-chapter2/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "·密码学原理课程 —— Introduction",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/localhost:1313\/2021-10-20-chapter1\/"
+        },"genre": "posts","keywords": "CourseOfCryptography","wordcount":  3449 ,
+        "url": "http:\/\/localhost:1313\/2021-10-20-chapter1\/","datePublished": "2021-11-20T12:00:00+00:00","dateModified": "2021-11-20T12:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2021-10-20-chapter1/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2021-10-20-chapter1/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">·密码学原理课程 —— Introduction</h1><h2 class="single-subtitle">一些有关本学期密码学课程的信息与传统密码学简介</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-11-20">2021-11-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3449 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#course-overview">Course Overview</a></li>
+        <li><a href="#course-structure">Course Structure</a></li>
+        <li><a href="#private-key-setting">Private-Key Setting</a></li>
+        <li><a href="#the-synatax-of-encryption">The Synatax of Encryption</a></li>
+        <li><a href="#kerckhoffs-principle">Kerckhoffs&rsquo; principle</a></li>
+        <li><a href="#top-conferences">Top Conferences</a></li>
+        <li><a href="#杂谈">杂谈</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h3 id="course-overview">Course Overview</h3>
+<p><strong>Cryptology</strong>: Science concerned with data communication and storage in secure and usually secret form.</p>
+<ul>
+<li>Cryptography (密码学)</li>
+<li>Cryptanalysis (密码分析学)</li>
+</ul>
+<p><strong>Our goals</strong>: the basic principles of modern cryptography</p>
+<ul>
+<li>mathematical assumptions (数学假设)</li>
+<li>security proof (安全证明)</li>
+<li>some standard (secure) constructions (一些现行标准密码方案的构造)</li>
+</ul>
+<p><strong>Textbook:</strong> <a href="http://www.cs.umd.edu/~jkatz/imc.html" target="_blank" rel="noopener noreffer ">Introduction to MODERN CRYPTOGRAPHY 3rd edition</a></p>
+<h3 id="course-structure">Course Structure</h3>
+<figure><a class="lightgallery" href="https://raw.githubusercontent.com/wgblikeW/blog-imgs/main/Introduction%20To%20Modern%20Cryptography.svg" title="https://raw.githubusercontent.com/wgblikeW/blog-imgs/main/Introduction%20To%20Modern%20Cryptography.svg" data-thumbnail="https://raw.githubusercontent.com/wgblikeW/blog-imgs/main/Introduction%20To%20Modern%20Cryptography.svg" data-sub-html="<h2>Introduction To Modern Cryptography</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://raw.githubusercontent.com/wgblikeW/blog-imgs/main/Introduction%20To%20Modern%20Cryptography.svg"
+            data-srcset="https://raw.githubusercontent.com/wgblikeW/blog-imgs/main/Introduction%20To%20Modern%20Cryptography.svg, https://raw.githubusercontent.com/wgblikeW/blog-imgs/main/Introduction%20To%20Modern%20Cryptography.svg 1.5x, https://raw.githubusercontent.com/wgblikeW/blog-imgs/main/Introduction%20To%20Modern%20Cryptography.svg 2x"
+            data-sizes="auto"
+            alt="https://raw.githubusercontent.com/wgblikeW/blog-imgs/main/Introduction%20To%20Modern%20Cryptography.svg" />
+    </a><figcaption class="image-caption">Introduction To Modern Cryptography</figcaption>
+    </figure>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th>Symmetric</th>
+<th>Asymmetric</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>Encryption</strong></td>
+<td>Private-Key Encryption</td>
+<td>Public-Key Encryption</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>Authentication</strong></td>
+<td>Message Authentication Codes</td>
+<td>Digital Signature</td>
+</tr>
+</tbody>
+</table>
+<p>课程由古典密码学开始，讲述经典的古典密码（<em>Caesar Cipher</em> &amp; <em>Vigenère Cipher</em>）以及从其中所抽象出来的编码思想（单表置换密码与多表置换密码）。这个时期的密码更像是个人的灵光乍现（<em>heuristic</em>），没有什么固定的范式和数学基础，其更多的被认为是一种艺术( <em>the art of writing or solving codes</em>)，一种个人通过巧妙的构思运用简单/相对复杂的规则将明文空间映射到密文空间上规则（这已经运用到了现代密码学的术语）。接着课程教授展示了运用现代密码分析学技巧破解上述两种古典密码方案的攻击方式（频率分析方法），由于古典密码学不是本课程的重点，因此不在赘述，有兴趣的朋友可以参考教材（<u>Pg. 9</u>）。</p>
+<blockquote>
+<p>多表位移（<em>poly-alphabetic shift</em>）密码成为了现代密码学中流密码（<em>Stream Cipher</em>）的源泉，而多表代换密码（<em>poly-alphabetic shift</em>）成为了现代密码学中分组密码（<em>Block Cipher</em>）的源泉。</p>
+</blockquote>
+<p>紧接着是现代密码学。在现代密码学中我们可以看到一种严谨的数学形式化表达，不同于古典密码，现代密码学有着一套严格且规范的数学定义去描述密码方案以及密码方案安全性，于此同时发展出了一种证明密码学方案安全性的规约证明方式（<em>Deduction</em>）。现代密码学有两条明显的主干，一是对称密码学也叫做私钥密码学（<em>Private-Key Cryptography OR Symmetric Cryptography</em>），另一是公钥密码学也叫做非对称密码学（<em>Public-Key Cryptography OR Asymmetric Cryptography</em>）。</p>
+<blockquote>
+<p>Dolev-Yao威胁模型：The <strong>Dolev–Yao model</strong>,[<a href="https://en.wikipedia.org/wiki/Dolev%e2%80%93Yao_model#cite_note-DolevYao-1" target="_blank" rel="noopener noreffer ">1]</a> named after its authors <a href="https://en.wikipedia.org/wiki/Danny_Dolev" target="_blank" rel="noopener noreffer ">Danny Dolev</a> and <a href="https://en.wikipedia.org/wiki/Andrew_Yao" target="_blank" rel="noopener noreffer ">Andrew Yao</a>, is a <a href="https://en.wikipedia.org/wiki/Mathematical_model" target="_blank" rel="noopener noreffer ">formal model</a> used to prove properties of interactive cryptographic protocols. （From WiKipedia）</p>
+<p>Pseudo-random Number Gerneration &amp; Multi-party Secure Computation (MPC) 以及上述的Dolev-Yao Model都是 Yao 在密码学领域的开创性工作</p>
+<p>By the way, Andrew Yao 是清华大学交叉信息研究院院长姚期智院士</p>
+</blockquote>
+<p>在非对称密码学中我们将讲述公钥加密方案（<em>Public-Key Encryption</em>）与数字签名（<em>Digital Signature</em>），这两者涉及到了密码学中的两大方向，认证（<em>Authentication</em>）与加密（<em>Encryption</em>）也就是关于如何保护信息的机密性与完整性。</p>
+<p>在对称密码学中我们将讲述消息认证码（<em>Message Authentication Code</em> <em>MAC</em>）、流密码（<em>Stream Cipher</em>）、分组密码（<em>Block Cipher</em>）和哈希函数及其应用（<em>Hash Function and applications</em>）。</p>
+<p>这里引用教材中由古典密码学转向现代密码学期间发生的方法论上的重大转变，</p>
+<blockquote>
+<p>In short, cryptography has gone from a <strong>heuristic set of tools</strong> concerned with ensuring <strong>secret communication</strong> for <strong>the military</strong> to a <strong>science</strong> that helps <strong>secure systems</strong> for <strong>ordinary people</strong> all across the globe.</p>
+</blockquote>
+<p>在本课程中，我们会对上述两种不同的密码学方向以及组成它们的各个部件给出其精确的形式化数学定义，并建立Dolev-Yao Model对密码方案的安全性作出证明。在学习本课程中要始终牢记一点，即密码学是建立在一定的基础假设之上的，我们需要假设攻击者所具有的能力，需要考虑攻击者所拥有的可能攻击算法的算法复杂度，至一点至关重要。我们考虑的始终是攻击者在拥有某种时间复杂度算法的条件下，该方案被攻破的概率，因此要想充分理解这其中的精髓我们还需要对概率论与计算复杂度理论有一定的了解，明白了这些我们才能更加深入的理解密码学理解信息科学。</p>
+<h3 id="private-key-setting">Private-Key Setting</h3>
+<p>​	在本主题下我们简要介绍一下当我们说Symmetric Encryption时我们究竟在说什么？Symmetric Encryption中文译为对称加密，与其简单的称其为对称加密不如完整的称其为对称加解密。在古典密码学一章中我们知道了通信双方想要在一个公开信道下实现秘密通信需要对原先要传输的信息/明文（<em>plaintext</em>）（我们不妨将其认为是具有语义的信息）进行一个变换，使其转变为窃听者无法从其获取到明文的信息的密文(<em>ciphertext</em>)数据，在这里我们需要对变换作出定义，这种定义就构成了我们的密码方案，而所有的这些密码方案都需要基于一个保密的信息，也就是我们所熟知的密钥（<em>Key</em>）。在本主题Private-Key下，我们所讨论的密钥在通信的双方的背景之下是相同的。</p>
+<p>考虑以下这个场景</p>
+<blockquote>
+<p>Alice和Bod是需要秘密通信的双方，它们事先私下会面，共同商讨了一个用于他们后续秘密通信的密钥，并对此密钥在接下来通信中的使用达成了共识。紧接着Alice和Bod回到各自的住所（空间上是相互隔离的），开始建立通信（这里的通信信道多种多样，你可以飞鸽传书也可以使用互联网），Alice和Bod使用它们预先商讨好的密钥对消息进行加密，并把加密好的密文推入信道。如果这时候他们通信的信道被一个第三者Eve截获（Eve只是个监听者），Eve无法在没有密钥的情况下获得关于明文的任何信息，这样便做到了在信息被敌手（<em>adversary</em>）截获的条件下保证消息的机密性。而Alice/Bod将从信道中取出密文并使用密钥对其进行解密，便可以恢复对方所传输的明文消息。（不考虑信息的完整性，即消息在传输的过程中是否被篡改）在这里加密和解密所使用到的密钥都是相同的，这也是Symmetric的含义，即通信双方实际上拥有的东西是等同的。</p>
+</blockquote>
+<figure><a class="lightgallery" href="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211121145210046.png" title="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211121145210046.png" data-thumbnail="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211121145210046.png" data-sub-html="<h2>通信双方使用一个安全信道进行通信</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211121145210046.png"
+            data-srcset="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211121145210046.png, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211121145210046.png 1.5x, https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211121145210046.png 2x"
+            data-sizes="auto"
+            alt="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/image-20211121145210046.png" />
+    </a><figcaption class="image-caption">通信双方使用一个安全信道进行通信</figcaption>
+    </figure>
+<p>​	在这里我们注意到一点就是我们一直强调的是密钥的机密性而不是强调密码方案的机密性，这点我们将会在后面的Kerckhoffs&rsquo; principle中提到。</p>
+<p>​	书中还给出了另外一种同一用户在本地存储介质上存储机密数据的场景，在此便不在赘述，有兴趣的朋友可以参考教材（<u>Pg. 4</u>）</p>
+<h3 id="the-synatax-of-encryption">The Synatax of Encryption</h3>
+<p>​	在本主题中我们简要介绍一下加密的语义。对于一个Private-Key加密方案来说，我们首先需要指定一个明文空间 $M$,一个用于生成随机数的随机数生成器 $Gen$ ，一个用于加密消息的加密器 $Enc$ 和一个用于解密的解密器 $Dec$ . 我们对者四者 $(M,Gen,Enc,Dec)$ 有以下说明</p>
+<ul>
+<li>$Gen$ 所使用的密钥生成算法是一个概率算法，这意味着每一次输入都可能输出符合某个概率分布的随机变量，我们在这并不对 $Gen$ 的概率分布作任何要求。（不过在现实的应用中 $Gen$ 的输出最好应该使得信息熵最大化）</li>
+<li>$Enc$ 接受两个输入，一个是密钥Key记作 $k$ ，一个是消息Message记作 $m$，其输出一个密文Ciphertext记作 $c$ ，我们将 $Enc_k(m)$ 称作使用密钥 $k$ 加密消息 $m$</li>
+<li>$Dec$ 接受两个输入，一个是密钥Key记作 $k$，一个是密文Ciphertext记作 $c$ ，其输出密文对应的明文Message记作 $m$，我们将 $Dec_k(c)$称作使用密钥 $k$ 解密密文 $c$</li>
+</ul>
+<p>​	一个加密方案必须满足下列的正确性需求：对于任意密钥生成器 $Gen$ 输出的密钥 $k$ 和所有 $m \in M$，下列等式恒成立
+$$
+Dec_k(Enc_k(m)) = m
+$$
+所有由密钥生成算法（<em>key-generation algorithm</em>）生成的密钥集合称为密钥空间，记为 $K$ 。在大多数情况下 $Gen$ 的输出在密钥空间 $K$ 中服从均匀分布（<em>uniformly distribution</em>）。使用上述提到的工具，我们能够使用数学语言来描述上述我们提到的 Alice-Bob 秘密通信的场景。</p>
+<blockquote>
+<p>Alice 与 Bod 通过秘密信道协商并确定使用的密钥 $k&lt;- Gen(1^n)$</p>
+<p>Alice 使用密钥 $k$ 与 Bob 在公开信道下进行加密通信 $c:=Enc_k(m)\space m \in M$</p>
+<p>Bod 在公开信道中收到密文 $c$ 并用密钥 $k$ 恢复明文 $m$，$m:=Dec_k(c)$</p>
+</blockquote>
+<h3 id="kerckhoffs-principle">Kerckhoffs&rsquo; principle</h3>
+<p>​	下列是教材中对Kerckhoffs&rsquo; principle 的描述</p>
+<blockquote>
+<p>The cipher method must not be required to be secret, and it must be able to fall into the hands of the enemy without inconvenience.</p>
+</blockquote>
+<p>​	简而言之，一个密码方案的安全性不应该依赖于整个密码方案的保密性，而应该仅仅依赖于密钥的保密性。（保密性：除了合法的通信双方，该信息不为第三方所知）</p>
+<p>​	这么做的好处可以简要概括为以下几点：</p>
+<ul>
+<li>对一个短密钥的持续保密要比持续保密一整个加密方案要来的简单</li>
+<li>当密钥泄露时，依照 Kerckhoffs&rsquo; principle，我们可以仅仅替换密钥来最大程度的降低信息系统所面临的风险而不需要大费周章的更换一整套加密方案</li>
+<li>再者公开机密方案有助于让同行审议以找出现存密码方案的弱点，并可以促进相关标准的制定以及有关密码方案的商业化</li>
+</ul>
+<h3 id="top-conferences">Top Conferences</h3>
+<p>对学术感兴趣的小伙伴可以在下列 Top Conferences 中获得快乐：）</p>
+<ul>
+<li><a href="https://www.iacr.org/" target="_blank" rel="noopener noreffer ">IACR</a> (International Association for Cryptologic Research)</li>
+<li><a href="https://cacr.iu.edu/" target="_blank" rel="noopener noreffer ">CACR</a> (Center for Applied Cybersecurity Research)</li>
+<li><a href="https://www.ieee-security.org/" target="_blank" rel="noopener noreffer ">S&amp;P</a> (IEEE Computer Society&rsquo;s Technical Committee on Security and Privacy)</li>
+<li><a href="https://dl.acm.org/conference/ccs" target="_blank" rel="noopener noreffer ">CCS</a> (The ACM Conference on Computer and Communication Security)</li>
+<li><a href="https://www.usenix.org/" target="_blank" rel="noopener noreffer ">USENIX Security</a></li>
+<li><a href="https://www.ndss-symposium.org/" target="_blank" rel="noopener noreffer ">NDSS</a> (The Network and Distributed System Security Symposium)</li>
+</ul>
+<h3 id="杂谈">杂谈</h3>
+<p>开设这个专栏的本意是为了重新梳理一下密码学原理课程的知识点还有就是为学弟学妹们留下一点东西，可能有些表述不太准确，言不达意，还望各位大佬不吝赐教。有关文章中出现的问题，各位可以将意见发送邮件至这个邮箱 <code>wgblike@gmail.com</code></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-11-20</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2021-10-20-chapter1/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="http://localhost:1313/2021-10-20-chapter1/" data-title="·密码学原理课程 —— Introduction" data-via="p1nant0m" data-hashtags="CourseOfCryptography"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="http://localhost:1313/2021-10-20-chapter1/" data-hashtag="CourseOfCryptography"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="http://localhost:1313/2021-10-20-chapter1/" data-title="·密码学原理课程 —— Introduction"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="http://localhost:1313/2021-10-20-chapter1/" data-title="·密码学原理课程 —— Introduction"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="http://localhost:1313/2021-10-20-chapter1/" data-title="·密码学原理课程 —— Introduction"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/courseofcryptography/">CourseOfCryptography</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2021-10-20-justdecrypt/" class="prev" rel="prev" title="JustDecrypt"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>JustDecrypt</a>
+            <a href="/2021-11-26-chapter2/" class="next" rel="next" title="·密码学原理课程 —— Perfectly Secret Encryption">·密码学原理课程 —— Perfectly Secret Encryption<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
