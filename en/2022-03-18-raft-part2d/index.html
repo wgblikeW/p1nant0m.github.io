@@ -30,6 +30,8 @@ KeyValue-Store Server Architecture Raft must provide the following function that
 Snapshot(index int, snapshot []byte)
 The index argument indicates the highest log entry that&rsquo;s reflected in the snapshot. Raft should discard its log entries before that point. You&rsquo;ll need to revise your Raft code to operate while storing only the tail of the log.
 You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper that allows a Raft leader to tell a lagging Raft peer to replace its state with a snapshot. You will likely need to think through how InstallSnapshot should interact with the state and rules in Figure 2."/>
+
+
 <meta name="application-name" content="我的网站">
 <meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
