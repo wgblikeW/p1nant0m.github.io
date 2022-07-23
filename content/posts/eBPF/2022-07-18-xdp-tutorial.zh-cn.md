@@ -175,6 +175,32 @@ struct {
 } xdp_stats_map_percpu SEC(".maps");
 ```
 
+{{< admonition tip "BPF Maps 创建 —— 代码示范" false >}}
+当你需要创建数量较多的 BPF Maps 时，你可以参考以下创建示例来简化你的代码逻辑，
+
+```c
+#define BPF_MAP(_name, _type, _key_type, _value_type, _max_entries)                                \
+    struct {                                                                                       \
+        __uint(type, _type);                                                                       \
+        __uint(max_entries, _max_entries);                                                         \
+        __type(key, _key_type);                                                                    \
+        __type(value, _value_type);                                                                \
+    } _name SEC(".maps");
+
+#define BPF_HASH(_name, _key_type, _value_type, _max_entries)                                      \
+    BPF_MAP(_name, BPF_MAP_TYPE_HASH, _key_type, _value_type, _max_entries)
+
+#define BPF_LRU_HASH(_name, _key_type, _value_type, _max_entries)                                  \
+    BPF_MAP(_name, BPF_MAP_TYPE_LRU_HASH, _key_type, _value_type, _max_entries)
+
+BPF_HASH(kconfig_map, u32, u32, 10240);
+BPF_HASH(interpreter_map, u32, file_info_t, 10240);      
+BPF_HASH(containers_map, u32, u8, 10240);  
+```
+
+ 上述示例代码来自 [tracee](https://github.com/aquasecurity/tracee)
+{{< /admonition >}}
+
 BPF maps 是通用的键值对存储方式，在上述定义中 `__uint(type, BPF_MAP_TYPE_ARRAY)` 用于指定特定类型的 BPF maps（这里给出了 v5.4 内核版本中所有的 [BPF maps 类型](https://elixir.bootlin.com/linux/v5.4/source/include/uapi/linux/bpf.h#L115)），`__type(key, __u32)` 用于指定 Key 对应的数据类型，`__type(value, struct datarec)` 用于指定 Value 对应的数据类型，`__uint(max_entries, XDP_ACTION_MAX)` 用于指定可存放的最大元素个数。
 
 使用 `bpf_object_find_map_by_name()` 函数可以通过 BPF maps 的名字找到其对应的 `bpf_map` 对象，通过 `bpf_map_fd()` 函数可以获得 map 的文件描述符，libbpf 库中提供了一个函数`bpf_object__find_map_fd_by_name()` 用于直接完成上述两个步骤。
@@ -187,8 +213,7 @@ BPF maps 是通用的键值对存储方式，在上述定义中 `__uint(type, BP
 
 
 
-在上述代码中，我们分别定义了两种不同类型的 BPF Maps，它们分别是 `BPF_MAP_TYPE_ARRAY` 与 `BPF_MAP_TYPE_PERCPU_ ARRAY` ，它们两者之间最大的区别【对持有数据的对象进行操作是否需要加锁】，对于前者来说多个数据操作主体共享一片内存空间，所以在这片内存空间之上进行操作需要持有锁（操作需要是原子的），而对于后者来说，由于各数据操作主体独有一片自用的内存空间，便不存在了临界区，我们可以直接在这片区域上进行读写。**不过，这时候我们在用户空间代码中的操作可能会有些许不同，这是由于数据被各 CPU 所持有，要想获取完整的数据需要遍历所有 CPU 持有的 Map 对象**。
-
+在上述代码中，我们分别定义了两种不同类型的 BPF Maps，它们分别是 `BPF_MAP_TYPE_ARRAY` 与 `BPF_MAP_TYPE_PERCPU_ ARRAY` ，它们两者之间最大的区别 **【对持有的数据对象进行操作是否需要加锁】** ，对于前者来说多个数据操作主体对一片共享内存空间进行操作，所以在这片内存空间之上进行操作时需要持有锁（操作需要是原子的），而对于后者来说，由于各数据操作主体独有一片自用的内存空间，便不存在了临界区，我们可以直接在这片区域上进行读写。**不过，这时候我们在用户空间代码中的操作可能会有些许不同，这是由于数据被各 CPU 所持有，要想获取完整的数据需要遍历所有 CPU 持有的 Map 对象**。注意到考虑硬件平台可能会支持 CPU 热插拔，所以 Linux Kernel 在初始化时会为这些潜在的可能能够上线的 CPU 初始化相应的 Buffer，分配相应的 CPU ID。若要查看当前环境中所有可能存在的 CPU 数量，可以在 root 权限下查看 `/sys/devices/system/cpu/possible` 文件来获取内核认为可能会存在的 CPU 数目，从而当我们读取 per-cpu buffer 时，需要读取这些所有可能存在 CPU 的 buffer。有关 `num_possible_cpus` 的讨论可以参考[此处](https://github.com/libbpf/libbpf/issues/383)。
 
 {{< admonition tip "eBPF 程序编写指南" false >}}
 在编写 BPF 程序时，遇到不熟悉的函数或者用法，可以查看 bpf-helpers。通过 `man bpf-helpers` 命令可以查看各函数相关入参、使用方法描述以及函数的返回值。
@@ -244,11 +269,13 @@ func (b *BPFMap) GetValue(key unsafe.Pointer) ([]byte, error) {
 
 <center>    <img style="border-radius: 0.3125em;    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08); zoom:67%;"     src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/bpf_basic03.png">    <br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">示例代码运行输出</div> </center>
 
-#### packet01-parsing
+秉着有问题就要暴露出来的想法，我去 libbpfgo 仓库下提了一个 [issues](https://github.com/aquasecurity/libbpfgo/issues/191)，最终也得到了解答。
 
 
 
 ### TCP 协议报文结构
+
+[RFC 793](https://datatracker.ietf.org/doc/html/rfc793)
 
 ```bash
                     0                   1                   2                   3
@@ -280,6 +307,8 @@ func (b *BPFMap) GetValue(key unsafe.Pointer) ([]byte, error) {
 
 ### IP 协议报文结构
 
+[RFC 791](https://datatracker.ietf.org/doc/html/rfc791)
+
 ```bash
                     0                   1                   2                   3
                     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -309,3 +338,6 @@ func (b *BPFMap) GetValue(key unsafe.Pointer) ([]byte, error) {
 3. General Introduction to XDP in [the academic paper](https://github.com/xdp-project/xdp-paper/blob/master/xdp-the-express-data-path.pdf) or [the presentation](https://github.com/xdp-project/xdp-paper/blob/master/xdp-presentation.pdf).  
 4. [Linux 内核观测技术 BPF](https://item.jd.com/12939760.html)
 5. 极客时间课程，倪鹏飞老师的 eBPF 核心技术与实战
+6. [Cilium: eBPF-based Networking, Security, and Observability](https://github.com/cilium/cilium)
+7. [tracee: Linux Runtime Security and Forensics using eBPF](https://github.com/aquasecurity/tracee)
+8. [ebpf official](https://ebpf.io/zh-cn/)
