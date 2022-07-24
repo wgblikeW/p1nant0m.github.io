@@ -30,7 +30,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/p1nant0m.com\/2022-07-18-xdp-tutorial\/"
-        },"genre": "posts","keywords": "eBPF, XDP, tutorial","wordcount":  4598 ,
+        },"genre": "posts","keywords": "eBPF, XDP, tutorial","wordcount":  4954 ,
         "url": "https:\/\/p1nant0m.com\/2022-07-18-xdp-tutorial\/","datePublished": "2022-07-18T07:00:00+00:00","dateModified": "2022-07-18T07:00:00+00:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -132,7 +132,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">XDP-tutorial 学习如何编写 eBPF XDP 程序</h1><h2 class="single-subtitle">跟着 xdp-tutorial repo 以及 Linux repo bpf/samples 从零开始学习编写 eBPF XDP 程序</h2><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-07-18">2022-07-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4598 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-07-18">2022-07-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4954 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 10 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -150,7 +150,6 @@
         <li><a href="#xdp-程序的编写">XDP 程序的编写</a>
           <ul>
             <li><a href="#basic-03---counting-with-bpf-maps">Basic 03 - counting with BPF maps</a></li>
-            <li><a href="#packet01-parsing">packet01-parsing</a></li>
           </ul>
         </li>
         <li><a href="#tcp-协议报文结构">TCP 协议报文结构</a></li>
@@ -359,7 +358,57 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">xdp_stats_map_percpu</span> <span class="n">SEC</span><span class="p">(</span><span class="s">&#34;.maps&#34;</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>BPF maps 是通用的键值对存储方式，在上述定义中 <code>__uint(type, BPF_MAP_TYPE_ARRAY)</code> 用于指定特定类型的 BPF maps（这里给出了 v5.4 内核版本中所有的 <a href="https://elixir.bootlin.com/linux/v5.4/source/include/uapi/linux/bpf.h#L115" target="_blank" rel="noopener noreffer ">BPF maps 类型</a>），<code>__type(key, __u32)</code> 用于指定 Key 对应的数据类型，<code>__type(value, struct datarec)</code> 用于指定 Value 对应的数据类型，<code>__uint(max_entries, XDP_ACTION_MAX)</code> 用于指定可存放的最大元素个数。</p>
+</div><div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>BPF Maps 创建 —— 代码示范<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>当你需要创建数量较多的 BPF Maps 时，你可以参考以下创建示例来简化你的代码逻辑，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define BPF_MAP(_name, _type, _key_type, _value_type, _max_entries)                                \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    struct {                                                                                       \
+</span></span></span><span class="line"><span class="cl"><span class="cp">        __uint(type, _type);                                                                       \
+</span></span></span><span class="line"><span class="cl"><span class="cp">        __uint(max_entries, _max_entries);                                                         \
+</span></span></span><span class="line"><span class="cl"><span class="cp">        __type(key, _key_type);                                                                    \
+</span></span></span><span class="line"><span class="cl"><span class="cp">        __type(value, _value_type);                                                                \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    } _name SEC(&#34;.maps&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#define BPF_HASH(_name, _key_type, _value_type, _max_entries)                                      \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    BPF_MAP(_name, BPF_MAP_TYPE_HASH, _key_type, _value_type, _max_entries)
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#define BPF_LRU_HASH(_name, _key_type, _value_type, _max_entries)                                  \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    BPF_MAP(_name, BPF_MAP_TYPE_LRU_HASH, _key_type, _value_type, _max_entries)
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="n">BPF_HASH</span><span class="p">(</span><span class="n">kconfig_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">BPF_HASH</span><span class="p">(</span><span class="n">interpreter_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">file_info_t</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>      
+</span></span><span class="line"><span class="cl"><span class="n">BPF_HASH</span><span class="p">(</span><span class="n">containers_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">u8</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上述示例代码来自 <a href="https://github.com/aquasecurity/tracee" target="_blank" rel="noopener noreffer ">tracee</a></p>
+</div>
+        </div>
+    </div>
+<p>BPF maps 是通用的键值对存储方式，在上述定义中 <code>__uint(type, BPF_MAP_TYPE_ARRAY)</code> 用于指定特定类型的 BPF maps（这里给出了 v5.4 内核版本中所有的 <a href="https://elixir.bootlin.com/linux/v5.4/source/include/uapi/linux/bpf.h#L115" target="_blank" rel="noopener noreffer ">BPF maps 类型</a>），<code>__type(key, __u32)</code> 用于指定 Key 对应的数据类型，<code>__type(value, struct datarec)</code> 用于指定 Value 对应的数据类型，<code>__uint(max_entries, XDP_ACTION_MAX)</code> 用于指定可存放的最大元素个数。</p>
 <p>使用 <code>bpf_object_find_map_by_name()</code> 函数可以通过 BPF maps 的名字找到其对应的 <code>bpf_map</code> 对象，通过 <code>bpf_map_fd()</code> 函数可以获得 map 的文件描述符，libbpf 库中提供了一个函数<code>bpf_object__find_map_fd_by_name()</code> 用于直接完成上述两个步骤。</p>
 <div class="details admonition tip">
         <div class="details-summary admonition-title">
@@ -370,7 +419,7 @@
         </div>
     </div>
 <p>在用户空间中，我们可以通过函数 <code>bpf_map_lookup_elem()</code> 在用户空间中读取 BPF Maps 中的内容。</p>
-<p>在上述代码中，我们分别定义了两种不同类型的 BPF Maps，它们分别是 <code>BPF_MAP_TYPE_ARRAY</code> 与 <code>BPF_MAP_TYPE_PERCPU_ ARRAY</code> ，它们两者之间最大的区别【对持有数据的对象进行操作是否需要加锁】，对于前者来说多个数据操作主体共享一片内存空间，所以在这片内存空间之上进行操作需要持有锁（操作需要是原子的），而对于后者来说，由于各数据操作主体独有一片自用的内存空间，便不存在了临界区，我们可以直接在这片区域上进行读写。<strong>不过，这时候我们在用户空间代码中的操作可能会有些许不同，这是由于数据被各 CPU 所持有，要想获取完整的数据需要遍历所有 CPU 持有的 Map 对象</strong>。</p>
+<p>在上述代码中，我们分别定义了两种不同类型的 BPF Maps，它们分别是 <code>BPF_MAP_TYPE_ARRAY</code> 与 <code>BPF_MAP_TYPE_PERCPU_ ARRAY</code> ，它们两者之间最大的区别 <strong>【对持有的数据对象进行操作是否需要加锁】</strong> ，对于前者来说多个数据操作主体对一片共享内存空间进行操作，所以在这片内存空间之上进行操作时需要持有锁（操作需要是原子的），而对于后者来说，由于各数据操作主体独有一片自用的内存空间，便不存在了临界区，我们可以直接在这片区域上进行读写。<strong>不过，这时候我们在用户空间代码中的操作可能会有些许不同，这是由于数据被各 CPU 所持有，要想获取完整的数据需要遍历所有 CPU 持有的 Map 对象</strong>。注意到考虑硬件平台可能会支持 CPU 热插拔，所以 Linux Kernel 在初始化时会为这些潜在的可能能够上线的 CPU 初始化相应的 Buffer，分配相应的 CPU ID。若要查看当前环境中所有可能存在的 CPU 数量，可以在 root 权限下查看 <code>/sys/devices/system/cpu/possible</code> 文件来获取内核认为可能会存在的 CPU 数目，从而当我们读取 per-cpu buffer 时，需要读取这些所有可能存在 CPU 的 buffer。有关 <code>num_possible_cpus</code> 的讨论可以参考<a href="https://github.com/libbpf/libbpf/issues/383" target="_blank" rel="noopener noreffer ">此处</a>。</p>
 <div class="details admonition tip">
         <div class="details-summary admonition-title">
             <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>eBPF 程序编写指南<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
@@ -458,8 +507,9 @@
 </div>
 </div><p><code>bpf_map_*</code> 系列函数都是通过 <code>bpf()</code> 系统调用实现的，具体实现<a href="https://elixir.bootlin.com/linux/v5.4/source/tools/lib/bpf/bpf.c#L371" target="_blank" rel="noopener noreffer ">参考此处</a>，也可以参考 <code>bpf</code> 系统调用手册。</p>
 <center>    <img style="border-radius: 0.3125em;    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08); zoom:67%;"     src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/bpf_basic03.png">    <br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">示例代码运行输出</div> </center>
-<h4 id="packet01-parsing">packet01-parsing</h4>
+<p>秉着有问题就要暴露出来的想法，我去 libbpfgo 仓库下提了一个 <a href="https://github.com/aquasecurity/libbpfgo/issues/191" target="_blank" rel="noopener noreffer ">issues</a>，最终也得到了解答。</p>
 <h3 id="tcp-协议报文结构">TCP 协议报文结构</h3>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc793" target="_blank" rel="noopener noreffer ">RFC 793</a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -510,6 +560,7 @@
 </div>
 </div><p>相关字段含义网络上已经有非常多详细的说明，在本文中便不再赘述。</p>
 <h3 id="ip-协议报文结构">IP 协议报文结构</h3>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc791" target="_blank" rel="noopener noreffer ">RFC 791</a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -558,6 +609,9 @@
 <li>General Introduction to XDP in <a href="https://github.com/xdp-project/xdp-paper/blob/master/xdp-the-express-data-path.pdf" target="_blank" rel="noopener noreffer ">the academic paper</a> or <a href="https://github.com/xdp-project/xdp-paper/blob/master/xdp-presentation.pdf" target="_blank" rel="noopener noreffer ">the presentation</a>.</li>
 <li><a href="https://item.jd.com/12939760.html" target="_blank" rel="noopener noreffer ">Linux 内核观测技术 BPF</a></li>
 <li>极客时间课程，倪鹏飞老师的 eBPF 核心技术与实战</li>
+<li><a href="https://github.com/cilium/cilium" target="_blank" rel="noopener noreffer ">Cilium: eBPF-based Networking, Security, and Observability</a></li>
+<li><a href="https://github.com/aquasecurity/tracee" target="_blank" rel="noopener noreffer ">tracee: Linux Runtime Security and Forensics using eBPF</a></li>
+<li><a href="https://ebpf.io/zh-cn/" target="_blank" rel="noopener noreffer ">ebpf official</a></li>
 </ol>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
