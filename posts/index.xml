@@ -4,7 +4,15 @@
         <link>https://p1nant0m.com/posts/</link>
         <description>所有文章 | p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Mon, 18 Jul 2022 07:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.com/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sun, 24 Jul 2022 14:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.com/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>eBPF-tracing 使用 eBPF 编写监控类程序</title>
+    <link>https://p1nant0m.com/2022-07-25-ebpf-tracing/</link>
+    <pubDate>Sun, 24 Jul 2022 14:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-07-25-ebpf-tracing/</guid>
+    <description><![CDATA[eBPF 程序的跟踪能力 The ability to attach eBPF programs to trace points as well as kernel and user application probe points allows unprecedented visibility into the runtime behavior of applications and the system itself. By giving introspection abilities to both the application and system side, both views can be combined, allowing powerful and unique insights to troubleshoot system performance problems. Advanced statistical data structures allow to extract meaningful visibility data in an efficient manner, without requiring the export of vast amounts of sampling data as typically done by similar systems. 如何找到你所需要的追踪点？ 首先，我们需要明确自身的需求，考虑清楚我们需要获取哪一些数据信息，再从这些数据信息的类型出发找到其对应的追踪位置。在 eBPF 程序中有以下这几种常用的追踪点类型： kprobe 内核探针 uprobe 用户程序探针 tracepoint 内核]]></description>
+</item>
+<item>
     <title>XDP-tutorial 学习如何编写 eBPF XDP 程序</title>
     <link>https://p1nant0m.com/2022-07-18-xdp-tutorial/</link>
     <pubDate>Mon, 18 Jul 2022 07:00:00 &#43;0000</pubDate>
