@@ -30,7 +30,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/p1nant0m.com\/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97\/"
-        },"genre": "posts","keywords": "eBPF, OpenSource Project, Security Issues","wordcount":  2412 ,
+        },"genre": "posts","keywords": "eBPF, OpenSource Project, Security Issues","wordcount":  2964 ,
         "url": "https:\/\/p1nant0m.com\/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97\/","datePublished": "2022-09-05T09:29:17+00:00","dateModified": "2022-09-05T09:29:17+00:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -132,8 +132,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Tracee 漫游指北</h1><h2 class="single-subtitle">Tracee 使用 eBPF 构建的 Linux 运行时安全与取证项目</h2><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-05">2022-09-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2412 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-05">2022-09-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2964 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -147,6 +147,7 @@
         <li><a href="#tracee-项目简介">Tracee 项目简介</a></li>
         <li><a href="#tracee-quickstart">Tracee QuickStart</a></li>
         <li><a href="#tracee-ebpf-组件初体验">Tracee-ebpf 组件初体验</a></li>
+        <li><a href="#tracee-rules-组件初体验">Tracee-rules 组件初体验</a></li>
       </ul>
     </li>
   </ul>
@@ -324,7 +325,116 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>根据需要，我们还能够指定事件输出的格式以及将事件流输出至文件中，进行更加复杂的事件过滤，有兴趣的读者可以自行参考官方文档进行实践。</p>
-</div><div class="post-footer" id="post-footer">
+<h3 id="tracee-rules-组件初体验">Tracee-rules 组件初体验</h3>
+<p>tracee-rules 是一个运行时安全检测引擎，用于从数据源中（目前仅支持 tracee-ebpf）分析是否存在于规则（Signatures）匹配的事件行为，若发现了预定义的异常行为，则会产生告警。当告警发生时可以通过 webhook 触发预先注册的行为事件，例如通过微信告知管理员当前告警信息。</p>
+<p><strong>✨ tracee-rules 用户自定义规则实现</strong></p>
+<p>tracee-rules 支持用户自定义规则（Signatures），目前支持以下三种方式：</p>
+<ul>
+<li>通过 Golang 编码实现 Signature 接口，用户便可以实现高度定制化的匹配规则与响应逻辑，这也是官方推荐的方式。你也可以使用 Go Plugin 的形式编写 signature，并在程序运行时动态加载，不过这种方式有诸多限制，所以并不被推荐。</li>
+<li>通过 <a href="https://www.openpolicyagent.org/docs/latest/#rego" target="_blank" rel="noopener noreffer ">Rego</a> 编写定制化的 Signature. 编写的 rule 文件大概长这个样子，</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">tracee</span><span class="p">.</span><span class="nx">TRC_2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">__rego_metadoc__</span> <span class="o">:=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;id&#34;</span><span class="p">:</span> <span class="s">&#34;TRC-2&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;version&#34;</span><span class="p">:</span> <span class="s">&#34;0.1.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;Anti-Debugging&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;description&#34;</span><span class="p">:</span> <span class="s">&#34;Process uses anti-debugging technique to block debugger&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;tags&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#34;linux&#34;</span><span class="p">,</span> <span class="s">&#34;container&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;properties&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;Severity&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;MITRE ATT&amp;CK&#34;</span><span class="p">:</span> <span class="s">&#34;Defense Evasion: Execution Guardrails&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">tracee_selected_events</span><span class="p">[</span><span class="nx">eventSelector</span><span class="p">]</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">eventSelector</span> <span class="o">:=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;source&#34;</span><span class="p">:</span> <span class="s">&#34;tracee&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;ptrace&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">tracee_match</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">input</span><span class="p">.</span><span class="nx">eventName</span> <span class="o">==</span> <span class="s">&#34;ptrace&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arg</span> <span class="o">:=</span> <span class="nx">input</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="nx">_</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arg</span><span class="p">.</span><span class="nx">name</span> <span class="o">==</span> <span class="s">&#34;request&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arg</span><span class="p">.</span><span class="nx">value</span> <span class="o">==</span> <span class="s">&#34;PTRACE_TRACEME&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>通过 <a href="https://github.com/google/cel-go" target="_blank" rel="noopener noreffer ">Go-Cel</a> 编写定制化的 Signature. 需要注意的是这种编写 rules 的方式目前仍然处于 POC (Proof Of Concept) 阶段，是一个实验性的功能，用于有可能需要添加相应的代码段才能够让程序正常识别所编写的 rules，如果你使用 <strong>Go-Cel</strong>，编写的 rule 文件大概长这个样子，</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">SignaturesConfig</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">tracee.aquasecurity.github.io/v1alpha1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">signatures</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Mine-0.1.0&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;0.1.0&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;My Own Signature&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;My Own Signature Detects Stuff&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="s2">&#34;linux&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">eventSelectors</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l">tracee</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">openat</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">expression</span><span class="p">:</span><span class="w"> </span><span class="p">|-</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">        input.eventName == &#39;openat&#39; &amp;&amp;
+</span></span></span><span class="line"><span class="cl"><span class="sd">        input.stringArg(&#39;pathname&#39;).startsWith(&#39;/etc/passwd&#39;)</span><span class="w">        
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
