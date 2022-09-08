@@ -30,7 +30,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/p1nant0m.com\/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97\/"
-        },"genre": "posts","keywords": "eBPF, OpenSource Project, Security Issues","wordcount":  2964 ,
+        },"genre": "posts","keywords": "eBPF, OpenSource Project, Security Issues","wordcount":  3537 ,
         "url": "https:\/\/p1nant0m.com\/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97\/","datePublished": "2022-09-05T09:29:17+00:00","dateModified": "2022-09-05T09:29:17+00:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -132,8 +132,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Tracee 漫游指北</h1><h2 class="single-subtitle">Tracee 使用 eBPF 构建的 Linux 运行时安全与取证项目</h2><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-05">2022-09-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2964 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-05">2022-09-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3537 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -148,6 +148,7 @@
         <li><a href="#tracee-quickstart">Tracee QuickStart</a></li>
         <li><a href="#tracee-ebpf-组件初体验">Tracee-ebpf 组件初体验</a></li>
         <li><a href="#tracee-rules-组件初体验">Tracee-rules 组件初体验</a></li>
+        <li><a href="#总结">总结</a></li>
       </ul>
     </li>
   </ul>
@@ -434,7 +435,100 @@
 </span></span></span><span class="line"><span class="cl"><span class="sd">        input.stringArg(&#39;pathname&#39;).startsWith(&#39;/etc/passwd&#39;)</span><span class="w">        
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div></div><div class="post-footer" id="post-footer">
+</div><p>目前，Tracee 内置的 rules 可以通过 <code>tracee-rules --list</code> 命令查看，这里截取其中的一部分，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ID         NAME                                VERSION DESCRIPTION
+</span></span><span class="line"><span class="cl">TRC-2      Anti-Debugging                      0.1.0   Process uses anti-debugging technique to block debugger
+</span></span><span class="line"><span class="cl">TRC-14     CGroups Release Agent File Modification 0.1.0   An Attempt to modify CGroups release agent file was detected. CGroups are a Linux kernel feature which can change a process<span class="err">&#39;</span>s resource limitations. Adversaries may use this feature <span class="k">for</span> container escaping.
+</span></span><span class="line"><span class="cl">TRC-3      Code injection                      0.1.0   Possible code injection into another process
+</span></span><span class="line"><span class="cl">TRC-11     Container Device Mount Detected     0.1.0   Container device filesystem mount detected. A mount of a host device filesystem can be exploited by adversaries to perform container escape.
+</span></span><span class="line"><span class="cl">TRC-9      New Executable Was Dropped During Runtime 0.1.0   An Executable file was dropped in your system during runtime. Usually container images are built with all binaries needed inside, a dropped binary may indicate an adversary infiltrated into your container
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，tracee-rules 检测引擎的工作本质是对语义化安全策略与源事件信息进行匹配，若事件在上下文语义中携带有策略所指定的信息，便会产生告警，拿上面提到的 <code>Anti-Debugging</code> Signature 为例，其具体的策略信息如下所示，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Go" data-lang="Go"><span class="line"><span class="cl"><span class="nx">tracee_selected_events</span><span class="p">[</span><span class="nx">eventSelector</span><span class="p">]</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">eventSelector</span> <span class="o">:=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;source&#34;</span><span class="p">:</span> <span class="s">&#34;tracee&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;ptrace&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">tracee_match</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">input</span><span class="p">.</span><span class="nx">eventName</span> <span class="o">==</span> <span class="s">&#34;ptrace&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arg</span> <span class="o">:=</span> <span class="nx">input</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="nx">_</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arg</span><span class="p">.</span><span class="nx">name</span> <span class="o">==</span> <span class="s">&#34;request&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">arg</span><span class="p">.</span><span class="nx">value</span> <span class="o">==</span> <span class="s">&#34;PTRACE_TRACEME&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>eventSelector</code> 指定了我们关心的事件名称，这本质上就是一个过滤器，与在 <code>tracee-ebpf</code> 中指定 <code>--trace event=ptrace</code> 相差不大，在 <code>tracee_match</code> 中指定了策略所关心的相关 <code>ptrace</code> 系统调用入参的信息，其中指定了 <code>request</code> 参数值为 <code>PTRACE_TRACEME</code> 的 <code>ptrace</code> 调用。若在事件流中出现了满足上述策略定义的事件，tracee-rules 便会产生告警。</p>
+<div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>ptrace 手册<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p><code>ptrace</code> 的函数签名如下所示，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl">       <span class="kt">long</span> <span class="nf">ptrace</span><span class="p">(</span><span class="k">enum</span> <span class="n">__ptrace_request</span> <span class="n">request</span><span class="p">,</span> <span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中与 <code>request</code> 入参对应值 <code>PTRACE_TRACEME</code> 的相关释义为，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">       PTRACE_TRACEME
+</span></span><span class="line"><span class="cl">              Indicate that this process is to be traced by its parent.  A process probably shouldn&#39;t make this request if its parent isn&#39;t expecting to trace it.  (pid, addr, and data are
+</span></span><span class="line"><span class="cl">              ignored.)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">              The PTRACE_TRACEME request is used only by the tracee; the remaining requests are used only by the tracer.  In the following requests, pid specifies  the  thread  ID  of  the
+</span></span><span class="line"><span class="cl">              tracee to be acted on.  For requests other than PTRACE_ATTACH, PTRACE_SEIZE, PTRACE_INTERRUPT, and PTRACE_KILL, the tracee must be stopped.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>更多的信息可以参考<a href="https://man7.org/linux/man-pages/man2/ptrace.2.html" target="_blank" rel="noopener noreffer ">手册</a>。</p>
+</div>
+        </div>
+    </div>
+<h3 id="总结">总结</h3>
+</div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
