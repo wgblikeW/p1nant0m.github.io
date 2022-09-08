@@ -2,9 +2,9 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://p1nant0m.com/tags/ebpf/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://p1nant0m.com/tags/opensource-project/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://p1nant0m.com/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://p1nant0m.com/tags/book-reading-notes/</loc><lastmod>2022-09-07T21:12:13&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/tags/cloud-native-security/</loc><lastmod>2022-09-07T21:12:13&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/</loc><lastmod>2022-09-07T21:12:13&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/"
@@ -13,7 +13,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/"
                     /></url><url>
-            <loc>https://p1nant0m.com/posts/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://p1nant0m.com/posts/</loc><lastmod>2022-09-07T21:12:13&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/posts/"
@@ -22,8 +22,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/posts/"
                     /></url><url>
-            <loc>https://p1nant0m.com/tags/security-issues/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://p1nant0m.com/tags/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://p1nant0m.com/tags/</loc><lastmod>2022-09-07T21:12:13&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/tags/"
@@ -32,6 +31,10 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/tags/"
                     /></url><url>
+            <loc>https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/</loc><lastmod>2022-09-07T21:12:13&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/tags/ebpf/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/tags/opensource-project/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/tags/security-issues/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://p1nant0m.com/tags/golang/</loc><lastmod>2022-08-28T07:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url><url>
             <loc>https://p1nant0m.com/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/</loc><lastmod>2022-08-28T07:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url><url>
