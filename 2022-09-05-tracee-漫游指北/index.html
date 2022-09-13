@@ -30,7 +30,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/p1nant0m.com\/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97\/"
-        },"genre": "posts","keywords": "eBPF, OpenSource Project, Security Issues","wordcount":  3537 ,
+        },"genre": "posts","keywords": "eBPF, OpenSource Project, Security Issues","wordcount":  4258 ,
         "url": "https:\/\/p1nant0m.com\/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97\/","datePublished": "2022-09-05T09:29:17+00:00","dateModified": "2022-09-05T09:29:17+00:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -132,8 +132,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Tracee 漫游指北</h1><h2 class="single-subtitle">Tracee 使用 eBPF 构建的 Linux 运行时安全与取证项目</h2><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-05">2022-09-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3537 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-05">2022-09-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4258 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -165,11 +165,10 @@
 <h3 id="前言">前言</h3>
 <p>这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技术构建的 <a href="https://cilium.io/" target="_blank" rel="noopener noreffer ">Cilium</a> 也于 <strong>2021 年 10 月 13 日</strong> 成为了 CNCF 的孵化项目，受到开源社区较大的关注。</p>
 <p>也许会写一系列文章来介绍相关的开源项目及其产品设计思路，主要的角度应该是从功能性、架构设计、以及技术选型出发探究这些优秀开源作品的底层设计逻辑，从中窥探目前业界技术、架构发展的趋势。至于编码层面的细节可能只会稍微提一提有意思的设计，重心还是会放在技术应用于产品上对某一揽子问题的通用解决思路。</p>
-<p>从目前收集到的信息来看，相关开源项目有，</p>
+<p>从目前收集到的信息来看，使用 Go 作为主要编程语言的相关开源项目有，</p>
 <ul>
 <li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Tracee</li>
 <li><i class="far fa-square fa-fw" aria-hidden="true"></i> Tetragon</li>
-<li><i class="far fa-square fa-fw" aria-hidden="true"></i> Elkeid</li>
 <li><i class="far fa-square fa-fw" aria-hidden="true"></i> Cilium</li>
 </ul>
 <h3 id="tracee-项目简介">Tracee 项目简介</h3>
@@ -528,6 +527,19 @@
         </div>
     </div>
 <h3 id="总结">总结</h3>
+<p>Tracee 项目由两大基本组件构成：<strong>1）</strong> tracee-ebpf 负责加载 eBPF 探针程序到 Linux 内核之中，采集发生在内核层面的安全事件，并将收集到的收集到的原始信息加以聚合整理，形成具有安全上下文语义的事件流，可供事件分析引擎进行监测。<strong>2）</strong> tracee-rules 是运行时安全检测引擎，目前其仅支持 tracee-ebpf 数据源。通过内置或用户自定义的 Signatures（rules），tracee-rules 在事件流中匹配相关的规则上下文，对成功匹配到的事件进行用户侧告警。</p>
+<p>目前，Tracee 项目并不支持对违背安全策略的事件进行实时阻断拦截，社区中也有相关对于增加阻断拦截功能的相关讨论，团队成员目前也有增加相关支持的计划，主要将会使用到 LSM-BPF 去实现阻断拦截的功能需求。不过，要想使用 LSM-BPF 需要使用版本较新的 Linux 内核（5.7+），并且该功能模块并不是 Linux 内核的默认配置，需要用户在编译阶段指定相应的选项去进行内核配置，并且在启动阶段设置相关的 flags。 这些都是用户使用 LSM-BPF 的成本。</p>
+<div class="details admonition note">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>设计思考<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>除了实时阻断这一种设计方向外，我们若能够容忍异常行为的执行（这时候信息资产可能已经受到了损害），采取一种事后补救的措施也是可供思考的设计方向之一。</p>
+<p>比如，对进行异常行为的外部实体进行封禁，拒绝其后续的行为，并对其操作进行回溯，找出具有安全风险的入口点，恢复其作出的更改，对相关入口采取应急措施。若出现文件落盘行为，则对相关文件进行进一步的沙盒分析，找出相关的回连地址，后续的操作可以有非常多的选择，可以设置蜜罐继续诱捕攻击者，又或是简单的将外联行为禁止等等。</p>
+</div>
+        </div>
+    </div>
+<p>Tracee 项目还未发布其正式版本（v1.0.0），还有许多功能特性以及 Bug 需要进行修复，多平台/架构的支持工作仍在继续，其设计思路以及编码风格可以为初学者提供比较清晰易懂的切入点。</p>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
