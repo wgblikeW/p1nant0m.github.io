@@ -2,7 +2,9 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://p1nant0m.com/</loc><lastmod>2022-09-10T18:36:36&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority><xhtml:link
+            <loc>https://p1nant0m.com/tags/golang/</loc><lastmod>2022-09-25T10:16:38&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0/</loc><lastmod>2022-09-25T10:16:38&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/</loc><lastmod>2022-09-25T10:16:38&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/"
@@ -11,7 +13,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/"
                     /></url><url>
-            <loc>https://p1nant0m.com/posts/</loc><lastmod>2022-09-10T18:36:36&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority><xhtml:link
+            <loc>https://p1nant0m.com/posts/</loc><lastmod>2022-09-25T10:16:38&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/posts/"
@@ -20,7 +22,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/posts/"
                     /></url><url>
-            <loc>https://p1nant0m.com/tags/</loc><lastmod>2022-09-10T18:36:36&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority><xhtml:link
+            <loc>https://p1nant0m.com/tags/</loc><lastmod>2022-09-25T10:16:38&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/tags/"
@@ -39,7 +41,6 @@
             <loc>https://p1nant0m.com/tags/opensource-project/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
             <loc>https://p1nant0m.com/tags/security-issues/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
             <loc>https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/</loc><lastmod>2022-09-05T09:29:17&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
-            <loc>https://p1nant0m.com/tags/golang/</loc><lastmod>2022-08-28T07:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
             <loc>https://p1nant0m.com/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/</loc><lastmod>2022-08-28T07:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
             <loc>https://p1nant0m.com/2022-07-25-ebpf-tracing/</loc><lastmod>2022-07-24T14:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/tags/tracing/</loc><lastmod>2022-07-24T14:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>

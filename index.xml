@@ -4,9 +4,17 @@
         <link>https://p1nant0m.com/</link>
         <description>p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sat, 10 Sep 2022 18:36:36 &#43;0000</lastBuildDate>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sun, 25 Sep 2022 10:16:38 &#43;0000</lastBuildDate>
             <atom:link href="https://p1nant0m.com/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Golang 面试驱动学习</title>
+    <link>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0/</link>
+    <pubDate>Sun, 25 Sep 2022 10:16:38 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0/</guid>
+    <description><![CDATA[说在前面 🐹 WIP Go 运行时行为 🐹 WIP GC 触发时机 GC 触发的入口为 runtime.gcStart() 垃圾收集被触发后会通过 runtime.gcTrigger.test() 方法检测当前是否需要触发垃圾收集，该方法会根据三种方式触发不同的检查， gcTriggerHeap：堆内存分配达到控制器计算的触发堆大小 gcTriggerTime：如果一段时间内没有触发，就会触发新一轮的循环，该触发条件由 runtime.forcegcperiod 变量控制，默认时间为 2 分钟 gcTriggerperiod：如果当前没有开启垃圾收集，则触发新的循环 所]]></description>
+</item>
+<item>
     <title>程序员修炼指南</title>
     <link>https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/</link>
     <pubDate>Sat, 10 Sep 2022 18:36:36 &#43;0000</pubDate>
@@ -77,14 +85,6 @@
     <author>p1nant0m</author>
     <guid>https://p1nant0m.com/2021-11-26-chapter2/</guid>
     <description><![CDATA[Perfectly Secret Encryption ​ 本章节的思维导图如下所示， 章节思维导图 ​ 在本章节中我们主要介绍完善保密理论（Perfectly Secret Encryption）并且给出一些在往下章节中经常使用的检验密码方案安全性的实验交互模型。在描述这些模型时，我们需要使用到一些基础的概率论知识，并且还需要讨论一些用于该模型中随机算法。 Generating randomness ​ 在密码学中，我们经常需要产生并使用一些随机数，这些随机数的概率分布影响着密码的安全性，一些随机性较差的随机]]></description>
-</item>
-<item>
-    <title>·密码学原理课程 —— Introduction</title>
-    <link>https://p1nant0m.com/2021-10-20-chapter1/</link>
-    <pubDate>Sat, 20 Nov 2021 12:00:00 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.com/2021-10-20-chapter1/</guid>
-    <description><![CDATA[Course Overview Cryptology: Science concerned with data communication and storage in secure and usually secret form. Cryptography (密码学) Cryptanalysis (密码分析学) Our goals: the basic principles of modern cryptography mathematical assumptions (数学假设) security proof (安全证明) some standard (secure) constructions (一些现行标准密码方案的构造) Textbook: Introduction to MODERN CRYPTOGRAPHY 3rd edition Course Structure Introduction To Modern Cryptography Symmetric Asymmetric Encryption Private-Key Encryption Public-Key Encryption Authentication Message Authentication Codes Digital Signature 课程由古典密码学开始，讲述经典的古典密码（Caesar Cipher &amp; Vigenère Cipher）以及从其中所抽象出来的编码思想（单表置换密码与多表置换密码）。这个时期的密码更像是个人的灵光乍现（heuristi]]></description>
 </item>
 </channel>
 </rss>
