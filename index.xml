@@ -4,9 +4,17 @@
         <link>https://p1nant0m.com/</link>
         <description>p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sun, 25 Sep 2022 10:16:38 &#43;0000</lastBuildDate>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Tue, 27 Sep 2022 14:57:27 &#43;0000</lastBuildDate>
             <atom:link href="https://p1nant0m.com/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>在 K8s 集群上部署 Cilium 与 Hubble</title>
+    <link>https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/</link>
+    <pubDate>Tue, 27 Sep 2022 14:57:27 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/</guid>
+    <description><![CDATA[关于笔者 目前，笔者还是一名在校大学生，就读于信息安全专业，对云原生安全、分布式系统、观测领域有较大的兴趣。因而小站上的很多文章都是萌新学习踩坑的经验分享，更多的是“玩”的心态向优秀、有趣的项目，学习其设计思路、编码风格、文档编写、开源社区/团队协作方面的知识，并辅以自己小小的见解。作为一名还未有充分经验的用户，文章中难免有所纰漏，还望能够与大家交流学习，共勉。 在 K8s 集群上部署 Cilium 与 Hubble 近段时间一直在思考]]></description>
+</item>
+<item>
     <title>Golang 面试驱动学习</title>
     <link>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0/</link>
     <pubDate>Sun, 25 Sep 2022 10:16:38 &#43;0000</pubDate>
@@ -77,14 +85,6 @@
     <author>p1nant0m</author>
     <guid>https://p1nant0m.com/2021-12-05-chapter3/</guid>
     <description><![CDATA[Private-Key (Symmetric) Cryptography 章节思维导图 在本章节中，我们开始介绍两大密码学方向中的私钥/对称密码学（Private-Key/Symmetric Cryptography）方向。 （1）我们将会从弱化完善保密理论安全性开始，得到一个在实践生产中能够被接受并且符合实际人们对安全性需求的安全定义（computational secrecy）。 （2）接着我们从 computational secrecy 出发，给出一种最为基本的安全性定义—— EAV-Security（窃听者]]></description>
-</item>
-<item>
-    <title>·密码学原理课程 —— Perfectly Secret Encryption</title>
-    <link>https://p1nant0m.com/2021-11-26-chapter2/</link>
-    <pubDate>Mon, 22 Nov 2021 12:00:00 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.com/2021-11-26-chapter2/</guid>
-    <description><![CDATA[Perfectly Secret Encryption ​ 本章节的思维导图如下所示， 章节思维导图 ​ 在本章节中我们主要介绍完善保密理论（Perfectly Secret Encryption）并且给出一些在往下章节中经常使用的检验密码方案安全性的实验交互模型。在描述这些模型时，我们需要使用到一些基础的概率论知识，并且还需要讨论一些用于该模型中随机算法。 Generating randomness ​ 在密码学中，我们经常需要产生并使用一些随机数，这些随机数的概率分布影响着密码的安全性，一些随机性较差的随机]]></description>
 </item>
 </channel>
 </rss>
