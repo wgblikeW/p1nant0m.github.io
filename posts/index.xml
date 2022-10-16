@@ -4,7 +4,23 @@
         <link>https://p1nant0m.com/posts/</link>
         <description>所有文章 | p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Tue, 27 Sep 2022 14:57:27 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.com/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Fri, 14 Oct 2022 11:46:09 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.com/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)</title>
+    <link>https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/</link>
+    <pubDate>Fri, 14 Oct 2022 11:46:09 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/</guid>
+    <description><![CDATA[背景知识 在第 29 届的 DEFCON 会议上，来自 Lacework 的 Rex Guo 与 LinkedIn 的 Junyuan Zeng 分享了以他们关于利用内核从用户态拷贝数据到内核态的过程中，由于某些 Runtime Security 产品选择了不合适的 Probes 插入位置，存在 TOCTOU 问题，进而能够欺骗探针，绕过 Runtime Security 产品的 Policy Enforcement，进而达成攻击者进行恶意活动的目的。 另外，分享者还介绍了 Semantic confusion，一种利用内核与跟踪程序对数据语义解释的歧义实现的攻击方式，这与在 Usenix Security'22 会议上获得最佳论文奖的 Identity Confusion in WebView-based Mobile App-in-app Ecosystems]]></description>
+</item>
+<item>
+    <title>优雅的创建 CLI 程序</title>
+    <link>https://p1nant0m.com/2022-10-08-%E4%BC%98%E9%9B%85%E7%9A%84%E5%88%9B%E5%BB%BA-cli-%E7%A8%8B%E5%BA%8F.zh-ch/</link>
+    <pubDate>Fri, 07 Oct 2022 07:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-10-08-%E4%BC%98%E9%9B%85%E7%9A%84%E5%88%9B%E5%BB%BA-cli-%E7%A8%8B%E5%BA%8F.zh-ch/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
     <title>在 K8s 集群上部署 Cilium 与 Hubble</title>
     <link>https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/</link>
     <pubDate>Tue, 27 Sep 2022 14:57:27 &#43;0000</pubDate>
@@ -14,10 +30,10 @@
 </item>
 <item>
     <title>Golang 面试驱动学习</title>
-    <link>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0/</link>
+    <link>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/</link>
     <pubDate>Sun, 25 Sep 2022 10:16:38 &#43;0000</pubDate>
     <author>p1nant0m</author>
-    <guid>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0/</guid>
+    <guid>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/</guid>
     <description><![CDATA[说在前面 🐹 WIP Go 运行时行为 🐹 WIP GC 触发时机 GC 触发的入口为 runtime.gcStart() 垃圾收集被触发后会通过 runtime.gcTrigger.test() 方法检测当前是否需要触发垃圾收集，该方法会根据三种方式触发不同的检查， gcTriggerHeap：堆内存分配达到控制器计算的触发堆大小 gcTriggerTime：如果一段时间内没有触发，就会触发新一轮的循环，该触发条件由 runtime.forcegcperiod 变量控制，默认时间为 2 分钟 gcTriggerperiod：如果当前没有开启垃圾收集，则触发新的循环 所]]></description>
 </item>
 <item>
@@ -67,22 +83,6 @@
     <author>p1nant0m</author>
     <guid>https://p1nant0m.com/2022-07-18-xdp-tutorial/</guid>
     <description><![CDATA[XDP-Tutorial ⭐ 本文章仍然在不断的更新中，因此文章结构以及内容可能会时常发生变化。同时本领域也是作者刚刚涉及的领域，难免在文本内容中出现错误，还望指正，大家一同学习共勉。 XDP-Tutorial 是一个 Github 上的 repo，皆在指导人们如何遵循最基本的步骤，高效地实现为内核中的 XDP 系统进行编程。我会随着这个课程的步伐与大家一同探寻 Linux 内核世界的奥秘以及如何使用高性能的 XDP 程序对网络数据报进行处理。随着学习的深入，我会列出理解每一节课程的编程实现]]></description>
-</item>
-<item>
-    <title>InfoSec-Lab2-apollo</title>
-    <link>https://p1nant0m.com/2022-03-16-infosec-2/</link>
-    <pubDate>Wed, 16 Mar 2022 20:00:00 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.com/2022-03-16-infosec-2/</guid>
-    <description><![CDATA[Architecture Design 模拟实现128位信息的加密通信过程。 实验设计包含三方：A，B，C。A与B之间进行128位信息的加密交换。C负责为A和B各生成一对公私钥对，并分别把对应的私钥传给A和B，并把他们的公钥公开。实现本实验需求的架构设计如下图所示， 项目数据流图 Protocol Design 在该实验需求中，ServerA与ServerB之间使用Asymmetric Encryption Scheme进行加密通信，ServerC充当密钥签发中心，负责为ServerA与]]></description>
-</item>
-<item>
-    <title>·密码学原理课程 —— Private-Key Cryptography Ⅰ</title>
-    <link>https://p1nant0m.com/2021-12-05-chapter3/</link>
-    <pubDate>Thu, 02 Dec 2021 12:00:00 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.com/2021-12-05-chapter3/</guid>
-    <description><![CDATA[Private-Key (Symmetric) Cryptography 章节思维导图 在本章节中，我们开始介绍两大密码学方向中的私钥/对称密码学（Private-Key/Symmetric Cryptography）方向。 （1）我们将会从弱化完善保密理论安全性开始，得到一个在实践生产中能够被接受并且符合实际人们对安全性需求的安全定义（computational secrecy）。 （2）接着我们从 computational secrecy 出发，给出一种最为基本的安全性定义—— EAV-Security（窃听者]]></description>
 </item>
 </channel>
 </rss>
