@@ -344,18 +344,18 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="n">__uint</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">BPF_MAP_TYPE_ARRAY</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">	<span class="n">__type</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">__u32</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">	<span class="n">__type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="k">struct</span> <span class="n">datarec</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">	<span class="n">__uint</span><span class="p">(</span><span class="n">max_entries</span><span class="p">,</span> <span class="n">XDP_ACTION_MAX</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">xdp_stats_map</span> <span class="n">SEC</span><span class="p">(</span><span class="s">&#34;.maps&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">__uint</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">BPF_MAP_TYPE_ARRAY</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">__type</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">__u32</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">__type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="k">struct</span> <span class="n">datarec</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">__uint</span><span class="p">(</span><span class="n">max_entries</span><span class="p">,</span> <span class="n">XDP_ACTION_MAX</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">xdp_stats_map</span> <span class="nf">SEC</span><span class="p">(</span><span class="s">&#34;.maps&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">__uint</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">BPF_MAP_TYPE_PERCPU_ARRAY</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">__type</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">__u32</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">__type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="k">struct</span> <span class="n">datarec</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">__uint</span><span class="p">(</span><span class="n">max_entries</span><span class="p">,</span> <span class="n">MAX_ENTRIES</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">xdp_stats_map_percpu</span> <span class="n">SEC</span><span class="p">(</span><span class="s">&#34;.maps&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__uint</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">BPF_MAP_TYPE_PERCPU_ARRAY</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__type</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">__u32</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="k">struct</span> <span class="n">datarec</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__uint</span><span class="p">(</span><span class="n">max_entries</span><span class="p">,</span> <span class="n">MAX_ENTRIES</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">xdp_stats_map_percpu</span> <span class="nf">SEC</span><span class="p">(</span><span class="s">&#34;.maps&#34;</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="details admonition tip">
@@ -399,9 +399,9 @@
 </span></span><span class="line"><span class="cl"><span class="cp">#define BPF_LRU_HASH(_name, _key_type, _value_type, _max_entries)                                  \
 </span></span></span><span class="line"><span class="cl"><span class="cp">    BPF_MAP(_name, BPF_MAP_TYPE_LRU_HASH, _key_type, _value_type, _max_entries)
 </span></span></span><span class="line"><span class="cl"><span class="cp"></span>
-</span></span><span class="line"><span class="cl"><span class="n">BPF_HASH</span><span class="p">(</span><span class="n">kconfig_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="n">BPF_HASH</span><span class="p">(</span><span class="n">interpreter_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">file_info_t</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>      
-</span></span><span class="line"><span class="cl"><span class="n">BPF_HASH</span><span class="p">(</span><span class="n">containers_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">u8</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>  
+</span></span><span class="line"><span class="cl"><span class="nf">BPF_HASH</span><span class="p">(</span><span class="n">kconfig_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nf">BPF_HASH</span><span class="p">(</span><span class="n">interpreter_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="kt">file_info_t</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>      
+</span></span><span class="line"><span class="cl"><span class="nf">BPF_HASH</span><span class="p">(</span><span class="n">containers_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">u8</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>  
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>上述示例代码来自 <a href="https://github.com/aquasecurity/tracee" target="_blank" rel="noopener noreffer ">tracee</a></p>
@@ -493,8 +493,8 @@
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">datarec</span> <span class="n">values</span><span class="p">[</span><span class="n">nr_cpus</span><span class="p">];</span> <span class="c1">// sizeof(struct datarec) * nr_cpus
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">((</span><span class="n">bpf_map_lookup_elem</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">((</span><span class="nf">bpf_map_lookup_elem</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">			<span class="s">&#34;ERR: bpf_map_lookup_elem failed key:0x%X</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">return</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
@@ -641,7 +641,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.106.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.107.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>

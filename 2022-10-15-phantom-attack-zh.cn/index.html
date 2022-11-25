@@ -373,7 +373,7 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">openat</span><span class="p">(</span><span class="kt">int</span> <span class="n">dirfd</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="n">mode_t</span> <span class="n">mode</span><span class="p">);</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">openat</span><span class="p">(</span><span class="kt">int</span> <span class="n">dirfd</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">mode_t</span> <span class="n">mode</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>其中，第二个参数是一个指向用户空间内存的指针，其中存放的是进行系统调用时，应用传入的想要打开文件的路径。在 <code>do_sys_open</code> 函数中，内核通过 <code>getname</code> 函数将用户空间的数据复制到内核缓冲区中，并在后续调用 <code>do_filp_open</code> 传入相关待打开文件的路径参数，完成 <code>openat</code> 系统调用的主要逻辑。</p>
@@ -462,13 +462,13 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="p">...</span>
-</span></span><span class="line"><span class="cl">  <span class="n">page_size</span> <span class="o">=</span> <span class="n">sysconf</span><span class="p">(</span><span class="n">_SC_PAGE_SIZE</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="n">page</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">page_size</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">page_size</span> <span class="o">=</span> <span class="nf">sysconf</span><span class="p">(</span><span class="n">_SC_PAGE_SIZE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">page</span> <span class="o">=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">page_size</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">              <span class="n">MAP_PRIVATE</span> <span class="o">|</span> <span class="n">MAP_ANONYMOUS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="p">...</span>
-</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">myfd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">O_CREAT</span><span class="o">|</span><span class="n">O_RDWR</span><span class="o">|</span><span class="n">O_DIRECT</span><span class="p">,</span> <span class="mo">0640</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">myfd</span> <span class="o">=</span> <span class="nf">open</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">O_CREAT</span><span class="o">|</span><span class="n">O_RDWR</span><span class="o">|</span><span class="n">O_DIRECT</span><span class="p">,</span> <span class="mo">0640</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">myfd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> 
-</span></span><span class="line"><span class="cl">    <span class="n">handle_error_en</span><span class="p">(</span><span class="n">myfd</span><span class="p">,</span> <span class="s">&#34;open failure&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">handle_error_en</span><span class="p">(</span><span class="n">myfd</span><span class="p">,</span> <span class="s">&#34;open failure&#34;</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>通过调用 <code>open</code> 函数触发一次系统调用，此时 pageA 指向的内存位置还未被分配，这将触发一次缺页中断。<strong>main thread</strong> 的控制流由 <strong>kernel thread</strong> 转向由 <code>userfaultfd</code> 注册的用于自定义缺页处理函数，我们在这省略一些初始化逻辑以及用于调试的输出信息，</p>
@@ -511,10 +511,10 @@
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="p">...</span>
 </span></span><span class="line"><span class="cl">  <span class="cm">/* Create a page that will be copied into the faulting region */</span>
 </span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">page</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">page</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">page_size</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">page</span> <span class="o">=</span> <span class="nf">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">page_size</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">                <span class="n">MAP_PRIVATE</span> <span class="o">|</span> <span class="n">MAP_ANONYMOUS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">page</span> <span class="o">==</span> <span class="n">MAP_FAILED</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="n">handle_error_en</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="s">&#34;mmap&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">handle_error_en</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="s">&#34;mmap&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="p">}</span>
 </span></span><span class="line"><span class="cl">    <span class="p">...</span>
 </span></span><span class="line"><span class="cl">
@@ -528,16 +528,16 @@
 </span></span><span class="line"><span class="cl">      <span class="n">uffdio_copy</span><span class="p">.</span><span class="n">copy</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">      <span class="cm">/* 将 Malicious filename 复制到 page 指向内存空间的起始位置 */</span>
-</span></span><span class="line"><span class="cl">      <span class="n">strncpy</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">filename</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">      <span class="n">flush</span><span class="p">(</span><span class="n">page</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">strncpy</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">filename</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">flush</span><span class="p">(</span><span class="n">page</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">      <span class="cm">/* 释放互斥锁 */</span>
-</span></span><span class="line"><span class="cl">      <span class="n">sender</span><span class="p">();</span> 
+</span></span><span class="line"><span class="cl">      <span class="nf">sender</span><span class="p">();</span> 
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">      <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Before ioctl</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="n">ioctl</span><span class="p">(</span><span class="n">uffd</span><span class="p">,</span> <span class="n">UFFDIO_COPY</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">uffdio_copy</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">handle_error_en</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;ioctl-UFFDIO_COPY&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Before ioctl</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nf">ioctl</span><span class="p">(</span><span class="n">uffd</span><span class="p">,</span> <span class="n">UFFDIO_COPY</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">uffdio_copy</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">handle_error_en</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;ioctl-UFFDIO_COPY&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">      <span class="n">printf</span><span class="p">(</span><span class="s">&#34;        (uffdio_copy.copy returned %lld)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;        (uffdio_copy.copy returned %lld)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">                <span class="n">uffdio_copy</span><span class="p">.</span><span class="n">copy</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="p">...</span>  
 </span></span></code></pre></td></tr></table>
@@ -565,19 +565,19 @@
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">  <span class="n">receiver</span><span class="p">()</span> <span class="cm">/* 该线程会在这暂停执行，直到锁释放 */</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">  <span class="nf">receiver</span><span class="p">()</span> <span class="cm">/* 该线程会在这暂停执行，直到锁释放 */</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">  <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span><span class="s">&#34;mfence&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="c1">// 写入合法的路径数据
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">write_char</span><span class="p">(</span><span class="n">fakename</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">fakename</span><span class="p">));</span>
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">write_char</span><span class="p">(</span><span class="n">fakename</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">fakename</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">  <span class="k">asm</span> <span class="nf">volatile</span><span class="p">(</span><span class="s">&#34;mfence&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="n">flush</span><span class="p">(</span><span class="n">page</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">flush</span><span class="p">(</span><span class="n">page</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="cm">/* trigger interrupt */</span>
 </span></span><span class="line"><span class="cl"><span class="cp">#ifdef TLBSHOOTDOWN_MPROTECT
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">mprotect</span><span class="p">((</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">page</span><span class="p">,</span> <span class="mi">4096</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_EXEC</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="nf">mprotect</span><span class="p">((</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">page</span><span class="p">,</span> <span class="mi">4096</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_EXEC</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">handle_error_en</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s">&#34;mprotect&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">handle_error_en</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s">&#34;mprotect&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="p">}</span>
 </span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="cp">#endif 
@@ -620,7 +620,7 @@
 </div>
 </article></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.106.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.107.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
         </div>
     </footer></div>
