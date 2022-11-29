@@ -27,11 +27,11 @@ tags:
 
 chall.txt中的内容大致如下，
 
-{{< image src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/4d0c3ead-1e13-4622-b5d9-4935534a28d3.png" caption="chall.txt中的内容" src_s="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/4d0c3ead-1e13-4622-b5d9-4935534a28d3.png" src_l="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/4d0c3ead-1e13-4622-b5d9-4935534a28d3.png" >}}
+{{< image src="http://image.p1nant0m.com/4d0c3ead-1e13-4622-b5d9-4935534a28d3.png" caption="chall.txt中的内容" src_s="http://image.p1nant0m.com/4d0c3ead-1e13-4622-b5d9-4935534a28d3.png" src_l="http://image.p1nant0m.com/4d0c3ead-1e13-4622-b5d9-4935534a28d3.png" >}}
 
 观察到chall.txt文件中的内容均为可见字符，根据encodings中的提示{***a weird base, much higher than base64***} 考虑是base家族的编码并且该编码不常见。文件中的内容均为Unicode字符（UCS-2编码），范围达到65535，Googling base65535，找到一个在线[Decoder](https://www.better-converter.com/Encoders-Decoders/Base65536-Decode)。解码后得到以下内容，
 
-{{< image src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/53870b26-d634-4b9e-ba70-eca12785fe2a.png" caption="解码后内容" src_s="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/53870b26-d634-4b9e-ba70-eca12785fe2a.png" src_l="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/53870b26-d634-4b9e-ba70-eca12785fe2a.png" >}}
+{{< image src="http://image.p1nant0m.com/53870b26-d634-4b9e-ba70-eca12785fe2a.png" caption="解码后内容" src_s="http://image.p1nant0m.com/53870b26-d634-4b9e-ba70-eca12785fe2a.png" src_l="http://image.p1nant0m.com/53870b26-d634-4b9e-ba70-eca12785fe2a.png" >}}
 
 均为Hex表示，使用xxd将其转换为二进制文件，
 
@@ -41,11 +41,11 @@ xxd -r -p base65535Decode.txt base65535_decoded.bin
 
 使用file查看base65535_decoded.bin的类型，见下图
 
-{{< image src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/204494e4-02a1-46e7-b8d9-916bf2ee2edc-16360259177581.png" caption="查看文件类型" src_s="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/204494e4-02a1-46e7-b8d9-916bf2ee2edc-16360259177581.png" src_l="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/204494e4-02a1-46e7-b8d9-916bf2ee2edc-16360259177581.png" >}}
+{{< image src="http://image.p1nant0m.com/204494e4-02a1-46e7-b8d9-916bf2ee2edc-16360259177581.png" caption="查看文件类型" src_s="http://image.p1nant0m.com/204494e4-02a1-46e7-b8d9-916bf2ee2edc-16360259177581.png" src_l="http://image.p1nant0m.com/204494e4-02a1-46e7-b8d9-916bf2ee2edc-16360259177581.png" >}}
 
 我们得到一张jpeg格式的图片，转换扩展名打开图片，我们得到下图，
 
-{{< image src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/4215c422-296a-43e0-853c-5f1a14242097-16360259268892.png" caption="提取出的 jpeg 文件" src_s="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/4215c422-296a-43e0-853c-5f1a14242097-16360259268892.png" src_l="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/4215c422-296a-43e0-853c-5f1a14242097-16360259268892.png" >}}
+{{< image src="http://image.p1nant0m.com/4215c422-296a-43e0-853c-5f1a14242097-16360259268892.png" caption="提取出的 jpeg 文件" src_s="http://image.p1nant0m.com/4215c422-296a-43e0-853c-5f1a14242097-16360259268892.png" src_l="http://image.p1nant0m.com/4215c422-296a-43e0-853c-5f1a14242097-16360259268892.png" >}}
 
 谢谢老番茄让我知道这是什么东西，这是画家蒙德里安的著作，根据encodings中的提示{***a language named after a painter***}，我们googling一下可以找到该语言Piet，并且还有其在线[解释器](https://www.bertnase.de/npiet/npiet-execute.php)，不过我把图片丢进去没啥效果，好像不是这副图片，我们得继续挖掘一下这幅图片，祭出我所有关于图片隐写的工具。在尝试了多种工具后，我在exiftool中提取到了有趣的数据，
 
@@ -55,18 +55,18 @@ exiftool base65535_decoded.jpeg > Piet.txt
 
 稍微处理掉一些我们不感兴趣的信息，得到
 
-{{< image src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/a6cc5067-80b6-4a78-899e-d17908f13d54.png" caption="处理后得到的文件内容" src_s="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/a6cc5067-80b6-4a78-899e-d17908f13d54.png" src_l="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/a6cc5067-80b6-4a78-899e-d17908f13d54.png" >}}
+{{< image src="http://image.p1nant0m.com/a6cc5067-80b6-4a78-899e-d17908f13d54.png" caption="处理后得到的文件内容" src_s="http://image.p1nant0m.com/a6cc5067-80b6-4a78-899e-d17908f13d54.png" src_l="http://image.p1nant0m.com/a6cc5067-80b6-4a78-899e-d17908f13d54.png" >}}
 
 看似又是一种奇怪的语言：（  根据encodings中的提示{***a language that is the opposite of good***}，我一开始想的是Bad，找了半天没找到，后来我干脆直接去找Good的反义词，
 
-{{< image src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/dafe187d-a7bc-4c5f-aac8-a483f4259fce.png" caption="good 的反义词" src_s="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/dafe187d-a7bc-4c5f-aac8-a483f4259fce.png" src_l="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/dafe187d-a7bc-4c5f-aac8-a483f4259fce.png" >}}
+{{< image src="http://image.p1nant0m.com/dafe187d-a7bc-4c5f-aac8-a483f4259fce.png" caption="good 的反义词" src_s="http://image.p1nant0m.com/dafe187d-a7bc-4c5f-aac8-a483f4259fce.png" src_l="http://image.p1nant0m.com/dafe187d-a7bc-4c5f-aac8-a483f4259fce.png" >}}
 
 在互联网世界遨游了一番后终于确定了那门语言——[Evil](https://esolangs.org/wiki/Evil)，故技重施找在线Interpreter，但没找着。无奈只好在[主页](http://web.archive.org/web/20070103000858/www1.pacific.edu/~twrensch/evil/index.html)下载了用Java实现的Interpreter。
 
 用javac编译一下后再执行我们得到的代码（Piet.txt）并将输出结果重定向至Evil.txt。我们又得到了一连串Hex，
 
 
-{{< image src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/09e0e3a3-3939-4754-a377-18215964cf59.png" caption="代码执行后输出内容" src_s="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/09e0e3a3-3939-4754-a377-18215964cf59.png" src_l="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/09e0e3a3-3939-4754-a377-18215964cf59.png" >}}
+{{< image src="http://image.p1nant0m.com/09e0e3a3-3939-4754-a377-18215964cf59.png" caption="代码执行后输出内容" src_s="http://image.p1nant0m.com/09e0e3a3-3939-4754-a377-18215964cf59.png" src_l="http://image.p1nant0m.com/09e0e3a3-3939-4754-a377-18215964cf59.png" >}}
 
 故技重施，用xxd转换为二进制文件，并用file检查文件类型，发现是一个zlib压缩文件，使用zlib-flate解压该文件，
 
@@ -80,7 +80,7 @@ zlib-flate -uncompress < Evil.bin > Evil_uncomp
 
 这时候我们可以将这个图片丢进Piet的Interpreter里了，我们又得到了一连串Hex，重复上述转换过程，最终我们得到一个ASCII文档，其中的内容为
 
-{{< image src="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/79392036-914e-4c39-81df-b573ea9c217f.png" caption="文本文件内容" src_s="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/79392036-914e-4c39-81df-b573ea9c217f.png" src_l="https://cdn.jsdelivr.net/gh/wgblikeW/blog-imgs/79392036-914e-4c39-81df-b573ea9c217f.png" >}}
+{{< image src="http://image.p1nant0m.com/79392036-914e-4c39-81df-b573ea9c217f.png" caption="文本文件内容" src_s="http://image.p1nant0m.com/79392036-914e-4c39-81df-b573ea9c217f.png" src_l="http://image.p1nant0m.com/79392036-914e-4c39-81df-b573ea9c217f.png" >}}
 
 根据encodings中的提示{***language that looks like a rainbow cat***}，googling后定位到[nya~](http://esolangs.org/wiki/Nya~)语言。由于nya~的语法比较简单，我们可以用python自实现。
 
