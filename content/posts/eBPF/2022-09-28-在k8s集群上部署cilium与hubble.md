@@ -59,11 +59,11 @@ networking:
 
 若一切的顺利执行，你的 K8s 集群便会被顺利创建，你可以使用 `kubectl cluster-info` 查看你的集群是否已成功部署，
 
-{{< image src="http://image.p1nant0m.com/202209281510675.png" caption="kubectl cluster-info 命令执行情况" src_s="" src_l="http://image.p1nant0m.com/202209281510675.png" >}}
+{{< image src="https://image.p1nant0m.com/202209281510675.png" caption="kubectl cluster-info 命令执行情况" src_s="" src_l="https://image.p1nant0m.com/202209281510675.png" >}}
 
 使用 `docker ps` 命令查看在本地机器上已经启动了的工作节点以及控制平面，
 
-{{< image src="http://image.p1nant0m.com/202209281510146.png" caption="docker ps 命令查看运行的“节点”" src_s="http://image.p1nant0m.com/202209281510146.png" src_l="http://image.p1nant0m.com/202209281510146.png" >}}
+{{< image src="https://image.p1nant0m.com/202209281510146.png" caption="docker ps 命令查看运行的“节点”" src_s="https://image.p1nant0m.com/202209281510146.png" src_l="https://image.p1nant0m.com/202209281510146.png" >}}
 
 **容器中代理服务的配置**
 
@@ -93,7 +93,7 @@ k8s 在相关节点拉取 YAML 文件中指定的镜像时并没有能够显示�
 
 一切都正常执行完毕后，你可以使用 `cilium status` 命令来查看集群中 Cilium 的状态，
 
-{{< image src="http://image.p1nant0m.com/202209281537611.png" caption="cilium status 命令执行" src_s="http://image.p1nant0m.com/202209281537611.png" src_l="http://image.p1nant0m.com/202209281537611.png" >}}
+{{< image src="https://image.p1nant0m.com/202209281537611.png" caption="cilium status 命令执行" src_s="https://image.p1nant0m.com/202209281537611.png" src_l="https://image.p1nant0m.com/202209281537611.png" >}}
 
 
 
@@ -103,7 +103,7 @@ Hubble 是 Cilium 项目的可观测层，它可以用来获取集群范围内�
 
 执行 `cilium hubble enable --ui` 启用 **hubble UI** 特性，Cilium 将会通过 Patch cilium-confg、重启 Cilium Pods 、部署 Hubble UI 相关组件的方式来启用相关服务，最终部署执行完成后执行 `cilium hubble ui` 命令将相关服务映射到我们本地的端口上，访问相关页面，可以看到 hubble-ui 与服务健康检测探针之间通信的数据流。
 
-{{< image src="http://image.p1nant0m.com/202209281620041.png" caption="Hubble UI 前端页面" src_s="http://image.p1nant0m.com/202209281620041.png" src_l="http://image.p1nant0m.com/202209281620041.png" >}}
+{{< image src="https://image.p1nant0m.com/202209281620041.png" caption="Hubble UI 前端页面" src_s="https://image.p1nant0m.com/202209281620041.png" src_l="https://image.p1nant0m.com/202209281620041.png" >}}
 
 
 #### 部署一些简单的 Workload （Star Wars Demo）并在 Hubble UI 中观察网络流
@@ -116,7 +116,7 @@ Cilium 官方文档中提供了一些示例 Demo 展示 Cilium 基于身份和 H
 
 同样，我们也可以在 tierfighter 中执行相似的命令，`kubectl exec tiefighter -- curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing`，其效果与上一个例子相似。我们能够在 hubble-ui 的 default 命名空间下看到相关 Pod 的网络流量，如下所示，
 
-{{< image src="http://image.p1nant0m.com/202209281648078.png" caption="default 命名空间下 Pods 间的网络流量" src_s="http://image.p1nant0m.com/202209281648078.png" src_l="http://image.p1nant0m.com/202209281648078.png" >}}
+{{< image src="https://image.p1nant0m.com/202209281648078.png" caption="default 命名空间下 Pods 间的网络流量" src_s="https://image.p1nant0m.com/202209281648078.png" src_l="https://image.p1nant0m.com/202209281648078.png" >}}
 
 不过，这里有一个奇怪的地方，盟军的 xwing 战机竟然能够落到帝国的 deathstar 上！这里我们便引出本文后续的内容，使用 Cilium 对网络流量进行 Policy Enforement。
 
@@ -261,7 +261,7 @@ spec:
 
 在 Hubble UI 中，我们可以看到由 Pod xwing 发出的流量被 Pod deathstar 丢弃，
 
-{{< image src="http://image.p1nant0m.com/202209281930575.png" caption="Policy Enforement 丢弃相关数据包" src_s="http://image.p1nant0m.com/202209281930575.png" src_l="http://image.p1nant0m.com/202209281930575.png" >}}
+{{< image src="https://image.p1nant0m.com/202209281930575.png" caption="Policy Enforement 丢弃相关数据包" src_s="https://image.p1nant0m.com/202209281930575.png" src_l="https://image.p1nant0m.com/202209281930575.png" >}}
 
 我们可以在此执行上面提到的查看 Cilium Endpoint 的命令，这时候我们发现 deathstar Pod 中 Ingress Policy Enforcement 被激活。我们也可以通过执行 `kubectl describe cnp` 来查看相关的 CiliumNetworkPolicy 规则。
 ```bash

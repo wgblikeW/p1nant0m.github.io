@@ -9,7 +9,7 @@ tags:
     - golang
 ---
 
-![header_](http://image.p1nant0m.com/header_opensource.png)
+![header_](https://image.p1nant0m.com/header_opensource.png)
 
 ### 大白话讲 Golang Channel 实现
 本文尝试以轻松的口吻介绍 Golang 中 Channel 的相关实现，我们会以源码不断迭代发展的视角去观察 Channel 实现的变化，具体的来说，通过 Go 主仓库 Commit 历史记录来查看每一次改动所对应的 Issues，一同来看下 Go 开发团队的具体考量。除此之外，我们也需要抓住一些不变的本质，这些本质的实现是整个 Channel 实现设计的基础，考察相关的数据结构以及方法对我们理解具体编码时 Channel 的行为颇有裨益。

@@ -24,7 +24,7 @@ XDP-Tutorial 是一个 Github 上的 repo，皆在指导人们如何遵循最基
 XDP 是 Linux 内核上游（Linux 内核原始版本非 Linux 分发版）的一部分，它为用户提供了将用户编写的包处理程序安装进入内核的通道，安装进入内核的包处理程序会在系统接收到包（还未对数据包进行任何处理）的时候触发执行，从而提供了一种高性能的方式允许用户自定义处理内核接收到数据包时的行为。
 
 
-{{< image src="http://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" caption="XDP 与内核协议栈的整合" src_s="http://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" src_l="http://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" >}}
+{{< image src="https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" caption="XDP 与内核协议栈的整合" src_s="https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" src_l="https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" >}}
 
 
 
@@ -267,7 +267,7 @@ func (b *BPFMap) GetValue(key unsafe.Pointer) ([]byte, error) {
 
 `bpf_map_*` 系列函数都是通过 `bpf()` 系统调用实现的，具体实现[参考此处](https://elixir.bootlin.com/linux/v5.4/source/tools/lib/bpf/bpf.c#L371)，也可以参考 `bpf` 系统调用手册。
 
-<center>    <img style="border-radius: 0.3125em;    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08); zoom:67%;"     src="http://image.p1nant0m.com/bpf_basic03.png">    <br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">示例代码运行输出</div> </center>
+<center>    <img style="border-radius: 0.3125em;    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08); zoom:67%;"     src="https://image.p1nant0m.com/bpf_basic03.png">    <br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">示例代码运行输出</div> </center>
 
 秉着有问题就要暴露出来的想法，我去 libbpfgo 仓库下提了一个 [issues](https://github.com/aquasecurity/libbpfgo/issues/191)，最终也得到了解答。
 

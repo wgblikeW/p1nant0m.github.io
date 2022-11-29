@@ -35,7 +35,7 @@ In software development, time-of-check to time-of-use (TOCTOU, TOCTTOU or TOC/TO
 
 我们可以发现在对系统状态进行检查与使用该经过检查的对象之间存在一定的**时间窗口**，这个时间窗口的长度决定了我们进行 TOCTOU 攻击时成功的概率。我们需要有办法让当前进程在执行完检查系统状态的指令后让出 CPU （时间窗口的左端点），并且引入另外一个线程对相关的对象进行修改，最终在回到原指令序列时以被替换后的对象执行后续的任务（时间窗口的右端点）。
 
-{{< image src="http://image.p1nant0m.com/202210151601004.png" caption="TOCTOU Overview" src_s="http://image.p1nant0m.com/202210151601004.png" src_l="http://image.p1nant0m.com/202210151601004.png" >}}
+{{< image src="https://image.p1nant0m.com/202210151601004.png" caption="TOCTOU Overview" src_s="https://image.p1nant0m.com/202210151601004.png" src_l="https://image.p1nant0m.com/202210151601004.png" >}}
 
 到这里，我们可以发现要想成功利用一次 TOCTOU， 需要集齐以下要素，
 
@@ -74,7 +74,7 @@ A local malicious user can circumvent the Falco detection engine through 0.28.1 
 
 在两位研究者的分享中，以 `openat` 系统调用为例，介绍了在有内核探针的环境下 TOCTOU 的利用。
 
-{{< image src="http://image.p1nant0m.com/202210151918144.png" caption="openat 系统调用入口" src_s="http://image.p1nant0m.com/202210151918144.png" src_l="http://image.p1nant0m.com/202210151918144.png" >}}
+{{< image src="https://image.p1nant0m.com/202210151918144.png" caption="openat 系统调用入口" src_s="https://image.p1nant0m.com/202210151918144.png" src_l="https://image.p1nant0m.com/202210151918144.png" >}}
 
 当应用程序需要调用 `openat` 系统调用完成其工作时，将会陷入内核完成相应的逻辑处理流程，首先便是 `trace_sys_enter` 入口，内核探针可以 Attach 到 `raw_syscalls/sys_enter` 处，每当操作系统陷入内核进行系统调用时都会触发相应的探针程序，完成相应的用户处理逻辑。在本文中，Runtime Security 可以在此获得相关系统调用的入参以及进程上下文环境。
 
@@ -82,7 +82,7 @@ A local malicious user can circumvent the Falco detection engine through 0.28.1 
 
 利用 eBPF 编写 Tracing 类程序可以简单参考本博客中的[这篇文章](http://localhost:1313/2022-07-25-ebpf-tracing/)。
 
-{{< image src="http://image.p1nant0m.com/202210152022831.png" caption="在不同位置引入 Probe" src_s="http://image.p1nant0m.com/202210152022831.png" src_l="http://image.p1nant0m.com/202210152022831.png" >}}
+{{< image src="https://image.p1nant0m.com/202210152022831.png" caption="在不同位置引入 Probe" src_s="https://image.p1nant0m.com/202210152022831.png" src_l="https://image.p1nant0m.com/202210152022831.png" >}}
 
 上图考虑的是 Tracing Program 在不同的内核位置 Hook 探针，主要考虑在（1）`trace_sys_enter` raw_tracepoints 入口处，以及 （2）在 `do_sys_open` 执行具体 `openat` 系统调用处。
 
@@ -194,7 +194,7 @@ int openat(int dirfd, const char *pathname, int flags, mode_t mode);
 
 需要注意的是 `mprotect` 场景下的中断处理，由于 `mprotect` 会改变映射内存页的权限，所有缓存了该页的处理器缓存都会发生失效，需要重新加载并缓存具有正确权限的内存页面。下图展示了研究者在 Exploit 中会使用到的攻击模型简易示例，
 
-{{< image src="http://image.p1nant0m.com/202210161424770.png" caption="攻击模型简要示例" src_s="http://image.p1nant0m.com/202210161424770.png" src_l="http://image.p1nant0m.com/202210161424770.png" >}}
+{{< image src="https://image.p1nant0m.com/202210161424770.png" caption="攻击模型简要示例" src_s="https://image.p1nant0m.com/202210161424770.png" src_l="https://image.p1nant0m.com/202210161424770.png" >}}
 
 可以看到在 Core0 上运行着用户程序 TaskA，Core1 上运行着用于触发中断的辅助程序，当 TaskA 触发系统调用陷入内核处理时，Core1 可以通过向 Core0 发送硬中断或 IPI 中断，打断 Core0 上的内核线程执行，使其转向执行注册的中断处理程序。在执行完中断处理程序后，再恢复当前进程上下文，继续执行原先的内核线程系统调用。
 
@@ -211,7 +211,7 @@ int openat(int dirfd, const char *pathname, int flags, mode_t mode);
 ##### Phantom v1 Attack - An Openat Examples
 
 整一个攻击流程可以用下图展示，
-{{< image src="http://image.p1nant0m.com/202210161447837.png" caption="Phantom v1 Attack" src_s="http://image.p1nant0m.com/202210161447837.png" src_l="http://image.p1nant0m.com/202210161447837.png" >}}
+{{< image src="https://image.p1nant0m.com/202210161447837.png" caption="Phantom v1 Attack" src_s="https://image.p1nant0m.com/202210161447837.png" src_l="https://image.p1nant0m.com/202210161447837.png" >}}
 
 可以看到整一个攻击链由三个主要的线程共同协作完成，它们分别是 **main thread**, **userfaultfd thread** 和 **overwrite thread**。其中 **main thread** 给固定在了 CPU3 上，而 **overwrite thread** 固定到了 CPU2 上。研究者进行 Exploit 演示的硬件平台运行在四核 CPU 环境上， CPU3 正是用于处理 Network Interrupt 的默认 CPU，因此若使用 Networking Interrupt 触发 Core3 执行中断处理程序，那么我们就需要将其 PIN 在 Core3 上，而若使用 IPIs 作为手段，**main thread** 可以运行在任意 CPU 上。
 
