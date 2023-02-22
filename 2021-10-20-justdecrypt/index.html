@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>JustDecrypt - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="JustDecrypt" />
+<meta property="og:description" content="0x1 Description ​ 题目描述：It&rsquo;s just a decryption system. And I heard that only the Bytedancers can get secret. ​ 题目附件：JustDecrypt.py 0x2 Analysis 题目一共分为两个阶段：1）暴力破解HASH；2）Chosen-ciphertext-attack in AES CFB MODE 第一阶段的主要逻辑定义在 proof_of_work() 方法中， 1 2 3 4 5 6 7 8 9 10 def proof_of_work(self): random.seed(urandom(32)) alphabet = string.ascii_letters &#43; string.digits proof = &#39;&#39;.join(random.choices(alphabet, k=32)) hash_value = sha256(proof.encode()).hexdigest() self.send(f&#39;sha256(XXXX&#43;{proof[4:]}) == {hash_value}&#39;.encode()) nonce = self.recv(prompt=b&#39;Give me XXXX &gt; &#39;) if len(nonce) != 4 or sha256(nonce &#43; proof[4:].encode()).hexdigest() != hash_value: return False return True alphabet的长度为62，而我们需要暴力破解原文的子" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2021-10-20-justdecrypt/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-11-17T12:00:00+00:00" />
+<meta property="article:modified_time" content="2021-11-17T12:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="JustDecrypt"/>
+<meta name="twitter:description" content="0x1 Description ​ 题目描述：It&rsquo;s just a decryption system. And I heard that only the Bytedancers can get secret. ​ 题目附件：JustDecrypt.py 0x2 Analysis 题目一共分为两个阶段：1）暴力破解HASH；2）Chosen-ciphertext-attack in AES CFB MODE 第一阶段的主要逻辑定义在 proof_of_work() 方法中， 1 2 3 4 5 6 7 8 9 10 def proof_of_work(self): random.seed(urandom(32)) alphabet = string.ascii_letters &#43; string.digits proof = &#39;&#39;.join(random.choices(alphabet, k=32)) hash_value = sha256(proof.encode()).hexdigest() self.send(f&#39;sha256(XXXX&#43;{proof[4:]}) == {hash_value}&#39;.encode()) nonce = self.recv(prompt=b&#39;Give me XXXX &gt; &#39;) if len(nonce) != 4 or sha256(nonce &#43; proof[4:].encode()).hexdigest() != hash_value: return False return True alphabet的长度为62，而我们需要暴力破解原文的子"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2021-10-20-justdecrypt/" /><link rel="prev" href="https://p1nant0m.com/2021-11-04-filestore/" /><link rel="next" href="https://p1nant0m.com/2021-10-20-chapter1/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "JustDecrypt",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2021-10-20-justdecrypt\/"
+        },"genre": "posts","keywords": "Crypto, ByteCTF2021","wordcount":  1621 ,
+        "url": "https:\/\/p1nant0m.com\/2021-10-20-justdecrypt\/","datePublished": "2021-11-17T12:00:00+00:00","dateModified": "2021-11-17T12:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2021-10-20-justdecrypt/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2021-10-20-justdecrypt/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">JustDecrypt</h1><h2 class="single-subtitle">A Crypto Challenge From ByteCTF2021</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-11-17">2021-11-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1621 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#0x1-description">0x1 Description</a></li>
+            <li><a href="#0x2-analysis">0x2 Analysis</a>
+              <ul>
+                <li><a href="#aes-cfb-mode">AES CFB MODE</a></li>
+              </ul>
+            </li>
+            <li><a href="#0x3-exploited">0x3 EXPLOITED</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h4 id="0x1-description">0x1 Description</h4>
+<p>​	题目描述：It&rsquo;s just a decryption system. And I heard that only the Bytedancers can get secret.</p>
+<p>​	题目附件：<code>JustDecrypt.py</code></p>
+<h4 id="0x2-analysis">0x2 Analysis</h4>
+<p>题目一共分为两个阶段：1）暴力破解HASH；2）Chosen-ciphertext-attack in AES CFB MODE</p>
+<p><strong>第一阶段</strong>的主要逻辑定义在 <code>proof_of_work()</code> 方法中，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python">    <span class="k">def</span> <span class="nf">proof_of_work</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">urandom</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span>
+        <span class="n">alphabet</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span>
+        <span class="n">proof</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">alphabet</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">32</span><span class="p">))</span>
+        <span class="n">hash_value</span> <span class="o">=</span> <span class="n">sha256</span><span class="p">(</span><span class="n">proof</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sha256(XXXX+</span><span class="si">{</span><span class="n">proof</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span><span class="si">}</span><span class="s1">) == </span><span class="si">{</span><span class="n">hash_value</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="n">nonce</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;Give me XXXX &gt; &#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nonce</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span> <span class="ow">or</span> <span class="n">sha256</span><span class="p">(</span><span class="n">nonce</span> <span class="o">+</span> <span class="n">proof</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span> <span class="o">!=</span> <span class="n">hash_value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>alphabet的长度为62，而我们需要暴力破解原文的子串长度只有4，因此可能的原文仅有 $62^4=14776336$ 种，我们能够在PPT内解决（其实相当的快）</p>
+<p>Exploit代码如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">hash_collid</span><span class="p">(</span><span class="n">tar_hash</span><span class="p">,</span> <span class="n">proof_back</span><span class="p">):</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">prefix_set</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">prefix_set</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">proof_back</span>
+        <span class="k">if</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span> <span class="o">==</span> <span class="n">tar_hash</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;[*]Found!  &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">prefix</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">prefix</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中预先计算了所有可能的原文子串</p>
+<p><strong>第二阶段</strong> chall为我们提供了一个解密Oracle，并且该Oracle使用的是AES CFB MODE，我们需要构造出恰当的密文以使其解密出的明文在 <code>unpad</code> 后为：<code>Hello, I'm a Bytedancer. Please give me the flag!</code> 在padding过程中采用了与 PKCS #7 相似的算法，不过在 <code>unpad</code>方法中存在漏洞，我们能够直接获取Oracle解密后的明文</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python">    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">unpad</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>并且出于Oracle的访问限制，我们与其交互的次数有限，很有可能不能够在有限的次数内还原出合法padding的明文，但利用上述漏洞我们可以构造出符合条件的plaintext {<code>Hello, I'm a Bytedancer. Please give me the flag!</code>} 而不用合法的padding</p>
+<p>接下来我们需要详细考察一下AES CFB MODE</p>
+<h5 id="aes-cfb-mode">AES CFB MODE</h5>
+<p>​	在pycryptodome库中，AES_MODE_CFB的实现依照<a href="http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf" target="_blank" rel="noopener noreffer ">NIST SP 800-38A, section 6.3</a>，其大致的加解密流程如下图所示，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211020093632010.png" title="https://image.p1nant0m.com/image-20211020093632010.png" data-thumbnail="https://image.p1nant0m.com/image-20211020093632010.png" data-sub-html="<h2>AES CFB MODE 加解密流程</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/image-20211020093632010.png"
+            data-srcset="https://image.p1nant0m.com/image-20211020093632010.png, https://image.p1nant0m.com/image-20211020093632010.png 1.5x, https://image.p1nant0m.com/image-20211020093632010.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/image-20211020093632010.png" />
+    </a><figcaption class="image-caption">AES CFB MODE 加解密流程</figcaption>
+    </figure>
+<p>​	数学表述为：</p>
+<p>$$
+CFB\space Encryption \\
+\space I_1 = IV;\\
+I_j = LSB_{b-s}(I_{j-1})|C^{\#}_{j-1}\space for\space j=2&hellip;n;\\
+O_j = CIPH_K(I_j)\space for\space j=1,2&hellip;n; \\
+C^{\#}_j=P^{\#}_j\oplus MSB_s(O_j)\space for\space j=1,2&hellip;n;\\\\
+CFB\space Decryption\\
+I_1=IV;\\
+I_j = LSB_{b-s}(I_{j-1})|C^{\#}_{j-1}\space for\space j=2&hellip;n;\\
+O_j = CIPH_K(I_j)\space for\space j=1,2&hellip;n;\\
+P^{\#}_j=C^{\#}_{j}\oplus MSB_s(O_j)\space for\space j=1,2&hellip;n
+$$</p>
+<p>LSB（least significant bits）<u>数二进制表示的低比特位</u> ，MSB（most significant bits）<u>数二进制表示的高比特位</u></p>
+<p>在pycryptodome库中，使用AES_MODE_CFB构造Cipher时有一个特殊的参数<code>segment_size</code> 其指示了plaintext与ciphertext的segement，在Doc中其描述为，</p>
+<blockquote>
+<p>​      segment_size (integer)</p>
+<p>​      (Only <code>MODE_CFB</code>). The number of <strong>bits</strong> the plaintext and ciphertext are segmented in. It must be a multiple of 8.</p>
+<p>​      If not specified, it will be assumed to be 8.</p>
+</blockquote>
+<p>我们可以使用AES_MODE_ECB来实现AES_MODE_CFB，具体的实现在本WP中不在多述</p>
+<p>我们回到chall中，由于该方案使用了不安全的<code>unpad()</code>方法，我们能够构造一个长ciphertext（这里我用了1024Bit）使得上述 $CIPH_K(I_j)$ 内容泄露。</p>
+<p>利用泄露的 $CIPH_K(I_j)$ 与我们已知的明文作XOR运算，便可以得到对应的密文，由此我们能够逐Byte恢复密文信息。但由于与Oracle的交互次数有限，我们并不能够得到合法的padding后的明文所对应的密文，因此我们需要利用<code>unpad()</code></p>
+<p>按照上述方法构造<code>Hello, I'm a Bytedancer. Please give me the flag!</code>对应的ciphertext，接着在获得的密文后添加<code>'00' * 30</code>来覆盖nonce，得到我们一开始恢复 <code>H</code> 所使用的 $CIPH_K(I_0)$ 高s位 （在实施攻击前我们需要用密文 <code>'00'*512</code> 来覆盖nonce从而控制Decrypt流 {Cipher内部状态} ），计算 $MSB_{s}(CIPH_K(I_{0}))\oplus0X1F$ 其中0X1F是我们在密文后添加的Byte个数，利用 <code>unpad()</code> 中的逻辑 <code>s[:-s[-1]]</code> 我们能够去除多余密文所带来的杂乱明文，这样便能够成功攻击该密码方案，获得FLAG。</p>
+<h4 id="0x3-exploited">0x3 EXPLOITED</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">curtsies.fmtfuncs</span> <span class="kn">import</span> <span class="n">red</span>
+<span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">import</span> <span class="nn">binascii</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="n">io</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s1">&#39;39.105.181.182&#39;</span><span class="p">,</span> <span class="mi">30001</span><span class="p">)</span>
+<span class="n">target_plaintext</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;Hello, I&#39;m a Bytedancer. Please give me the flag!&#34;</span>
+
+
+<span class="k">def</span> <span class="nf">interactive_pharse1</span><span class="p">(</span><span class="n">io</span><span class="p">):</span>
+
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;Give me XXXX &gt;&#39;</span><span class="p">)</span>
+    <span class="n">tar_hash</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">temp</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;==&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">:</span><span class="n">temp</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;==&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="o">+</span><span class="mi">64</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="n">proof_back</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">temp</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;XXXX&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">:</span><span class="n">temp</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;XXXX&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="o">+</span><span class="mi">28</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="n">proof_prefix</span> <span class="o">=</span> <span class="n">hash_collid</span><span class="p">(</span><span class="n">tar_hash</span><span class="p">,</span> <span class="n">proof_back</span><span class="p">)</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">proof_prefix</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">io</span>
+
+
+<span class="k">def</span> <span class="nf">hash_collid</span><span class="p">(</span><span class="n">tar_hash</span><span class="p">,</span> <span class="n">proof_back</span><span class="p">):</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">prefix_set</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">prefix_set</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">proof_back</span>
+        <span class="k">if</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span> <span class="o">==</span> <span class="n">tar_hash</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;[*]Found!  &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">prefix</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">prefix</span>
+
+
+<span class="k">def</span> <span class="nf">interactive_pharse2</span><span class="p">(</span><span class="n">io</span><span class="p">,</span> <span class="n">cip</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+    <span class="n">io</span><span class="o">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;Please enter your cipher in hex &gt;&#39;</span><span class="p">)</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">cip</span><span class="p">)</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39; Your plaintext in hex: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">plaintext</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;OK! Here is your flag: &#39;</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s2">&#34;[+] Here&#39;s the Flag: &#34;</span><span class="p">)</span> <span class="o">+</span>
+              <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;ByteCTF{.*}&#39;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">return</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">plaintext</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">plaintext</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">atk</span><span class="p">(</span><span class="n">io</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">target_plaintext</span>
+    <span class="n">cip</span> <span class="o">=</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">512</span>
+    <span class="n">leak_byte1</span> <span class="o">=</span> <span class="n">interactive_pharse2</span><span class="p">(</span>
+        <span class="n">io</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cip</span><span class="p">),</span> <span class="s1">&#39;hex&#39;</span><span class="p">))[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="n">cip</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">xor</span><span class="p">(</span><span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">leak_byte1</span><span class="p">),</span> <span class="sa">b</span><span class="s1">&#39;H&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_plaintext</span><span class="p">)):</span>
+        <span class="n">plaintext</span> <span class="o">=</span> <span class="n">interactive_pharse2</span><span class="p">(</span>
+            <span class="n">io</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cip</span><span class="p">),</span> <span class="s1">&#39;hex&#39;</span><span class="p">))</span>
+        <span class="n">leak_byte</span> <span class="o">=</span> <span class="n">plaintext</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">:</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">cip</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">xor</span><span class="p">(</span><span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">leak_byte</span><span class="p">),</span> <span class="n">target_plaintext</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;[*] cipertext: &#39;</span><span class="p">),</span> <span class="n">codecs</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cip</span><span class="p">),</span> <span class="s1">&#39;hex&#39;</span><span class="p">))</span>
+    <span class="n">cip</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cip</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">79</span><span class="p">)])</span>
+    <span class="n">cip</span> <span class="o">+=</span> <span class="n">xor</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s1">&#39;1f&#39;</span><span class="p">),</span> <span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">leak_byte1</span><span class="p">))</span>
+    <span class="n">interactive_pharse2</span><span class="p">(</span><span class="n">io</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">cip</span><span class="p">,</span> <span class="s1">&#39;hex&#39;</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">interactive_pharse1</span><span class="p">(</span><span class="n">io</span><span class="p">)</span>
+    <span class="n">atk</span><span class="p">(</span><span class="n">io</span><span class="p">)</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>ByteCTF{8de1d3e1-5e74-4a73-b99e-7dc860183f96}</strong></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-11-17</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2021-10-20-justdecrypt/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2021-10-20-justdecrypt/" data-title="JustDecrypt" data-via="p1nant0m" data-hashtags="Crypto,ByteCTF2021"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2021-10-20-justdecrypt/" data-hashtag="Crypto"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2021-10-20-justdecrypt/" data-title="JustDecrypt"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2021-10-20-justdecrypt/" data-title="JustDecrypt"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2021-10-20-justdecrypt/" data-title="JustDecrypt"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/crypto/">Crypto</a>,&nbsp;<a href="/tags/bytectf2021/">ByteCTF2021</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2021-11-04-filestore/" class="prev" rel="prev" title="FileStore"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>FileStore</a>
+            <a href="/2021-10-20-chapter1/" class="next" rel="next" title="·密码学原理课程 —— Introduction">·密码学原理课程 —— Introduction<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

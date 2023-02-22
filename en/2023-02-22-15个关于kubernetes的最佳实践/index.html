@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>15 Best Practices for Working with Kubernetes - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="15 Best Practices for Working with Kubernetes" />
+<meta property="og:description" content="Introduction to Kubernetes Kubernetes is a popular and powerful container orchestration system that has become the de facto standard for managing containerized workloads. However, managing Kubernetes clusters can be complex and challenging, especially if you are new to the technology. In this post, we&rsquo;ll cover 15 best practices for working with Kubernetes that can help you optimize your clusters and improve the performance and reliability of your applications.
+15 Best Practices   Keep Your Clusters Up-to-Date
+Kubernetes is a rapidly evolving technology, with new features and bug fixes released regularly. It&rsquo;s important to keep your clusters up-to-date with the latest stable release to ensure you have access to the latest features, security patches, and bug fixes.
+  Use a Declarative Approach
+Kubernetes resources, such as deployments, services, and config maps, can be defined in YAML manifests or Helm charts. Use a declarative approach to managing your resources, which means you define the desired state of your resources and let Kubernetes handle the implementation details.
+  Define Resource Requests and Limits
+To ensure that your applications have the necessary resources to run properly and to prevent resource contention on your nodes, define resource requests and limits for your containers." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-02-21T12:00:00+00:00" />
+<meta property="article:modified_time" content="2023-02-21T12:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="15 Best Practices for Working with Kubernetes"/>
+<meta name="twitter:description" content="Introduction to Kubernetes Kubernetes is a popular and powerful container orchestration system that has become the de facto standard for managing containerized workloads. However, managing Kubernetes clusters can be complex and challenging, especially if you are new to the technology. In this post, we&rsquo;ll cover 15 best practices for working with Kubernetes that can help you optimize your clusters and improve the performance and reliability of your applications.
+15 Best Practices   Keep Your Clusters Up-to-Date
+Kubernetes is a rapidly evolving technology, with new features and bug fixes released regularly. It&rsquo;s important to keep your clusters up-to-date with the latest stable release to ensure you have access to the latest features, security patches, and bug fixes.
+  Use a Declarative Approach
+Kubernetes resources, such as deployments, services, and config maps, can be defined in YAML manifests or Helm charts. Use a declarative approach to managing your resources, which means you define the desired state of your resources and let Kubernetes handle the implementation details.
+  Define Resource Requests and Limits
+To ensure that your applications have the necessary resources to run properly and to prevent resource contention on your nodes, define resource requests and limits for your containers."/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" /><link rel="prev" href="https://p1nant0m.com/en/2022-03-18-raft-part2d/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "15 Best Practices for Working with Kubernetes",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/en\/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5\/"
+        },"genre": "posts","keywords": "Kubernetes, Best Practices, AIGC","wordcount":  775 ,
+        "url": "https:\/\/p1nant0m.com\/en\/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5\/","datePublished": "2023-02-21T12:00:00+00:00","dateModified": "2023-02-21T12:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "ChatGPT"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/en/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/en/posts/"> Posts </a><a class="menu-item" href="/en/tags/"> Tags </a><a class="menu-item" href="/en/categories/"> Categories </a><a class="menu-item" href="/en/about/"> About </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" selected>English</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/en/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/en/posts/" title="">Posts</a><a class="menu-item" href="/en/tags/" title="">Tags</a><a class="menu-item" href="/en/categories/" title="">Categories</a><a class="menu-item" href="/en/about/" title="">About</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" selected>English</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">15 Best Practices for Working with Kubernetes</h1><h2 class="single-subtitle">Optimizing Clusters for Improved Performance, Reliability, and Security</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/en/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>ChatGPT</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-02-21">2023-02-21</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;775 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;4 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction-to-kubernetes">Introduction to Kubernetes</a></li>
+        <li><a href="#15-best-practices">15 Best Practices</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h3 id="introduction-to-kubernetes">Introduction to Kubernetes</h3>
+<p>Kubernetes is a popular and powerful container orchestration system that has become the de facto standard for managing containerized workloads. However, managing Kubernetes clusters can be complex and challenging, especially if you are new to the technology. In this post, we&rsquo;ll cover 15 best practices for working with Kubernetes that can help you optimize your clusters and improve the performance and reliability of your applications.</p>
+<h3 id="15-best-practices">15 Best Practices</h3>
+<ol>
+<li>
+<p><strong>Keep Your Clusters Up-to-Date</strong></p>
+<p>Kubernetes is a rapidly evolving technology, with new features and bug fixes released regularly. It&rsquo;s important to keep your clusters up-to-date with the latest stable release to ensure you have access to the latest features, security patches, and bug fixes.</p>
+</li>
+<li>
+<p><strong>Use a Declarative Approach</strong></p>
+<p>Kubernetes resources, such as deployments, services, and config maps, can be defined in YAML manifests or Helm charts. Use a declarative approach to managing your resources, which means you define the desired state of your resources and let Kubernetes handle the implementation details.</p>
+</li>
+<li>
+<p><strong>Define Resource Requests and Limits</strong></p>
+<p>To ensure that your applications have the necessary resources to run properly and to prevent resource contention on your nodes, define resource requests and limits for your containers. This allows Kubernetes to schedule your workloads more efficiently and prevent performance issues.</p>
+</li>
+<li>
+<p><strong>Use Namespaces to Organize Your Resources</strong></p>
+<p>Use namespaces to organize your resources and provide a level of isolation and resource quota for different teams or applications. This helps you manage your clusters more effectively and provides better visibility into your resources.</p>
+</li>
+<li>
+<p><strong>Use RBAC to Control Access to Your Resources</strong></p>
+<p>Use RBAC (Role-Based Access Control) to control access to your Kubernetes resources, and grant only the necessary privileges to each user or group. This helps you enforce security policies and prevent unauthorized access.</p>
+</li>
+<li>
+<p><strong>Enable Auditing</strong></p>
+<p>Enabling auditing helps you keep track of changes to your Kubernetes resources, and to monitor and detect unauthorized access or behavior. This helps you maintain the integrity of your clusters and data.</p>
+</li>
+<li>
+<p><strong>Use ConfigMaps and Secrets to Manage Configuration Data</strong></p>
+<p>Use ConfigMaps and Secrets to manage configuration data and sensitive information, such as passwords or API keys, separately from your application code. This makes it easier to manage and update your configuration data, and provides a more secure way to handle sensitive information.</p>
+</li>
+<li>
+<p><strong>Use Liveness and Readiness Probes</strong></p>
+<p>Use liveness and readiness probes to monitor the health of your applications and to enable Kubernetes to restart or reschedule containers automatically in case of failures. This helps you ensure that your applications are always available and responsive.</p>
+</li>
+<li>
+<p><strong>Use Horizontal Pod Autoscaling</strong></p>
+<p>Use horizontal pod autoscaling to automatically adjust the number of replicas of your application based on resource utilization or custom metrics. This helps you optimize the performance of your applications and reduce costs by scaling up or down as needed.</p>
+</li>
+<li>
+<p><strong>Use Node Taints and Tolerations</strong></p>
+<p>Use node taints and tolerations to schedule workloads only on nodes that meet certain criteria, such as having specific hardware or software configurations. This helps you optimize your cluster resources and prevent performance issues.</p>
+</li>
+<li>
+<p><strong>Use Node Affinity and Anti-Affinity</strong></p>
+<p>Use node affinity and anti-affinity to schedule workloads based on node labels, such as geographic location or availability zone, or to spread workloads across multiple nodes. This helps you optimize your cluster resources and prevent performance issues.</p>
+</li>
+<li>
+<p><strong>Use Network Policies</strong></p>
+<p>Use network policies to control traffic between pods or namespaces and to enforce security rules. This helps you ensure the security and integrity of your data and applications.</p>
+</li>
+<li>
+<p><strong>Use Helm to Manage Your Kubernetes Applications</strong></p>
+<p>Use Helm to manage your Kubernetes applications and to simplify the deployment and management of complex applications or clusters. Helm provides a packaging system and deployment tool that makes it easier to manage your Kubernetes applications and to share them with the community.</p>
+</li>
+<li>
+<p><strong>Use Prometheus and Grafana to Monitor and Visualize Your Clusters and Applications</strong></p>
+<p>Use Prometheus and Grafana to monitor and visualize your Kubernetes clusters and applications, and to detect and troubleshoot issues. Prometheus is a popular monitoring system that collects metrics from your applications and infrastructure, while Grafana is a visualization tool that helps you create custom dashboards and alerts.</p>
+</li>
+<li>
+<p><strong>Use Backups and Disaster Recovery Strategies</strong></p>
+<p>Use backups and disaster recovery strategies to protect your data and applications against data loss or unexpected failures. Backups should be taken regularly, and disaster recovery plans should be tested to ensure that you can recover from unexpected events.</p>
+</li>
+</ol>
+<h3 id="conclusion">Conclusion</h3>
+<p>These 15 best practices can help you optimize your Kubernetes clusters and improve the performance and reliability of your applications. By following these practices, you can better manage your clusters, enhance the security of your applications, and ensure that your applications are always available and responsive.</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2023-02-21</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" data-title="15 Best Practices for Working with Kubernetes" data-via="p1nant0m" data-hashtags="Kubernetes,Best Practices,AIGC"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" data-hashtag="Kubernetes"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" data-title="15 Best Practices for Working with Kubernetes"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" data-title="15 Best Practices for Working with Kubernetes"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" data-title="15 Best Practices for Working with Kubernetes"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/en/tags/kubernetes/">Kubernetes</a>,&nbsp;<a href="/en/tags/best-practices/">Best Practices</a>,&nbsp;<a href="/en/tags/aigc/">AIGC</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/en/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/en/2022-03-18-raft-part2d/" class="prev" rel="prev" title="6.824-RaftLab-Part2D-Development Quicknotes"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>6.824-RaftLab-Part2D-Development Quicknotes</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/en/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"Got it!","link":"Learn more","message":"This website uses Cookies to improve your experience."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/en/index.json","maxResultLength":10,"noResultsFound":"No results found","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

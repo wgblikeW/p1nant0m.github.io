@@ -1,0 +1,90 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>p1nant0m</title>
+        <link>https://p1nant0m.com/</link>
+        <description>p1nant0m</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Fri, 14 Oct 2022 11:46:09 &#43;0000</lastBuildDate>
+            <atom:link href="https://p1nant0m.com/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+    <title>Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)</title>
+    <link>https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/</link>
+    <pubDate>Fri, 14 Oct 2022 11:46:09 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/</guid>
+    <description><![CDATA[背景知识 在第 29 届的 DEFCON 会议上，来自 Lacework 的 Rex Guo 与 LinkedIn 的 Junyuan Zeng 分享了以他们关于利用内核从用户态拷贝数据到内核态的过程中，由于某些 Runtime Security 产品选择了不合适的 Probes 插入位置，存在 TOCTOU 问题，进而能够欺骗探针，绕过 Runtime Security 产品的 Policy Enforcement，进而达成攻击者进行恶意活动的目的。 另外，分享者还介绍了 Semantic confusion，一种利用内核与跟踪程序对数据语义解释的歧义实现的攻击方式，这与在 Usenix Security'22 会议上获得最佳论文奖的 Identity Confusion in WebView-based Mobile App-in-app Ecosystems]]></description>
+</item>
+<item>
+    <title>优雅的创建 CLI 程序</title>
+    <link>https://p1nant0m.com/2022-10-08-%E4%BC%98%E9%9B%85%E7%9A%84%E5%88%9B%E5%BB%BA-cli-%E7%A8%8B%E5%BA%8F.zh-ch/</link>
+    <pubDate>Fri, 07 Oct 2022 07:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-10-08-%E4%BC%98%E9%9B%85%E7%9A%84%E5%88%9B%E5%BB%BA-cli-%E7%A8%8B%E5%BA%8F.zh-ch/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
+    <title>在 K8s 集群上部署 Cilium 与 Hubble</title>
+    <link>https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/</link>
+    <pubDate>Tue, 27 Sep 2022 14:57:27 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/</guid>
+    <description><![CDATA[关于笔者 目前，笔者还是一名在校大学生，就读于信息安全专业，对云原生安全、分布式系统、观测领域有较大的兴趣。因而小站上的很多文章都是萌新学习踩坑的经验分享，更多的是“玩”的心态向优秀、有趣的项目，学习其设计思路、编码风格、文档编写、开源社区/团队协作方面的知识，并辅以自己小小的见解。作为一名还未有充分经验的用户，文章中难免有所纰漏，还望能够与大家交流学习，共勉。 在 K8s 集群上部署 Cilium 与 Hubble 近段时间一直在思考]]></description>
+</item>
+<item>
+    <title>Golang 面试驱动学习</title>
+    <link>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/</link>
+    <pubDate>Sun, 25 Sep 2022 10:16:38 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/</guid>
+    <description><![CDATA[说在前面 🐹 WIP Go 运行时行为 🐹 WIP GC 触发时机 GC 触发的入口为 runtime.gcStart() 垃圾收集被触发后会通过 runtime.gcTrigger.test() 方法检测当前是否需要触发垃圾收集，该方法会根据三种方式触发不同的检查， gcTriggerHeap：堆内存分配达到控制器计算的触发堆大小 gcTriggerTime：如果一段时间内没有触发，就会触发新一轮的循环，该触发条件由 runtime.forcegcperiod 变量控制，默认时间为 2 分钟 gcTriggerperiod：如果当前没有开启垃圾收集，则触发新的循环 所]]></description>
+</item>
+<item>
+    <title>程序员修炼指南</title>
+    <link>https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/</link>
+    <pubDate>Sat, 10 Sep 2022 18:36:36 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/</guid>
+    <description><![CDATA[文章概要 本文准备以一种轻快、对话式的口吻来描述笔者在计算机相关领域学习过程中感悟体会，其中包括一些回顾、一些建议、一些反思以及对未来的一些思考。这些内容并不是对某一领域的具体讨论，因此不会涉及相关的技术细节，读者可以抱着一种来看看故事、吹吹牛的心态阅读本篇文章，因而你不需要有任何认知上的压力。如果你在阅读完本篇文章后，能够有所收获与思考，笔者将感到由衷的高兴。 🤔 优秀程序员的特质：黑客与画家 OR 哲学家]]></description>
+</item>
+<item>
+    <title>云原生安全：攻防实践与体系构建阅读笔记</title>
+    <link>https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/</link>
+    <pubDate>Wed, 07 Sep 2022 21:12:13 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/</guid>
+    <description><![CDATA[云原生安全——攻防实践与体系构建 1云原生安全 在本章节中我们首先介绍云原生的含义和特性，然后介绍云原生安全的含义、体系、关键问题和现状。 1.1云原生：云计算下半场 CNCF对云原生的见解是：“云原生技术有利于各组织在公有云、私有云和混合云等新型动态环境中，构建和运行可弹性扩展的应用。云原生的代表技术包括容器、服务网络、微服务、不可变基础设施和声明式API。这些技术能够构建容错性好、易于管理和便于观察的]]></description>
+</item>
+<item>
+    <title>Tracee 漫游指北</title>
+    <link>https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/</link>
+    <pubDate>Mon, 05 Sep 2022 09:29:17 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/</guid>
+    <description><![CDATA[项目仓库地址：https://github.com/aquasecurity/tracee 前言 这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技]]></description>
+</item>
+<item>
+    <title>大白话讲 Golang Channel 实现</title>
+    <link>https://p1nant0m.com/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/</link>
+    <pubDate>Sun, 28 Aug 2022 07:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/</guid>
+    <description><![CDATA[大白话讲 Golang Channel 实现 本文尝试以轻松的口吻介绍 Golang 中 Channel 的相关实现，我们会以源码不断迭代发展的视角去观察 Channel 实现的变化，具体的来说，通过 Go 主仓库 Commit 历史记录来查看每一次改动所对应的 Issues，一同来看下 Go 开发团队的具体考量。除此之外，我们也需要抓住一些不变的本质，这些本质的实现是整个 Channel 实现设计的基础，考察相关的数据结构以及方法对我们理解具体编码时 Channel 的行为颇有裨益。 本文是笔者在学习过程中写成的，参考了许多前人写]]></description>
+</item>
+<item>
+    <title>eBPF-tracing 使用 eBPF 编写监控类程序</title>
+    <link>https://p1nant0m.com/2022-07-25-ebpf-tracing/</link>
+    <pubDate>Sun, 24 Jul 2022 14:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-07-25-ebpf-tracing/</guid>
+    <description><![CDATA[eBPF 程序的跟踪能力 The ability to attach eBPF programs to trace points as well as kernel and user application probe points allows unprecedented visibility into the runtime behavior of applications and the system itself. By giving introspection abilities to both the application and system side, both views can be combined, allowing powerful and unique insights to troubleshoot system performance problems. Advanced statistical data structures allow to extract meaningful visibility data in an efficient manner, without requiring the export of vast amounts of sampling data as typically done by similar systems. 如何找到你所需要的追踪点？ 首先，我们需要明确自身的需求，考虑清楚我们需要获取哪一些数据信息，再从这些数据信息的类型出发找到其对应的追踪位置。在 eBPF 程序中有以下这几种常用的追踪点类型： kprobe 内核探针 uprobe 用户程序探针 tracepoint 内核]]></description>
+</item>
+<item>
+    <title>XDP-tutorial 学习如何编写 eBPF XDP 程序</title>
+    <link>https://p1nant0m.com/2022-07-18-xdp-tutorial/</link>
+    <pubDate>Mon, 18 Jul 2022 07:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2022-07-18-xdp-tutorial/</guid>
+    <description><![CDATA[XDP-Tutorial ⭐ 本文章仍然在不断的更新中，因此文章结构以及内容可能会时常发生变化。同时本领域也是作者刚刚涉及的领域，难免在文本内容中出现错误，还望指正，大家一同学习共勉。 XDP-Tutorial 是一个 Github 上的 repo，皆在指导人们如何遵循最基本的步骤，高效地实现为内核中的 XDP 系统进行编程。我会随着这个课程的步伐与大家一同探寻 Linux 内核世界的奥秘以及如何使用高性能的 XDP 程序对网络数据报进行处理。随着学习的深入，我会列出理解每一节课程的编程实现]]></description>
+</item>
+</channel>
+</rss>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Forbbiden Fruit - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="Forbbiden Fruit" />
+<meta property="og:description" content="Origin: http://aes.cryptohack.org/forbidden_fruit/
+0x1 DESCRIPTION Galois Counter Mode (GCM) is the most widely used block cipher mode in TLS today. It&rsquo;s an &ldquo;authenticated encryption with associated data&rdquo; cipher mode (AEAD), yet not resistant to misuse.
+See here for a great resource on the inner workings of GCM, as well as this attack.
+Source
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53  from Crypto.Cipher import AES import os IV = ? KEY = ? FLAG = ? @chal.route(&#39;/forbidden_fruit/decrypt/&lt;nonce&gt;/&lt;ciphertext&gt;/&lt;tag&gt;/&lt;associated_data&gt;/&#39;) def decrypt(nonce, ciphertext, tag, associated_data): ciphertext = bytes.fromhex(ciphertext) tag = bytes.fromhex(tag) header = bytes.fromhex(associated_data) nonce = bytes.fromhex(nonce) if header != b&#39;CryptoHack&#39;: return {&#34;error&#34;: &#34;Don&#39;t understand this message type&#34;} cipher = AES.new(KEY, AES.MODE_GCM, nonce=nonce) encrypted = cipher.update(header) try: decrypted = cipher.decrypt_and_verify(ciphertext, tag) except ValueError as e: return {&#34;error&#34;: &#34;Invalid authentication tag&#34;} if b&#39;give me the flag&#39; in decrypted: return {&#34;plaintext&#34;: FLAG.encode().hex()} return {&#34;plaintext&#34;: decrypted.hex()} @chal.route(&#39;/forbidden_fruit/encrypt/&lt;plaintext&gt;/&#39;) def encrypt(plaintext): plaintext = bytes.fromhex(plaintext) header = b&#34;CryptoHack&#34; cipher = AES.new(KEY, AES.MODE_GCM, nonce=IV) encrypted = cipher." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-10-20T12:00:00+00:00" />
+<meta property="article:modified_time" content="2021-10-20T12:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="Forbbiden Fruit"/>
+<meta name="twitter:description" content="Origin: http://aes.cryptohack.org/forbidden_fruit/
+0x1 DESCRIPTION Galois Counter Mode (GCM) is the most widely used block cipher mode in TLS today. It&rsquo;s an &ldquo;authenticated encryption with associated data&rdquo; cipher mode (AEAD), yet not resistant to misuse.
+See here for a great resource on the inner workings of GCM, as well as this attack.
+Source
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53  from Crypto.Cipher import AES import os IV = ? KEY = ? FLAG = ? @chal.route(&#39;/forbidden_fruit/decrypt/&lt;nonce&gt;/&lt;ciphertext&gt;/&lt;tag&gt;/&lt;associated_data&gt;/&#39;) def decrypt(nonce, ciphertext, tag, associated_data): ciphertext = bytes.fromhex(ciphertext) tag = bytes.fromhex(tag) header = bytes.fromhex(associated_data) nonce = bytes.fromhex(nonce) if header != b&#39;CryptoHack&#39;: return {&#34;error&#34;: &#34;Don&#39;t understand this message type&#34;} cipher = AES.new(KEY, AES.MODE_GCM, nonce=nonce) encrypted = cipher.update(header) try: decrypted = cipher.decrypt_and_verify(ciphertext, tag) except ValueError as e: return {&#34;error&#34;: &#34;Invalid authentication tag&#34;} if b&#39;give me the flag&#39; in decrypted: return {&#34;plaintext&#34;: FLAG.encode().hex()} return {&#34;plaintext&#34;: decrypted.hex()} @chal.route(&#39;/forbidden_fruit/encrypt/&lt;plaintext&gt;/&#39;) def encrypt(plaintext): plaintext = bytes.fromhex(plaintext) header = b&#34;CryptoHack&#34; cipher = AES.new(KEY, AES.MODE_GCM, nonce=IV) encrypted = cipher."/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/" /><link rel="next" href="https://p1nant0m.com/en/2022-03-18-raft-part2d/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Forbbiden Fruit",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/en\/2021-10-20-forbbiden-fruit\/"
+        },"genre": "posts","keywords": "Crypto, CryptoHack","wordcount":  1225 ,
+        "url": "https:\/\/p1nant0m.com\/en\/2021-10-20-forbbiden-fruit\/","datePublished": "2021-10-20T12:00:00+00:00","dateModified": "2021-10-20T12:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "P1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/en/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/en/posts/"> Posts </a><a class="menu-item" href="/en/tags/"> Tags </a><a class="menu-item" href="/en/categories/"> Categories </a><a class="menu-item" href="/en/about/"> About </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="Select Language">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/en/2021-10-20-forbbiden-fruit/" selected>English</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/en/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/en/posts/" title="">Posts</a><a class="menu-item" href="/en/tags/" title="">Tags</a><a class="menu-item" href="/en/categories/" title="">Categories</a><a class="menu-item" href="/en/about/" title="">About</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="Select Language">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/en/2021-10-20-forbbiden-fruit/" selected>English</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Forbbiden Fruit</h1><h2 class="single-subtitle">An interesting Crypto Challenge about AES in GCM Mode and nonce reusing.</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/en/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>P1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-10-20">2021-10-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;1225 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;6 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x1-description">0x1 DESCRIPTION</a></li>
+    <li><a href="#0x2-analysis">0x2 ANALYSIS</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>Origin: <a href="http://aes.cryptohack.org/forbidden_fruit/" target="_blank" rel="noopener noreffer ">http://aes.cryptohack.org/forbidden_fruit/</a></p>
+<h2 id="0x1-description">0x1 DESCRIPTION</h2>
+<p>Galois Counter Mode (GCM) is the most widely used block cipher mode in TLS today. It&rsquo;s an &ldquo;authenticated encryption with associated data&rdquo; cipher mode (<a href="https://en.wikipedia.org/wiki/Authenticated_encryption" target="_blank" rel="noopener noreffer ">AEAD</a>), yet not resistant to misuse.</p>
+<p>See <a href="https://toadstyle.org/cryptopals/63.txt" target="_blank" rel="noopener noreffer ">here</a> for a great resource on the inner workings of GCM, as well as this attack.</p>
+<p><strong>Source</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">AES</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="n">IV</span> <span class="o">=</span> <span class="err">?</span>
+<span class="n">KEY</span> <span class="o">=</span> <span class="err">?</span>
+<span class="n">FLAG</span> <span class="o">=</span> <span class="err">?</span>
+
+
+<span class="nd">@chal</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/forbidden_fruit/decrypt/&lt;nonce&gt;/&lt;ciphertext&gt;/&lt;tag&gt;/&lt;associated_data&gt;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">decrypt</span><span class="p">(</span><span class="n">nonce</span><span class="p">,</span> <span class="n">ciphertext</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">associated_data</span><span class="p">):</span>
+    <span class="n">ciphertext</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">associated_data</span><span class="p">)</span>
+    <span class="n">nonce</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">nonce</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">header</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;CryptoHack&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="s2">&#34;Don&#39;t understand this message type&#34;</span><span class="p">}</span>
+
+    <span class="n">cipher</span> <span class="o">=</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_GCM</span><span class="p">,</span> <span class="n">nonce</span><span class="o">=</span><span class="n">nonce</span><span class="p">)</span>
+    <span class="n">encrypted</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">decrypted</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">decrypt_and_verify</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="s2">&#34;Invalid authentication tag&#34;</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="sa">b</span><span class="s1">&#39;give me the flag&#39;</span> <span class="ow">in</span> <span class="n">decrypted</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;plaintext&#34;</span><span class="p">:</span> <span class="n">FLAG</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">()}</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;plaintext&#34;</span><span class="p">:</span> <span class="n">decrypted</span><span class="o">.</span><span class="n">hex</span><span class="p">()}</span>
+
+
+<span class="nd">@chal</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/forbidden_fruit/encrypt/&lt;plaintext&gt;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">encrypt</span><span class="p">(</span><span class="n">plaintext</span><span class="p">):</span>
+    <span class="n">plaintext</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">plaintext</span><span class="p">)</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;CryptoHack&#34;</span>
+
+    <span class="n">cipher</span> <span class="o">=</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_GCM</span><span class="p">,</span> <span class="n">nonce</span><span class="o">=</span><span class="n">IV</span><span class="p">)</span>
+    <span class="n">encrypted</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+    <span class="n">ciphertext</span><span class="p">,</span> <span class="n">tag</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">encrypt_and_digest</span><span class="p">(</span><span class="n">plaintext</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="sa">b</span><span class="s1">&#39;flag&#39;</span> <span class="ow">in</span> <span class="n">plaintext</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="s2">&#34;Invalid plaintext, not authenticating&#34;</span><span class="p">,</span>
+            <span class="s2">&#34;ciphertext&#34;</span><span class="p">:</span> <span class="n">ciphertext</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&#34;nonce&#34;</span><span class="p">:</span> <span class="n">IV</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span>
+        <span class="s2">&#34;ciphertext&#34;</span><span class="p">:</span> <span class="n">ciphertext</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span>
+        <span class="s2">&#34;tag&#34;</span><span class="p">:</span> <span class="n">tag</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span>
+        <span class="s2">&#34;associated_data&#34;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span>
+    <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="0x2-analysis">0x2 ANALYSIS</h2>
+<p>Given cryptosystem implements AES (<em><strong>Advanced Encryption Standar</strong></em>) GCM (<em><strong>Galois Counter Mode</strong></em>) Mode. Here&rsquo;s the detail of <a href="https://en.wikipedia.org/wiki/Galois/Counter_Mode" target="_blank" rel="noopener noreffer ">AES_GCM</a>. The basic idea of GCM mode is to compute the GHASH attaching to the ciphertext to validate the authentication of the information.</p>
+<p>Notice that in this challenge, IV is reusing, which may be equal to a constant  <code>IV = ?</code> It&rsquo;s a dangerous behavior, which is possible to be exploited by the attacker. It is easy to compute the $H = E_k(IV||0^{32})$  and $E_k(IV||0^{31}1)$ , which are critical in computing the GHASH and MAC (<em><strong>Mesaage Autentication Code</strong></em>).</p>
+<p>$$
+\text{GHASH}(H,A,C)=X_{m+n+1}
+$$</p>
+<p>We can compute the tag using these formula:</p>
+<p>$$
+Tag = AAD * H^3 + C_1*H^2 + L*H + E_k(IV||0^{31}1)
+$$</p>
+<p>$L=len(AAD)||len(ciphertext)$ Notice that the len of text is the <strong>bit lengths</strong>.
+In this challenge we need to forge the tag of the ciphertext, which is encrypted by the plaintext of <code>give me the flag</code>. It&rsquo;s just 16 bytes here, Perfect ! We can get some oracles from the server and then compute the things we don&rsquo;t know by solving the linear equation.</p>
+<p>$$
+T_1 = AAD*H^3 + C_1*H^2 + L*H + E_k(IV||0^{31}1)
+$$</p>
+<p>$$
+T_2 = AAD*H^3 + C_2*H^2 + L*H + E_k(IV||0^{31}1)
+$$</p>
+<p>Because the IV is reusing, the $H$ and $E_k(IV||0^{31}1)$  here are equal in these two equation. And all arithmetic operations are based on $GF(2^{128})$, we can add these two equations to get:</p>
+<p>$$
+T_1 \oplus T_2 = (C_1 \oplus C_2)H^2
+$$</p>
+<p>And the subsequent works are going to be simple. But I go through a dark age since I am searching a way to implement polynomial factorization over $GF(2^{128})$ I used the package called <code>galois</code> in Python but I didn&rsquo;t figure it out. I feel so weird to do some simple arithmetic operation in the finite field. (<em>Maybe I never know its correct way to use</em>) Anyway, I tried some other mathmatics tools and found SageMath finally. (I wonder whether I have once heard about sage in the lecture):</p>
+<p>I spent a nice time on reading the documents to learn how to write the code in sage. It&rsquo;s quite like Python but has its own special syntax. Like <code>F.&lt;x&gt; = GF(2)[]</code> I stuck in this syntax in python scripts, beacuse it will be error when you execute your scripts with <code>F.&lt;x&gt; = GF(2)[]</code> (Obviously) :(</p>
+<p>So after googling, I found the solution in <a href="https://stackoverflow.com/questions/53045500/sage-syntax-a-x" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/questions/53045500/sage-syntax-a-x</a>. Sage has its parser to interpret invaild Python input as valid Python. Great!</p>
+<p>We can go back for our <code>F.&lt;x&gt; = GF(2)[]</code> code , and turn it into <code>F = GF(Integer(2))['x']; (x,) = F._first_ngens(1)</code> Bomb! We can finish our task now. :)</p>
+<p><strong>0x3 EXPLOITED</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ch">#!/usr/bin/env sage</span>
+<span class="kn">import</span> <span class="nn">binascii</span>
+<span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="n">xor</span>
+<span class="kn">from</span> <span class="nn">Cryptodome.Util.number</span> <span class="kn">import</span> <span class="n">long_to_bytes</span>
+<span class="kn">from</span> <span class="nn">bitstring</span> <span class="kn">import</span> <span class="n">BitArray</span>
+<span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">curtsies.fmtfuncs</span> <span class="kn">import</span> <span class="n">red</span>
+
+<span class="c1"># ! construct the galois field</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">GF</span><span class="p">(</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span>
+<span class="p">(</span><span class="n">X</span><span class="p">,)</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">_first_ngens</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">GF</span><span class="p">(</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="n">Integer</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span> <span class="n">modulus</span><span class="o">=</span><span class="n">X</span><span class="o">**</span><span class="n">Integer</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span><span class="o">+</span><span class="n">X</span> <span class="o">**</span>
+       <span class="n">Integer</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="o">+</span><span class="n">X</span><span class="o">**</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">X</span><span class="o">+</span><span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,))</span>
+<span class="p">(</span><span class="n">x</span><span class="p">,)</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">_first_ngens</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+<span class="p">(</span><span class="n">y</span><span class="p">,)</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">_first_ngens</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">retrieve_oracle</span><span class="p">(</span><span class="n">plaintext</span><span class="p">):</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s1">&#39;http://aes.cryptohack.org/forbidden_fruit/encrypt/&#39;</span> <span class="o">+</span> <span class="n">plaintext</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;ciphertext&#39;</span><span class="p">],</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;tag&#39;</span><span class="p">],</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;nonce&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;ciphertext&#39;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">hex_list_2_bytes_list</span><span class="p">(</span><span class="n">hex_list</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">hex_list</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">to_gf</span><span class="p">(</span><span class="n">long_bytes</span><span class="p">):</span>
+    <span class="s1">&#39;&#39;&#39;
+</span><span class="s1">        arithmetic operation over galois field 
+</span><span class="s1">        GF(2^128)
+</span><span class="s1">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">G</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">BitArray</span><span class="p">(</span><span class="n">long_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">bin</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">128</span><span class="p">)])</span>
+
+
+<span class="k">def</span> <span class="nf">compute_mask</span><span class="p">(</span><span class="n">AD</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="s1">&#39;&#39;&#39;
+</span><span class="s1">        mask computes based on this equation over GF(2^128)
+</span><span class="s1">        T = AAD * H^3 + C_1 * H^2 + L * H + MASK
+</span><span class="s1">        In AES_GCM MODE MASK = E_k(IV||0*31||1)
+</span><span class="s1">
+</span><span class="s1">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">t</span> <span class="o">+</span> <span class="n">AD</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">L</span><span class="o">*</span><span class="n">H</span>
+
+
+<span class="k">def</span> <span class="nf">compute_tag</span><span class="p">(</span><span class="n">AD</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">AD</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">L</span> <span class="o">*</span> <span class="n">H</span> <span class="o">+</span> <span class="n">mask</span>
+
+
+<span class="k">def</span> <span class="nf">poly_2_hex</span><span class="p">(</span><span class="n">poly</span><span class="p">):</span>
+    <span class="s1">&#39;&#39;&#39;
+</span><span class="s1">        e.g. 00010000
+</span><span class="s1">        the first bit (from left to right) is the coefficient of x^0
+</span><span class="s1">        the last bit is the coefficient of x^7
+</span><span class="s1">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">long_to_bytes</span><span class="p">(</span>
+        <span class="nb">int</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">poly</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">()]),</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">16</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">get_flag</span><span class="p">(</span><span class="n">nonce</span><span class="p">,</span> <span class="n">ciphertext</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">asso_data</span><span class="p">):</span>
+    <span class="n">flag</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://aes.cryptohack.org/forbidden_fruit/decrypt/&#39;</span> <span class="o">+</span>
+                        <span class="n">nonce</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">ciphertext</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">tag</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">asso_data</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;plaintext&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+
+<span class="c1"># You can choose your own plaintext</span>
+<span class="n">plaintext_4_equation</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;0123456789abcdef&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">)])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+<span class="n">tag_4_equation</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="n">ciphertext_4_equation</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">plaintext_4_equation</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">plaintext_4_equation</span><span class="p">)):</span>
+    <span class="n">o1</span><span class="p">,</span> <span class="n">o2</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">retrieve_oracle</span><span class="p">(</span><span class="n">plaintext_4_equation</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">ciphertext_4_equation</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">o1</span>
+    <span class="n">tag_4_equation</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">o2</span>
+
+
+<span class="n">ciphertext_4_equation_byte</span> <span class="o">=</span> <span class="n">hex_list_2_bytes_list</span><span class="p">(</span><span class="n">ciphertext_4_equation</span><span class="p">)</span>
+<span class="n">tag_4_equation_byte</span> <span class="o">=</span> <span class="n">hex_list_2_bytes_list</span><span class="p">(</span><span class="n">tag_4_equation</span><span class="p">)</span>
+
+<span class="c1"># ! compute H</span>
+<span class="n">ciphertext_xor</span> <span class="o">=</span> <span class="n">xor</span><span class="p">(</span>
+    <span class="n">ciphertext_4_equation_byte</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ciphertext_4_equation_byte</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">tag_xor</span> <span class="o">=</span> <span class="n">xor</span><span class="p">(</span><span class="n">tag_4_equation_byte</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tag_4_equation_byte</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">c_xor_GF</span> <span class="o">=</span> <span class="n">to_gf</span><span class="p">(</span><span class="n">ciphertext_xor</span><span class="p">)</span>
+<span class="n">t_xor_GF</span> <span class="o">=</span> <span class="n">to_gf</span><span class="p">(</span><span class="n">tag_xor</span><span class="p">)</span>
+<span class="c1"># ! t_1 + t_2 = (c1 + c2)*H^2 NOTICE: all operations are over GF(2^128)</span>
+<span class="n">H</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_xor_GF</span> <span class="o">/</span> <span class="n">c_xor_GF</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;[+] Get H: &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">poly_2_hex</span><span class="p">(</span><span class="n">H</span><span class="p">))</span>
+<span class="c1"># ! compute mask M = E_k(IV||0_31||1)</span>
+<span class="n">AAD</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;CryptoHack&#39;</span>
+<span class="n">AAD_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">AAD</span><span class="p">)</span>
+<span class="n">ciphertext_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ciphertext_4_equation</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="n">concat_len</span> <span class="o">=</span> <span class="p">((</span><span class="n">AAD_len</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">64</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">ciphertext_len</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">AAD_GF</span> <span class="o">=</span> <span class="n">to_gf</span><span class="p">(</span><span class="n">AAD</span><span class="p">)</span>
+<span class="n">concat_len_GF</span> <span class="o">=</span> <span class="n">to_gf</span><span class="p">(</span><span class="n">long_to_bytes</span><span class="p">(</span><span class="n">concat_len</span><span class="p">))</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">to_gf</span><span class="p">(</span><span class="n">ciphertext_4_equation_byte</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">to_gf</span><span class="p">(</span><span class="n">ciphertext_4_equation_byte</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">to_gf</span><span class="p">(</span><span class="n">tag_4_equation_byte</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">to_gf</span><span class="p">(</span><span class="n">tag_4_equation_byte</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="n">mask</span> <span class="o">=</span> <span class="n">compute_mask</span><span class="p">(</span><span class="n">AAD_GF</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">concat_len_GF</span><span class="p">,</span> <span class="n">t1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;[+] MASK GET: &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">poly_2_hex</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+<span class="k">assert</span> <span class="n">t2</span> <span class="o">==</span> <span class="n">compute_tag</span><span class="p">(</span><span class="n">AAD_GF</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">concat_len_GF</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+<span class="n">plaintext_target</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;give me the flag&#39;</span>
+<span class="n">unauth_ciphertext</span> <span class="o">=</span> <span class="n">retrieve_oracle</span><span class="p">(</span>
+    <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">plaintext_target</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+<span class="n">unauth_ciphertext_GF</span> <span class="o">=</span> <span class="n">to_gf</span><span class="p">(</span><span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">unauth_ciphertext</span><span class="p">))</span>
+<span class="n">forge_tag</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">compute_tag</span><span class="p">(</span><span class="n">AAD_GF</span><span class="p">,</span> <span class="n">unauth_ciphertext_GF</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span>
+                                                 <span class="n">concat_len_GF</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">polynomial</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">()])</span>
+
+<span class="n">forge_tag</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">long_to_bytes</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">forge_tag</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">16</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;[+] Forge Tag: &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">forge_tag</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">red</span><span class="p">(</span><span class="s1">&#39;[+] Flag: &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">get_flag</span><span class="p">(</span><span class="n">nonce</span><span class="p">,</span> <span class="n">unauth_ciphertext</span><span class="p">,</span>
+      <span class="n">forge_tag</span><span class="p">,</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">AAD</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()))</span>
+<span class="c1"># crypto{}</span>
+</code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-10-20</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/en/2021-10-20-forbbiden-fruit/index.md" target="_blank">Read Markdown</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/" data-title="Forbbiden Fruit" data-via="p1nant0m" data-hashtags="Crypto,CryptoHack"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/" data-hashtag="Crypto"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/" data-title="Forbbiden Fruit"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/" data-title="Forbbiden Fruit"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/" data-title="Forbbiden Fruit"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/en/tags/crypto/">Crypto</a>,&nbsp;<a href="/en/tags/cryptohack/">CryptoHack</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/en/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+            <a href="/en/2022-03-18-raft-part2d/" class="next" rel="next" title="6.824-RaftLab-Part2D-Development Quicknotes">6.824-RaftLab-Part2D-Development Quicknotes<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/en/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"Got it!","link":"Learn more","message":"This website uses Cookies to improve your experience."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/en/index.json","maxResultLength":10,"noResultsFound":"No results found","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

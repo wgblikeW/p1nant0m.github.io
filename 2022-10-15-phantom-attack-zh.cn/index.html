@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Phantom Attack: Evading System Call Monitoring (TOCTOU Problem) - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)" />
+<meta property="og:description" content="背景知识 在第 29 届的 DEFCON 会议上，来自 Lacework 的 Rex Guo 与 LinkedIn 的 Junyuan Zeng 分享了以他们关于利用内核从用户态拷贝数据到内核态的过程中，由于某些 Runtime Security 产品选择了不合适的 Probes 插入位置，存在 TOCTOU 问题，进而能够欺骗探针，绕过 Runtime Security 产品的 Policy Enforcement，进而达成攻击者进行恶意活动的目的。 另外，分享者还介绍了 Semantic confusion，一种利用内核与跟踪程序对数据语义解释的歧义实现的攻击方式，这与在 Usenix Security&#39;22 会议上获得最佳论文奖的 Identity Confusion in WebView-based Mobile App-in-app Ecosystems" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-10-14T11:46:09+00:00" />
+<meta property="article:modified_time" content="2022-10-14T11:46:09+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)"/>
+<meta name="twitter:description" content="背景知识 在第 29 届的 DEFCON 会议上，来自 Lacework 的 Rex Guo 与 LinkedIn 的 Junyuan Zeng 分享了以他们关于利用内核从用户态拷贝数据到内核态的过程中，由于某些 Runtime Security 产品选择了不合适的 Probes 插入位置，存在 TOCTOU 问题，进而能够欺骗探针，绕过 Runtime Security 产品的 Policy Enforcement，进而达成攻击者进行恶意活动的目的。 另外，分享者还介绍了 Semantic confusion，一种利用内核与跟踪程序对数据语义解释的歧义实现的攻击方式，这与在 Usenix Security&#39;22 会议上获得最佳论文奖的 Identity Confusion in WebView-based Mobile App-in-app Ecosystems"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/" /><link rel="prev" href="https://p1nant0m.com/2022-10-08-%E4%BC%98%E9%9B%85%E7%9A%84%E5%88%9B%E5%BB%BA-cli-%E7%A8%8B%E5%BA%8F.zh-ch/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2022-10-15-phantom-attack-zh.cn\/"
+        },"genre": "posts","keywords": "eBPF, TOCTOU, Clound Native Security, Malicious Behaviour Monitoring, DEFCON 29, Conference Sharing","wordcount":  5724 ,
+        "url": "https:\/\/p1nant0m.com\/2022-10-15-phantom-attack-zh.cn\/","datePublished": "2022-10-14T11:46:09+00:00","dateModified": "2022-10-14T11:46:09+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2022-10-15-phantom-attack-zh.cn/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2022-10-15-phantom-attack-zh.cn/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)</h1><h2 class="single-subtitle">DEFCON29 分享学习 TOCTOU 绕过 Falco Policy Enforcement</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-10-14">2022-10-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5724 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 12 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#背景知识">背景知识</a>
+          <ul>
+            <li><a href="#time-of-check-time-of-use-toctou">Time-Of-Check Time-Of-Use (TOCTOU)</a></li>
+            <li><a href="#runtime-security-products">Runtime Security Products</a></li>
+          </ul>
+        </li>
+        <li><a href="#漏洞描述">漏洞描述</a>
+          <ul>
+            <li><a href="#toctou-在内核观测中">TOCTOU 在内核观测中</a></li>
+            <li><a href="#phantom-v1-exploit-plan">Phantom v1 Exploit Plan</a>
+              <ul>
+                <li><a href="#userfaultfd-syscall">Userfaultfd Syscall</a></li>
+                <li><a href="#interrupts-and-scheduling">Interrupts and Scheduling</a></li>
+                <li><a href="#phantom-v1-attack---an-openat-examples">Phantom v1 Attack - An Openat Examples</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#进一步研究">🤔进一步研究</a></li>
+        <li><a href="#references">References</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h3 id="背景知识">背景知识</h3>
+<p>在第 29 届的 <strong>DEFCON</strong> 会议上，来自 Lacework 的 Rex Guo 与 LinkedIn 的 Junyuan Zeng 分享了以他们关于利用内核从用户态拷贝数据到内核态的过程中，由于某些 Runtime Security 产品选择了不合适的 Probes 插入位置，存在 TOCTOU 问题，进而能够欺骗探针，绕过 Runtime Security 产品的 Policy Enforcement，进而达成攻击者进行恶意活动的目的。</p>
+<p>另外，分享者还介绍了 <strong>Semantic confusion</strong>，一种利用内核与跟踪程序对数据语义解释的歧义实现的攻击方式，这与在 Usenix Security'22 会议上获得最佳论文奖的 <a href="https://www.usenix.org/conference/usenixsecurity22/presentation/zhang-lei" target="_blank" rel="noopener noreffer ">Identity Confusion in WebView-based Mobile App-in-app Ecosystems</a> 有异曲同工之妙，有兴趣的读者可以自行查阅欣赏。</p>
+<p>在这次分享中，他们提到了两个具有漏洞的开源项目，一个是云原生 Runtime Security 项目 <a href="https://falco.org/" target="_blank" rel="noopener noreffer ">Falco</a>，它同时也是 CNCF 的孵化项目，另一个则是我们之前有介绍过的 <a href="https://aquasecurity.github.io/tracee/latest" target="_blank" rel="noopener noreffer ">Tracee</a>。</p>
+<p>这两个项目实现都不同程度的受到 TOCTOU 问题的影响，存在漏洞被利用的风险。在介绍具体的漏洞利用细节前，我们先来看看什么是 TOCTOU，以及这两个项目最主要的功能实现。</p>
+<h4 id="time-of-check-time-of-use-toctou">Time-Of-Check Time-Of-Use (TOCTOU)</h4>
+<p>在<a href="https://en.wikipedia.org/wiki/Time-of-check_to_time-of-use#Examples" target="_blank" rel="noopener noreffer ">维基百科</a>中对 TOCTOU 问题的定义如下，</p>
+<div class="details admonition quote">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-quote-right fa-fw" aria-hidden="true"></i>TOCTOU<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">In software development, time-of-check to time-of-use (TOCTOU, TOCTTOU or TOC/TOU) is a class of software bugs caused by a <strong>race condition</strong> involving the checking of the state of a part of a system (such as a security credential) and the use of the results of that check.</div>
+        </div>
+    </div>
+<p>简单来说 TOCTOU 问题利用了当前 Multi-threads 或 Multi-cores 机器上指令执行序不确定的现象外加不正确的编码所引起的 Race condition，从而当对软件系统的某一部分的状态进行检查并通过后，操作系统可能并不会马上让当前进程继续执行后续的指令流程（使用经过检查的对象），而是调度其它的任务去干一些其它的事情（当然，这种情况也可能不发生，原先的任务可以一直执行下去，直至分配给其的时间片被消耗殆尽）。当操作系统调度我们具有 TOCTOU 问题的进程在 CPU 上运行时，先前通过检查的对象已经被悄悄的修改。从全局上看，安全上下文语义已经发生了变化，操作系统拿着这个被“掉包”的对象进行后续的操作，从而可能会引入一定的安全风险。</p>
+<p>我们可以发现在对系统状态进行检查与使用该经过检查的对象之间存在一定的<strong>时间窗口</strong>，这个时间窗口的长度决定了我们进行 TOCTOU 攻击时成功的概率。我们需要有办法让当前进程在执行完检查系统状态的指令后让出 CPU （时间窗口的左端点），并且引入另外一个线程对相关的对象进行修改，最终在回到原指令序列时以被替换后的对象执行后续的任务（时间窗口的右端点）。</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202210151601004.png" title="https://image.p1nant0m.com/202210151601004.png" data-thumbnail="https://image.p1nant0m.com/202210151601004.png" data-sub-html="<h2>TOCTOU Overview</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202210151601004.png"
+            data-srcset="https://image.p1nant0m.com/202210151601004.png, https://image.p1nant0m.com/202210151601004.png 1.5x, https://image.p1nant0m.com/202210151601004.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202210151601004.png" />
+    </a><figcaption class="image-caption">TOCTOU Overview</figcaption>
+    </figure>
+<p>到这里，我们可以发现要想成功利用一次 TOCTOU， 需要集齐以下要素，</p>
+<ul>
+<li>需要有办法让执行当前任务的进程挂起</li>
+<li>需要有一个协助线程能够访问目标对象的内存空间，改变目标对象的状态</li>
+<li>需要让 TOCTOU 窗口足够大以确保我们能够在进程恢复前完成修改目标对象的任务（进程调度是操作系统的任务，用户一般无法干预/预测一个进程在什么时间点执行，我们能够知道的是这个进程在就绪状态下会被执行，至于具体的细节由操作系统决定，这也导致 TOCTOU 的利用不一定是 100% 成功的，当然在有利条件下也是能够达成 100% 成功）</li>
+</ul>
+<h4 id="runtime-security-products">Runtime Security Products</h4>
+<p>Falco 和 Tracee 一样，都可以归属与 Runtime Security 产品类别，主要实现的功能为：1）在运行时环境中、内核层面解析 Linux 系统调用，将其转换为具有安全上下文语义的结构化数据；2）使用规则检测引擎根据用户自定义的规则在捕获器产生的事件流中发现违背规则的事件，并产生告警；</p>
+<p>Falco 和 Tracee 实现上述功能的原理都是通过在关键内核函数或跟踪点上 Hook 住探针来达到对进程执行在操作系统内核层面行为的监测，其需要与内核相关函数以及相关事件执行流程进行关联来确定安全上下文语义，进而对进程执行流程进行画像，从而找到异常的行为事件，确保运行时安全。</p>
+<p>有关 Tracee 的介绍可以查看本博客的<a href="https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" target="_blank" rel="noopener noreffer ">这篇文章</a>。</p>
+<div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>差异<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>Runtime Security 产品的差异可以在几个维度上给予考虑：1）用户自定义规则上的语义丰富程度；2）规则检测引擎的性能；3）可提供安全事件的覆盖范围以及安全上下文语义的丰富程度；4）与其它安全产品或平台的联动支持程度；</p>
+<p>需要注意的是，他们都只是对相关的异常行为进行告警，并不会有什么主动的动作，也就是说上述两者并没有阻断进程异常行为的能力，在本篇文章的末尾我将会简要探讨一下 eBPF LSM 在弥补这一方面不足的能力。</p>
+</div>
+        </div>
+    </div>
+<h3 id="漏洞描述">漏洞描述</h3>
+<p>该漏洞被编号为 <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-33505" target="_blank" rel="noopener noreffer ">CVE-2021-33505
+</a>，官方对其描述如下所示，</p>
+<div class="details admonition note">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Description<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">A local malicious user can circumvent the Falco detection engine through 0.28.1 by running a program that alters arguments of system calls being executed.</div>
+        </div>
+    </div>
+<p>该漏洞可以欺骗 Falco 规则引擎的检测（实际上，在数据采集阶段获取的信息在全局的视角来看已经是不准确的了，内核执行的相关操作已与采集器捕获到的数据无关，也就不能表征进程的行为，给出有用的安全建议了），执行规则本不允许的操作而不产生告警信息。</p>
+<h4 id="toctou-在内核观测中">TOCTOU 在内核观测中</h4>
+<p>在两位研究者的分享中，以 <code>openat</code> 系统调用为例，介绍了在有内核探针的环境下 TOCTOU 的利用。</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202210151918144.png" title="https://image.p1nant0m.com/202210151918144.png" data-thumbnail="https://image.p1nant0m.com/202210151918144.png" data-sub-html="<h2>openat 系统调用入口</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202210151918144.png"
+            data-srcset="https://image.p1nant0m.com/202210151918144.png, https://image.p1nant0m.com/202210151918144.png 1.5x, https://image.p1nant0m.com/202210151918144.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202210151918144.png" />
+    </a><figcaption class="image-caption">openat 系统调用入口</figcaption>
+    </figure>
+<p>当应用程序需要调用 <code>openat</code> 系统调用完成其工作时，将会陷入内核完成相应的逻辑处理流程，首先便是 <code>trace_sys_enter</code> 入口，内核探针可以 Attach 到 <code>raw_syscalls/sys_enter</code> 处，每当操作系统陷入内核进行系统调用时都会触发相应的探针程序，完成相应的用户处理逻辑。在本文中，Runtime Security 可以在此获得相关系统调用的入参以及进程上下文环境。</p>
+<p>接着，根据具体执行的系统调用和硬件平台查找 <a href="https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl" target="_blank" rel="noopener noreffer ">Syscall Table</a>（在此处是 <code>openat</code>）调用相应的内核处理函数（在此处是 <code>do_sys_open</code>）完成相应的任务，最后调用 <code>trace_sys_exit</code> 函数结束系统调用，最后返回应用程序空间。若有任何内核探针被挂载到 <code>trace_sys_exit</code> 上，其也会在 <code>trace_sys_exit</code> 函数被调用时执行。</p>
+<p>利用 eBPF 编写 Tracing 类程序可以简单参考本博客中的<a href="http://localhost:1313/2022-07-25-ebpf-tracing/" target="_blank" rel="noopener noreffer ">这篇文章</a>。</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202210152022831.png" title="https://image.p1nant0m.com/202210152022831.png" data-thumbnail="https://image.p1nant0m.com/202210152022831.png" data-sub-html="<h2>在不同位置引入 Probe</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202210152022831.png"
+            data-srcset="https://image.p1nant0m.com/202210152022831.png, https://image.p1nant0m.com/202210152022831.png 1.5x, https://image.p1nant0m.com/202210152022831.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202210152022831.png" />
+    </a><figcaption class="image-caption">在不同位置引入 Probe</figcaption>
+    </figure>
+<p>上图考虑的是 Tracing Program 在不同的内核位置 Hook 探针，主要考虑在（1）<code>trace_sys_enter</code> raw_tracepoints 入口处，以及 （2）在 <code>do_sys_open</code> 执行具体 <code>openat</code> 系统调用处。</p>
+<p>当内核执行到这些被 Hook 住的函数时，会触发用户挂载的自定义处理程序（比如 eBPF 程序），执行相应的处理逻辑。比如，在 Tracce 中定义了两种 Probes，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">SysEnter</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">traceProbe</span><span class="p">{</span>
+            <span class="nx">eventName</span><span class="p">:</span> <span class="s">&#34;raw_syscalls:sys_enter&#34;</span><span class="p">,</span> 
+            <span class="nx">probeType</span><span class="p">:</span> <span class="nx">rawTracepoint</span><span class="p">,</span> 
+            <span class="nx">programName</span><span class="p">:</span> <span class="s">&#34;trace_sys_enter&#34;</span><span class="p">},</span>
+
+<span class="nx">SyscallEnter__Internal</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">traceProbe</span><span class="p">{</span>
+            <span class="nx">eventName</span><span class="p">:</span> <span class="s">&#34;raw_syscalls:sys_enter&#34;</span><span class="p">,</span> 
+            <span class="nx">probeType</span><span class="p">:</span> <span class="nx">rawTracepoint</span><span class="p">,</span> 
+            <span class="nx">programName</span><span class="p">:</span> <span class="s">&#34;tracepoint__raw_syscalls__sys_enter&#34;</span><span class="p">},</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>它们对应的内核态 eBPF 程序如下所示，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nf">SEC</span><span class="p">(</span><span class="s">&#34;raw_tracepoint/trace_sys_enter&#34;</span><span class="p">)</span>
+<span class="kt">int</span> <span class="nf">trace_sys_enter</span><span class="p">(</span><span class="kd">struct</span> <span class="nx">bpf_raw_tracepoint_args</span> <span class="o">*</span><span class="nx">ctx</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nx">event_data_t</span> <span class="nx">data</span> <span class="p">=</span> <span class="p">{};</span>
+    <span class="k">if</span> <span class="p">(!</span><span class="nf">init_event_data</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">data</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(!</span><span class="nf">should_trace</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">data</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">// always submit since this won&#39;t be attached otherwise
+</span><span class="c1"></span>    <span class="kt">int</span> <span class="nx">id</span> <span class="p">=</span> <span class="nx">ctx</span><span class="o">-</span><span class="p">&gt;</span><span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="kd">struct</span> <span class="nx">task_struct</span> <span class="o">*</span><span class="nx">task</span> <span class="p">=</span> <span class="p">(</span><span class="kd">struct</span> <span class="nx">task_struct</span> <span class="o">*</span><span class="p">)</span> <span class="nf">bpf_get_current_task</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nf">is_compat</span><span class="p">(</span><span class="nx">task</span><span class="p">))</span> <span class="p">{</span>
+        <span class="c1">// Translate 32bit syscalls to 64bit syscalls, so we can send to the correct handler
+</span><span class="c1"></span>        <span class="nx">u32</span> <span class="o">*</span><span class="nx">id_64</span> <span class="p">=</span> <span class="nf">bpf_map_lookup_elem</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sys_32_to_64_map</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">id</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">id_64</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="nx">id</span> <span class="p">=</span> <span class="o">*</span><span class="nx">id_64</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nf">save_to_submit_buf</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">data</span><span class="p">,</span> <span class="p">(</span><span class="nx">void</span> <span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="nx">id</span><span class="p">,</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="nf">events_perf_submit</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">data</span><span class="p">,</span> <span class="nx">RAW_SYS_ENTER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">SEC</span><span class="p">(</span><span class="s">&#34;raw_tracepoint/sys_enter&#34;</span><span class="p">)</span>
+<span class="kt">int</span> <span class="nf">tracepoint__raw_syscalls__sys_enter</span><span class="p">(</span><span class="kd">struct</span> <span class="nx">bpf_raw_tracepoint_args</span> <span class="o">*</span><span class="nx">ctx</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kd">struct</span> <span class="nx">task_struct</span> <span class="o">*</span><span class="nx">task</span> <span class="p">=</span> <span class="p">(</span><span class="kd">struct</span> <span class="nx">task_struct</span> <span class="o">*</span><span class="p">)</span> <span class="nf">bpf_get_current_task</span><span class="p">();</span>
+    <span class="kt">int</span> <span class="nx">id</span> <span class="p">=</span> <span class="nx">ctx</span><span class="o">-</span><span class="p">&gt;</span><span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nf">is_compat</span><span class="p">(</span><span class="nx">task</span><span class="p">))</span> <span class="p">{</span>
+        <span class="c1">// Translate 32bit syscalls to 64bit syscalls, so we can send to the correct handler
+</span><span class="c1"></span>        <span class="nx">u32</span> <span class="o">*</span><span class="nx">id_64</span> <span class="p">=</span> <span class="nf">bpf_map_lookup_elem</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sys_32_to_64_map</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">id</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">id_64</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="nx">id</span> <span class="p">=</span> <span class="o">*</span><span class="nx">id_64</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nf">bpf_tail_call</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">sys_enter_init_tail</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>不过，<code>trace_sys_enter</code> 在通常情况下并不会默认挂载到指定的 tracepoint 上，只有当显式指定 <strong>Tracing Arguments</strong> 中包含 <code>sys_enter</code> 事件时才会被挂载。在 Tracee 中使用 <code>tracepoint__raw_syscalls__sys_enter</code> 跟踪系统调用，并通过 tail call 完成事件的解析与上报。</p>
+<p>回到上图跟踪 <code>openat</code> 系统调用的例子，为了更好的说明，我们需要知道 <code>openat</code> 系统调用的函数签名，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">openat</span><span class="p">(</span><span class="kt">int</span> <span class="n">dirfd</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="n">mode_t</span> <span class="n">mode</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中，第二个参数是一个指向用户空间内存的指针，其中存放的是进行系统调用时，应用传入的想要打开文件的路径。在 <code>do_sys_open</code> 函数中，内核通过 <code>getname</code> 函数将用户空间的数据复制到内核缓冲区中，并在后续调用 <code>do_filp_open</code> 传入相关待打开文件的路径参数，完成 <code>openat</code> 系统调用的主要逻辑。</p>
+<p>我们可以以 <code>getname</code> 函数为界，将该代码段分为 CP-1 和 CP-2 两部分。在 CP-1 中，<code>filename</code> 数据存放于用户空间内存，位于用户空间的攻击者可以修改存放 <code>filename</code> 数据的内存，进而在内核拷贝/使用相关数据时（TOU）传入的是攻击者篡改的恶意路径。</p>
+<p>我们若考虑在 CP-1 函数中 Hook 探针有这么两个选择：1）使用 <strong>raw_tracepoints</strong> 在 <code>trace_sys_enter</code> 上 Hook 探针，2）使用 <strong>kprobe</strong> 在 <code>do_sys_open</code> 上 Hook 探针；由于这两个函数的入参指向的都是位于用户空间的内存，攻击者能够在通过探针的检查后，在程序控制流执行到 <code>getname</code> 函数前，修改相关内存位置的 <code>filename</code> 数据，欺骗 <strong>Tracing Program</strong>，达到进行恶意行为，避免产生安全告警的目的。这两个 Hook Points 也就是我们所说的 TOC 部分，其中探针获取到的数据在全局来看是不可靠的。</p>
+<p>在 CP-2 中，由于位于用户空间侧的数据已经被拷贝进入了内核缓冲区，其能够避免位于用户空间侧攻击者对数据的篡改。若我们此时选择 <code>do_filp_open</code> 函数作为 <strong>Tracing Program</strong> 的 Hook 点，我们就能够确保内核执行文件打开逻辑所使用的参数与我观测程序所“看到”的参数是一致的。（我们在这做的就是将观测点尽可能的靠近内核进行主要操作逻辑的部分）</p>
+<p>需要注意的是，若 Hook 点选择在 <code>trace_sys_exit</code> 上，其仍然会受到 TOCTOU 问题的影响，因为其传入的参数与 <code>trace_sys_enter</code> 中的参数是一致的。</p>
+<h4 id="phantom-v1-exploit-plan">Phantom v1 Exploit Plan</h4>
+<p>研究者给出了他们利用 TOCTOU 问题对 Falco 进行 Exploit 的计划，具体可以划分为以下几个环节，</p>
+<ul>
+<li>使用恶意参数触发目标系统调用</li>
+<li>让内核从用户空间中读取恶意参数并且执行攻击者预想的恶意行为</li>
+<li>使用合法的参数覆写用户内存空间指针指向的数据结构</li>
+<li>在调用 <code>sys_exit</code> 准备结束一次系统调用的时候，<strong>tracing program</strong> 读取用户空间指针指向的数据结构并且通过规则引擎的检测</li>
+</ul>
+<p>为了实现上述这些目标需要面临如下挑战，</p>
+<ul>
+<li>内核线程什么时候会读取用户传入的参数？</li>
+<li>我们如何同步覆写与内核线程读行为？（确保覆写完成后，内核线程读取到的是我们覆写的合法内容）</li>
+<li>竞态窗口对于每一个系统调用来说是否足够大？</li>
+<li>如何确保 <strong>tracing program</strong> 读取到的是我们覆写的内容？</li>
+</ul>
+<h5 id="userfaultfd-syscall">Userfaultfd Syscall</h5>
+<p>研究者介绍了一个在 TOCTOU 利用中常见的 Trick —— <code>Userfaultfd</code> 系统调用，它允许用户注册自己的缺页处理机制，在发生缺页错误时若通过 <code>userfaultfd</code> 注册了相应的处理函数，将会导致内核线程暂停执行，等待用户空间的用户处理代码相应，更多细节可以<a href="https://ctf-wiki.org/pwn/linux/kernel-mode/exploitation/userfaultfd/" target="_blank" rel="noopener noreffer ">参考这篇 <code>userfaultfd</code> 系统在 CTF 比赛中的应用</a>。</p>
+<h5 id="interrupts-and-scheduling">Interrupts and Scheduling</h5>
+<p>在 Exploit 的背景介绍中研究者还铺垫了有关中断以及进程调度的相关内容，在这里我就直接将原文贴出了，</p>
+<ul>
+<li>An interrupt notifies the processor with an event that requires immediate attention</li>
+<li>An interrupt diverts the program control flow to an interrupt handler</li>
+<li>Interrupt can be triggered indirectly from system calls
+<ul>
+<li>Hardware interrupts (networking, e.g., connect)</li>
+<li>Interprocessor interrupts (IPIs) (e.g., mprotect)</li>
+</ul>
+</li>
+</ul>
+<p>需要注意的是 <code>mprotect</code> 场景下的中断处理，由于 <code>mprotect</code> 会改变映射内存页的权限，所有缓存了该页的处理器缓存都会发生失效，需要重新加载并缓存具有正确权限的内存页面。下图展示了研究者在 Exploit 中会使用到的攻击模型简易示例，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202210161424770.png" title="https://image.p1nant0m.com/202210161424770.png" data-thumbnail="https://image.p1nant0m.com/202210161424770.png" data-sub-html="<h2>攻击模型简要示例</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202210161424770.png"
+            data-srcset="https://image.p1nant0m.com/202210161424770.png, https://image.p1nant0m.com/202210161424770.png 1.5x, https://image.p1nant0m.com/202210161424770.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202210161424770.png" />
+    </a><figcaption class="image-caption">攻击模型简要示例</figcaption>
+    </figure>
+<p>可以看到在 Core0 上运行着用户程序 TaskA，Core1 上运行着用于触发中断的辅助程序，当 TaskA 触发系统调用陷入内核处理时，Core1 可以通过向 Core0 发送硬中断或 IPI 中断，打断 Core0 上的内核线程执行，使其转向执行注册的中断处理程序。在执行完中断处理程序后，再恢复当前进程上下文，继续执行原先的内核线程系统调用。</p>
+<div class="details admonition note">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>Core1 中断 Core0<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">关于 Core1 触发的中断为何要让 Core0 进行处理，在 HW interrupt 的情况中，有专门的 CPU 核心用于处理此类中断类型；在 IPI interrupts 中，比如使用 <code>mprotect</code> 系统调用触发中断会导致内存页面权限发生变化，使用该内存页面的 CPU 需要更新缓存以获得具有正确权限的内存页，这将会导致其进行中断处理。</div>
+        </div>
+    </div>
+<p>进一步，研究者介绍了他们在本次 Exploit 中将会使用到的基本攻击原语: <strong>sched_setscheduler()</strong> 以及 <strong>sched_setaffinity()</strong>.</p>
+<p><strong>sched_setscheduler()</strong> 在 Exploit 中是一个可选项，当 TOCTOU Window 足够大时，比如进行与网络相关的系统调用可以不需要使用这个方法。但在向处理打开文件这样的系统调用需要使用该方法来改变进程运行的优先级来增加 TOCTOU Window 的大小，以确保 Exploit 能够以一个较高的概率成功。有关 <strong>sched_setscheduler</strong> 更进一步的介绍可以<a href="https://man7.org/linux/man-pages/man2/sched_setscheduler.2.html" target="_blank" rel="noopener noreffer ">点击这里</a>，感兴趣的读者可以自行查阅。</p>
+<p><strong>sched_setaffinity()</strong> 用于将一个线程固定到一个指定的 CPU 核心上。</p>
+<h5 id="phantom-v1-attack---an-openat-examples">Phantom v1 Attack - An Openat Examples</h5>
+<p>整一个攻击流程可以用下图展示，
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202210161447837.png" title="https://image.p1nant0m.com/202210161447837.png" data-thumbnail="https://image.p1nant0m.com/202210161447837.png" data-sub-html="<h2>Phantom v1 Attack</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202210161447837.png"
+            data-srcset="https://image.p1nant0m.com/202210161447837.png, https://image.p1nant0m.com/202210161447837.png 1.5x, https://image.p1nant0m.com/202210161447837.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202210161447837.png" />
+    </a><figcaption class="image-caption">Phantom v1 Attack</figcaption>
+    </figure></p>
+<p>可以看到整一个攻击链由三个主要的线程共同协作完成，它们分别是 <strong>main thread</strong>, <strong>userfaultfd thread</strong> 和 <strong>overwrite thread</strong>。其中 <strong>main thread</strong> 给固定在了 CPU3 上，而 <strong>overwrite thread</strong> 固定到了 CPU2 上。研究者进行 Exploit 演示的硬件平台运行在四核 CPU 环境上， CPU3 正是用于处理 Network Interrupt 的默认 CPU，因此若使用 Networking Interrupt 触发 Core3 执行中断处理程序，那么我们就需要将其 PIN 在 Core3 上，而若使用 IPIs 作为手段，<strong>main thread</strong> 可以运行在任意 CPU 上。</p>
+<p>在 <strong>main thread</strong> 上调用 <code>mmap</code> 创建 pageA 内存映射，注意到此时该页还未被分配加载。同时，注册 <code>userfaultfd</code> 线程去处理 pageA 的缺页中断事件。<strong>main thread</strong> 还会作为调用 <code>openat</code> 的入口来演示相关的 TOCTOU 问题。</p>
+<p><strong>overwrite thread</strong> 负责在 <strong>tracing program</strong> 检查前向 pageA 中写入合法的文件名，其在刚启动时会被条件锁给阻塞。</p>
+<p>在了解了整个 Exploit 的基本设置后，我们结合流程图在 Exploit 代码的视角来看看整个攻击的流程，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">    <span class="p">...</span>
+  <span class="n">page_size</span> <span class="o">=</span> <span class="n">sysconf</span><span class="p">(</span><span class="n">_SC_PAGE_SIZE</span><span class="p">);</span>
+  <span class="n">page</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">page_size</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">,</span>
+              <span class="n">MAP_PRIVATE</span> <span class="o">|</span> <span class="n">MAP_ANONYMOUS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">...</span>
+  <span class="kt">int</span> <span class="n">myfd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">O_CREAT</span><span class="o">|</span><span class="n">O_RDWR</span><span class="o">|</span><span class="n">O_DIRECT</span><span class="p">,</span> <span class="mo">0640</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">myfd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> 
+    <span class="n">handle_error_en</span><span class="p">(</span><span class="n">myfd</span><span class="p">,</span> <span class="s">&#34;open failure&#34;</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过调用 <code>open</code> 函数触发一次系统调用，此时 pageA 指向的内存位置还未被分配，这将触发一次缺页中断。<strong>main thread</strong> 的控制流由 <strong>kernel thread</strong> 转向由 <code>userfaultfd</code> 注册的用于自定义缺页处理函数，我们在这省略一些初始化逻辑以及用于调试的输出信息，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">    <span class="p">...</span>
+  <span class="cm">/* Create a page that will be copied into the faulting region */</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">page</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">page</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">page_size</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">,</span>
+                <span class="n">MAP_PRIVATE</span> <span class="o">|</span> <span class="n">MAP_ANONYMOUS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">page</span> <span class="o">==</span> <span class="n">MAP_FAILED</span><span class="p">)</span>
+      <span class="n">handle_error_en</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="s">&#34;mmap&#34;</span><span class="p">);</span>
+  <span class="p">}</span>
+    <span class="p">...</span>
+
+      <span class="n">uffdio_copy</span><span class="p">.</span><span class="n">src</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span> <span class="n">page</span><span class="p">;</span>
+      <span class="cm">/* We need to handle page faults in units of pages(!).
+</span><span class="cm">         So, round faulting address down to page boundary */</span>
+      <span class="n">uffdio_copy</span><span class="p">.</span><span class="n">dst</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span> <span class="n">msg</span><span class="p">.</span><span class="n">arg</span><span class="p">.</span><span class="n">pagefault</span><span class="p">.</span><span class="n">address</span> <span class="o">&amp;</span>
+                                           <span class="o">~</span><span class="p">(</span><span class="n">page_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="n">uffdio_copy</span><span class="p">.</span><span class="n">len</span> <span class="o">=</span> <span class="n">page_size</span><span class="p">;</span>
+      <span class="n">uffdio_copy</span><span class="p">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">uffdio_copy</span><span class="p">.</span><span class="n">copy</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+      <span class="cm">/* 将 Malicious filename 复制到 page 指向内存空间的起始位置 */</span>
+      <span class="n">strncpy</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">filename</span><span class="p">));</span>
+      <span class="n">flush</span><span class="p">(</span><span class="n">page</span><span class="p">);</span>
+      <span class="cm">/* 释放互斥锁 */</span>
+      <span class="n">sender</span><span class="p">();</span> 
+
+      <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Before ioctl</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">ioctl</span><span class="p">(</span><span class="n">uffd</span><span class="p">,</span> <span class="n">UFFDIO_COPY</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">uffdio_copy</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">handle_error_en</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;ioctl-UFFDIO_COPY&#34;</span><span class="p">);</span>
+
+      <span class="n">printf</span><span class="p">(</span><span class="s">&#34;        (uffdio_copy.copy returned %lld)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+                <span class="n">uffdio_copy</span><span class="p">.</span><span class="n">copy</span><span class="p">);</span>
+    <span class="p">...</span>  
+</code></pre></td></tr></table>
+</div>
+</div><p>我们在 <code>userfaultfd</code> 注册相应事件的处理逻辑，在这里主要就关注 UFFD_EVENT_PAGEFAULT. 此时，我们已经“偷偷地”改写了 <code>filename</code>，并释放了用于同步 <strong>overwrite thread</strong> 的锁，最终通过 IOCTL 返回到内核执行流。</p>
+<p>内核线程从恶意 <code>filename</code> 指向的用户内存空间中复制要打开文件的路径数据到内核缓冲区，并以此为参数调用内部处理文件打开的函数，这是 TOU 阶段。</p>
+<p>与此同时，在另外一个 CPU Core 上运行着的 <strong>overwrite thread</strong> 正准备向 pageA 中写入合法的路径数据，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">  <span class="n">receiver</span><span class="p">()</span> <span class="cm">/* 该线程会在这暂停执行，直到锁释放 */</span>
+
+  <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span><span class="s">&#34;mfence&#34;</span><span class="p">);</span>
+  <span class="c1">// 写入合法的路径数据
+</span><span class="c1"></span>  <span class="n">write_char</span><span class="p">(</span><span class="n">fakename</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">fakename</span><span class="p">));</span>
+  <span class="k">asm</span> <span class="nf">volatile</span><span class="p">(</span><span class="s">&#34;mfence&#34;</span><span class="p">);</span>
+  <span class="n">flush</span><span class="p">(</span><span class="n">page</span><span class="p">);</span>
+
+    <span class="cm">/* trigger interrupt */</span>
+<span class="cp">#ifdef TLBSHOOTDOWN_MPROTECT
+</span><span class="cp"></span>  <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">mprotect</span><span class="p">((</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">page</span><span class="p">,</span> <span class="mi">4096</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_EXEC</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">handle_error_en</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s">&#34;mprotect&#34;</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="cp">#endif 
+</span></code></pre></td></tr></table>
+</div>
+</div><p>在上述代码中，我们使用了 IPIs 来触发 CPU Core3 上运行着的 <strong>kernel thread</strong>
+的中断，这将会为我们的覆写带来充足的时间窗口。</p>
+<p>最终，当控制流又重新回到 <strong>kernel thread</strong> 时，Hook 在 <code>sys_exit</code> 处的 <strong>tracing program</strong> 读取到被修改后的 <code>filename</code>，最终实现 TOCTOU 问题的利用，欺骗 <strong>Runtime Security</strong> 产品，访问规则不允许的文件而不产生告警，相关的 demo 可以在 github 上找到，<a href="https://github.com/rexguowork/phantom-attack/blob/main/phantom_v1/attack_openat.c#L385-L392" target="_blank" rel="noopener noreffer ">链接</a>放在这儿。</p>
+<h3 id="进一步研究">🤔进一步研究</h3>
+<p>在介绍整个 Phantom Attack v1 的过程中，我们不难发现整个攻击链路的关键点在于设计的 <strong>tracing program</strong> 选择了什么函数作为跟踪的 Hook 点 ，若选择的 Hook 点读取的数据来自于用户空间侧，其就存在被篡改的风险，若选择的 Hook 点使用的是已经位于内核侧的数据作为入参，其存在被篡改的可能性就小，<strong>tracing program</strong> 获得到的数据也就更加可信。在内核中有以 security_xxxx 命名的函数，这些函数所处的路径可以认为是安全的，hook 到这些函数的 kprobe 可以信任它们从中获得的数据。</p>
+<p>并且我们发现这些 <strong>Runtime Security</strong> 产品并没有能够对异常行为进行阻断的能力，它们能够做的事情是：发生正在进行的异常行为，并将与该行为相关的上下文信息尽可能多的展示给安全运维人员，用作事后审计或有人员实时对相关异常行为进行研判处理。</p>
+<p>为了让运行时安全产品获得阻断异常行为的能力，可供选择的解决方案之中赫然屹立着 <strong>LSM BPF</strong> 这种令人耳目一新的解决方案，后续随着进一步的学习，笔者也会写写这方面有关的学习笔记。</p>
+<h3 id="references">References</h3>
+<p><a href="https://www.youtube.com/watch?v=yaAdM8pWKG8&amp;t=2030s" target="_blank" rel="noopener noreffer ">DEF CON 29 - Rex Guo, Junyuan Zeng - Phantom Attack: Evading System Call Monitoring</a>
+<a href="https://www.youtube.com/watch?v=l8jZ-8uLdVU" target="_blank" rel="noopener noreffer ">LSM BPF Change Everything - Leonardo Di Donato, Elastic &amp; KP Singh, Google</a></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-10-14</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2022-10-15-phantom-attack-zh.cn/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/" data-title="Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)" data-via="p1nant0m" data-hashtags="eBPF,TOCTOU,Clound Native Security,Malicious Behaviour Monitoring,DEFCON 29,Conference Sharing"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/" data-hashtag="eBPF"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/" data-title="Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/" data-title="Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/" data-title="Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/ebpf/">eBPF</a>,&nbsp;<a href="/tags/toctou/">TOCTOU</a>,&nbsp;<a href="/tags/clound-native-security/">Clound Native Security</a>,&nbsp;<a href="/tags/malicious-behaviour-monitoring/">Malicious Behaviour Monitoring</a>,&nbsp;<a href="/tags/defcon-29/">DEFCON 29</a>,&nbsp;<a href="/tags/conference-sharing/">Conference Sharing</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2022-10-08-%E4%BC%98%E9%9B%85%E7%9A%84%E5%88%9B%E5%BB%BA-cli-%E7%A8%8B%E5%BA%8F.zh-ch/" class="prev" rel="prev" title="优雅的创建 CLI 程序"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>优雅的创建 CLI 程序</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

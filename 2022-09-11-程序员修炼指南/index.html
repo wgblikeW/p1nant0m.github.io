@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>程序员修炼指南 - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="程序员修炼指南" />
+<meta property="og:description" content="文章概要 本文准备以一种轻快、对话式的口吻来描述笔者在计算机相关领域学习过程中感悟体会，其中包括一些回顾、一些建议、一些反思以及对未来的一些思考。这些内容并不是对某一领域的具体讨论，因此不会涉及相关的技术细节，读者可以抱着一种来看看故事、吹吹牛的心态阅读本篇文章，因而你不需要有任何认知上的压力。如果你在阅读完本篇文章后，能够有所收获与思考，笔者将感到由衷的高兴。 🤔 优秀程序员的特质：黑客与画家 OR 哲学家" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-09-10T18:36:36+00:00" />
+<meta property="article:modified_time" content="2022-09-10T18:36:36+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="程序员修炼指南"/>
+<meta name="twitter:description" content="文章概要 本文准备以一种轻快、对话式的口吻来描述笔者在计算机相关领域学习过程中感悟体会，其中包括一些回顾、一些建议、一些反思以及对未来的一些思考。这些内容并不是对某一领域的具体讨论，因此不会涉及相关的技术细节，读者可以抱着一种来看看故事、吹吹牛的心态阅读本篇文章，因而你不需要有任何认知上的压力。如果你在阅读完本篇文章后，能够有所收获与思考，笔者将感到由衷的高兴。 🤔 优秀程序员的特质：黑客与画家 OR 哲学家"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" /><link rel="prev" href="https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" /><link rel="next" href="https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "程序员修炼指南",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97\/"
+        },"genre": "posts","keywords": "知识学习分享, 随谈","wordcount":  2057 ,
+        "url": "https:\/\/p1nant0m.com\/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97\/","datePublished": "2022-09-10T18:36:36+00:00","dateModified": "2022-09-10T18:36:36+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">程序员修炼指南</h1><h2 class="single-subtitle">一个爱玩的程序员应该如何从零到一开启他/她的打怪升级之旅</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-10">2022-09-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2057 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#文章概要">文章概要</a></li>
+        <li><a href="#-优秀程序员的特质黑客与画家-or-哲学家">🤔 优秀程序员的特质：黑客与画家 OR 哲学家？</a></li>
+        <li><a href="#-学点什么">🤓 学点什么</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h3 id="文章概要">文章概要</h3>
+<p>本文准备以一种轻快、对话式的口吻来描述笔者在计算机相关领域学习过程中感悟体会，其中包括一些回顾、一些建议、一些反思以及对未来的一些思考。这些内容并不是对某一领域的具体讨论，因此不会涉及相关的技术细节，读者可以抱着一种来看看故事、吹吹牛的心态阅读本篇文章，因而你不需要有任何认知上的压力。如果你在阅读完本篇文章后，能够有所收获与思考，笔者将感到由衷的高兴。</p>
+<h3 id="-优秀程序员的特质黑客与画家-or-哲学家">🤔 优秀程序员的特质：黑客与画家 OR 哲学家？</h3>
+<p>最近看完了两本书，一本是 Paul Graham 的<a href="https://en.wikipedia.org/wiki/Hackers_%26_Painters" target="_blank" rel="noopener noreffer ">黑客与画家</a>，另一本是 Linus Torvalds 的自传 <a href="https://books.google.com.hk/books/about/Just_for_Fun.html?id=Q3aIPwAACAAJ&amp;redir_esc=y" target="_blank" rel="noopener noreffer ">Just for Fun: The Story of an Accidental Revolutionary</a> 英文原版，看完之后我更加相信<strong>优秀的程序员</strong>在某种程度上更像是艺术工作者而不是技术工作者。他/她们对于其所从事的工作有着近乎偏执的要求以及狂热的激情，有着独特的审美趣味，最为主要的是那种极其强大的自驱力，这种自驱力不是由外部因素驱动的，例如金钱、地位、权力等世俗的东西，而是完全因为其自身的内在动力。</p>
+<p>这种内在动力他们也不知道如何去形容，我们会经常听到这样的问题，为什么选择从事这项工作/为什么愿意投入如此之多的时间和精力在这个领域当中，这些问题的答案在我们上述讨论到的这种人群（黑客）当中往往有这样的回答，因为我做的这个事情真的非常有意思，非常好玩，将时间与精力投入与此我并不感觉虚度光阴，相反，我获得了极大的快乐。</p>
+<p>这让我想到了月亮与六便士中的主人公斯特里克兰，其愿意抛弃其在世俗中所获得的一切，孤注一掷地投身于艺术创作当中，忽视其所处的种种不幸，以能够作画为乐，偏执、疯狂，沉溺于其中，在外人看来他与疯子无疑。在现实中我们也能找到拥有这些特质的人，Linux 之父 Linus、Elon Musk、雷军、Steve Jobs、Christopher Nolan 等以及在历史长河中留名的艺术家、哲学家们，他们都在其所处从事的领域作出了巨大的贡献留下了各自的作品，而这些成果并不是他们一开始就能够预测的到的或者说是以此为目标的，这些受世人赞赏的成就都是他们”玩“出来的，属于在特定的历史时间从事着正确的事情并产出的副产品。</p>
+<p>这让我想起了身边的一些朋友，他们身上具备着一些相似的特质，比如理想主义者、喜欢辩论、对政治、经济等相关宽泛的议题有与主流观点不一样的看法、对他们所从事的领域充满激情、生活随性但整洁，人生规划与目标清晰，思维敏捷充满着奇思妙想等。拥有这些特质并不能说就能够在如今卷到爆炸的就业市场上拥有独特的竞争力，至少在短期来看对相关知识的掌握程度、学历背景、表达能力等更具度量性的指标上更具优势的候选人往往更具竞争力，这也是以可量化指标为评价体系的系统的系统性缺失。</p>
+<p>在东亚圈的文化背景下，盛产卓越工程师与实干家，他们能够发现当前系统的结构型矛盾并发挥自身的聪明才智去解决当下的现实问题，也能够发现更加深层次的本质从而提出一整套解决相关问题的方法论。而西方却盛产冒险家与梦想家，在近代宽松的政治、富裕的经济条件下，那里的人们可以有更多的机会去发扬个性、发表己见，对讨论更加开放，层级关系相对而言较为松散，试错成本低，这种氛围更有利于新事物的出现和发展。因此，我们也不难发现在许多技术发源于西方，而却在东方得到的大范围的应用与实践，且基于此得到了不少的改进与提升。</p>
+<p>对于程序员来说，他们是更加乐于接触新事物的人，开放包容的心态在团队成员之间的沟通协作中非常重要，在开源社区中我也遇到了许多大神级别的人物，他们愿意回答初级工程师提出的 ”简单的“ 问题，并且在语言的使用层面也让人感到舒服，这是纯粹的技术交流，并没有什么级别的隔阂，有问题就提出，总有人会回答你（别忘了向别人道谢，毕竟开源工作全凭热爱，花费的是别人的时间）。在这里分享一个站点，<a href="https://news.ycombinator.com/" target="_blank" rel="noopener noreffer ">Hacker News</a> 其中有与计算机领域相关的热点，也有与数学、物理等自然科学相关的话题，更有求职、生活、心理学等等领域的知识，只要你对知识摄入感兴趣，你就可以去这逛逛。</p>
+<p>随着互联网的快速发展，程序员成为了这个时代最为吃香的职业之一，大量人员涌入与计算机互联网相关的领域，不知疲倦地学习领域内的相关知识，投入时间、金钱以及精力去搜刮任何一个角落，囫囵吞枣地吸收着固定的流水线模式，生成出”背书“式的代码与解答，”码农“这个词便由此而生。其实这也无可厚非，程序员被标榜着为高薪职业，自然会受到追捧，行业也从原先的百家争鸣混乱竞争的状态到形成具有成熟行业规范多雄鼎立的状态，编码以及生产都有着”最佳实践“由不得人员胡乱自由发挥，这是市场经济、行业发展的规律。市场不景气便会让原先无序扩张的现象受到遏制甚至出现反噬，具体的表现便是各大公司选择裁员以减少开支、优化业务，处在时代浪尖的人们能做的就只有疯狂内卷争夺少数的机会吗？我想你应该先停下奔波的脚步，停下来思考一下自己究竟喜欢什么，从事什么工作能让你获得最大的满足感，而不是为了物质上的利益去从事让你精神上浑浑噩噩的行业。这个东西说着十分玄幻，在日本人生哲学中有个概念叫作 <a href="https://en.wikipedia.org/wiki/Ikigai" target="_blank" rel="noopener noreffer ">IKIGAI</a> 讲述的是人根据不同的意愿从事不同的职业领域与获得的人生意义之间的关系，有兴趣的朋友可以去了解一下。</p>
+<h3 id="-学点什么">🤓 学点什么</h3>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-09-10</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" data-title="程序员修炼指南" data-via="p1nant0m" data-hashtags="知识学习分享,随谈"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" data-hashtag="知识学习分享"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" data-title="程序员修炼指南"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" data-title="程序员修炼指南"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" data-title="程序员修炼指南"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E7%9F%A5%E8%AF%86%E5%AD%A6%E4%B9%A0%E5%88%86%E4%BA%AB/">知识学习分享</a>,&nbsp;<a href="/tags/%E9%9A%8F%E8%B0%88/">随谈</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" class="prev" rel="prev" title="云原生安全：攻防实践与体系构建阅读笔记"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>云原生安全：攻防实践与体系构建阅读笔记</a>
+            <a href="/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" class="next" rel="next" title="Golang 面试驱动学习">Golang 面试驱动学习<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

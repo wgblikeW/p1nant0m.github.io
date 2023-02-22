@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Golang 面试驱动学习 - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="Golang 面试驱动学习" />
+<meta property="og:description" content="说在前面 🐹 WIP Go 运行时行为 🐹 WIP GC 触发时机 GC 触发的入口为 runtime.gcStart() 垃圾收集被触发后会通过 runtime.gcTrigger.test() 方法检测当前是否需要触发垃圾收集，该方法会根据三种方式触发不同的检查， gcTriggerHeap：堆内存分配达到控制器计算的触发堆大小 gcTriggerTime：如果一段时间内没有触发，就会触发新一轮的循环，该触发条件由 runtime.forcegcperiod 变量控制，默认时间为 2 分钟 gcTriggerperiod：如果当前没有开启垃圾收集，则触发新的循环 所" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-09-25T10:16:38+00:00" />
+<meta property="article:modified_time" content="2022-09-25T10:16:38+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="Golang 面试驱动学习"/>
+<meta name="twitter:description" content="说在前面 🐹 WIP Go 运行时行为 🐹 WIP GC 触发时机 GC 触发的入口为 runtime.gcStart() 垃圾收集被触发后会通过 runtime.gcTrigger.test() 方法检测当前是否需要触发垃圾收集，该方法会根据三种方式触发不同的检查， gcTriggerHeap：堆内存分配达到控制器计算的触发堆大小 gcTriggerTime：如果一段时间内没有触发，就会触发新一轮的循环，该触发条件由 runtime.forcegcperiod 变量控制，默认时间为 2 分钟 gcTriggerperiod：如果当前没有开启垃圾收集，则触发新的循环 所"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" /><link rel="prev" href="https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" /><link rel="next" href="https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Golang 面试驱动学习",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch\/"
+        },"genre": "posts","keywords": "golang","wordcount":  3814 ,
+        "url": "https:\/\/p1nant0m.com\/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch\/","datePublished": "2022-09-25T10:16:38+00:00","dateModified": "2022-09-25T10:16:38+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Golang 面试驱动学习</h1><h2 class="single-subtitle">记录一些面试中常见的 Golang 八股文并以此为切入点深度(bushi)了解 Golang 底层实现</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-25">2022-09-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3814 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#说在前面">说在前面</a>
+      <ul>
+        <li><a href="#go-运行时行为">Go 运行时行为</a>
+          <ul>
+            <li><a href="#gc-触发时机">GC 触发时机</a></li>
+            <li><a href="#g-的调度流程">g 的调度流程</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://image.p1nant0m.com/header_opensource.png"
+        data-srcset="https://image.p1nant0m.com/header_opensource.png, https://image.p1nant0m.com/header_opensource.png 1.5x, https://image.p1nant0m.com/header_opensource.png 2x"
+        data-sizes="auto"
+        alt="https://image.p1nant0m.com/header_opensource.png"
+        title="header_" /></p>
+<h2 id="说在前面">说在前面</h2>
+<p>🐹 <strong>WIP</strong></p>
+<h3 id="go-运行时行为">Go 运行时行为</h3>
+<p>🐹 <strong>WIP</strong></p>
+<h4 id="gc-触发时机">GC 触发时机</h4>
+<p>GC 触发的入口为 <code>runtime.gcStart()</code> 垃圾收集被触发后会通过 <code>runtime.gcTrigger.test()</code> 方法检测当前是否需要触发垃圾收集，该方法会根据三种方式触发不同的检查，</p>
+<ul>
+<li>gcTriggerHeap：堆内存分配达到控制器计算的触发堆大小</li>
+<li>gcTriggerTime：如果一段时间内没有触发，就会触发新一轮的循环，该触发条件由 runtime.forcegcperiod 变量控制，默认时间为 2 分钟</li>
+<li>gcTriggerperiod：如果当前没有开启垃圾收集，则触发新的循环</li>
+</ul>
+<p>所有出现 runtime.gcTrigger 结构体的位置都是触发垃圾收集的代码位置</p>
+<ul>
+<li>runtime.sysmon 和 runtime.forcegchelper —— 后台运行定时检查和垃圾收集；（gcTriggerTime）</li>
+<li>runtime.GC —— 用户程序手动触发垃圾收集；（gcTriggerCycle）</li>
+<li>runtime.mallocgc —— 申请内存时根据堆大小触发垃圾收集 （ gcTriggerHeap）</li>
+</ul>
+<div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>🤔 你该怎么回答？<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>GC 触发时机按照触发的行为主体可以大致分为两类，一类是由用户主动触发，另一类是运行时系统依据某些条件自动触发。</p>
+<ul>
+<li>
+<p>用户触发：用户可以在用户代码中通过调用 <code>runtime.GC()</code> ，以 <code>gcTriggerCycle</code> 充当谓词构建 <code>gcTrigger</code> 结构体，调用 <code>runtime.gcStart()</code> 触发垃圾收集；（这里会不会真正触发垃圾收集还要看当前是否就是处在垃圾收集的阶段，也就是说用户手动触发垃圾收集前，GC 已经启动了。这将通过 <code>runtime.gcTrigger.test()</code> 方法进行检测）</p>
+</li>
+<li>
+<p>系统监控触发：在 <code>runtime.sysmon</code> 与 <code>runtime.forcegchelper</code> 中会以 <code>gcTriggerTime</code> 充当谓词构建 <code>gcTrigger</code> 结构体，调用 <code>(gcTrigger).test()</code>  方法检测当前是否需要触发一次 GC。若距离上一次 GC 的时间超过了一定的阈值（由 <code>forcegcperiod</code> 变量决定，该变量的默认值是 2 * 60 * 1e9 也就是两分钟），则会触发一次 GC。</p>
+</li>
+<li>
+<p>由 <code>mallocgc</code> 触发：在 <code>runtime.mallocgc()</code> 代码的结尾会以 <code>gcTriggerHeap</code> 充当谓词构建 <code>gcTrigger</code> 结构体，调用 <code>(gcTrigger).test()</code> 方法检测当前是否需要触发一次GC。若当前堆的大小大于通过<strong>步调算法</strong>计算得出的下一次 GC 触发大小，则会触发一次 GC，在代码中为 <code>gcController.heapLive &gt;= gcController.trigger</code> 时 <code>(gcTrigger).test()</code> 方法返回 <strong>True</strong>。步调算法核心思想是控制内存增长的比例，可以通过 <code>GOGC</code> 和 <code>debug.SetGCPercent</code> 进行控制。其通过计算得出的下一次 GC 时堆大小的阈值 <code>gcController.trigger</code>，来控制 GC 触发的时间点，进而保证最后 GC 结束时堆大小应该小于算法得出的目标堆大小。下图展示的是这个过程，</p>
+</li>
+</ul>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209261110433.png" title="https://image.p1nant0m.com/202209261110433.png" data-thumbnail="https://image.p1nant0m.com/202209261110433.png" data-sub-html="<h2>步调 (Pacing) 算法实现目标</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202209261110433.png"
+            data-srcset="https://image.p1nant0m.com/202209261110433.png, https://image.p1nant0m.com/202209261110433.png 1.5x, https://image.p1nant0m.com/202209261110433.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202209261110433.png" />
+    </a><figcaption class="image-caption">步调 (Pacing) 算法实现目标</figcaption>
+    </figure>
+</div>
+        </div>
+    </div>
+<h4 id="g-的调度流程">g 的调度流程</h4>
+<p>我们使用 <code>go</code> 关键字可以轻松创建一个 goroutine, 并在其中执行我们的用户代码，快速地实现并发编程。这简单的用户层面使用语法，背后是运行时调度系统做的一系列复杂的工作，这里简单的描述一下相关的过程。</p>
+<p>Go 语言中的调度流程与 GMP 模型的设计息息相关，但本文这里并不会去介绍相关 GMP 模型的内容，我们更希望将关注的焦点放在运行时的调度行为上。用户使用 <code>go</code> 关键字创建一个 goroutine 后，运行时会对其进行一系列的初始化操作，并将其加入到相关 P 的本地可运行队列中，等待一下次调度循环中被选中执行。我们关键就来看一看这一个 <code>runtime.schedule</code> 函数具体都干了些什么工作。</p>
+<p><code>runtime.schedule</code> 将主要的寻找可运行 g 的逻辑写到了 <code>runtime.findRunnable</code> 函数中，其会从下面几处查找待执行的 goroutine，</p>
+<ul>
+<li>为了保证公平，当全局运行队列中有待执行的 Goroutine 时，通过 schedtick 保证有一定概率（从源代码中看，每过61次调度循环便会主动先去 GRQ 中找是否有可运行的 g）会从全局的运行队列中查找对应的 Goroutine；</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="c1">// Check the global runnable queue once in a while to ensure fairness.
+</span><span class="c1"></span>	<span class="c1">// Otherwise two goroutines can completely occupy the local runqueue
+</span><span class="c1"></span>	<span class="c1">// by constantly respawning each other.
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">_p_</span><span class="p">.</span><span class="nx">schedtick</span><span class="o">%</span><span class="mi">61</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">sched</span><span class="p">.</span><span class="nx">runqsize</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="nx">gp</span> <span class="p">=</span> <span class="nf">globrunqget</span><span class="p">(</span><span class="nx">_p_</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+		<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">gp</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">gp</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>从处理器（P）的 LRQ 中查找待执行的 Goroutine；</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="c1">// local runq
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">gp</span><span class="p">,</span> <span class="nx">inheritTime</span> <span class="o">:=</span> <span class="nf">runqget</span><span class="p">(</span><span class="nx">_p_</span><span class="p">);</span> <span class="nx">gp</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">gp</span><span class="p">,</span> <span class="nx">inheritTime</span><span class="p">,</span> <span class="kc">false</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>从 GRQ 中查找待执行的 Goroutine；</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="c1">// global runq
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">sched</span><span class="p">.</span><span class="nx">runqsize</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="nx">gp</span> <span class="o">:=</span> <span class="nf">globrunqget</span><span class="p">(</span><span class="nx">_p_</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">gp</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">gp</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>从网络轮询器中查找是否有 Goroutine 等待运行；</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="c1">// Poll network.
+</span><span class="c1"></span>	<span class="c1">// This netpoll is only an optimization before we resort to stealing.
+</span><span class="c1"></span>	<span class="c1">// We can safely skip it if there are no waiters or a thread is blocked
+</span><span class="c1"></span>	<span class="c1">// in netpoll already. If there is any kind of logical race with that
+</span><span class="c1"></span>	<span class="c1">// blocked thread (e.g. it has already returned from netpoll, but does
+</span><span class="c1"></span>	<span class="c1">// not set lastpoll yet), this thread will do blocking netpoll below
+</span><span class="c1"></span>	<span class="c1">// anyway.
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nf">netpollinited</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">netpollWaiters</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">atomic</span><span class="p">.</span><span class="nf">Load64</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lastpoll</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">list</span> <span class="o">:=</span> <span class="nf">netpoll</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="p">!</span><span class="nx">list</span><span class="p">.</span><span class="nf">empty</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// non-blocking
+</span><span class="c1"></span>			<span class="nx">gp</span> <span class="o">:=</span> <span class="nx">list</span><span class="p">.</span><span class="nf">pop</span><span class="p">()</span>
+			<span class="nf">injectglist</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">list</span><span class="p">)</span>
+			<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Gwaiting</span><span class="p">,</span> <span class="nx">_Grunnable</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">trace</span><span class="p">.</span><span class="nx">enabled</span> <span class="p">{</span>
+				<span class="nf">traceGoUnpark</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">gp</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>通过 runtime.runqsteal 尝试从其他随机的处理器（P）中窃取待运行的 Goroutine，该函数还可能窃取处理器（P）的计时器。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="c1">// Spinning Ms: steal work from other Ps.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// Limit the number of spinning Ms to half the number of busy Ps.
+</span><span class="c1"></span>	<span class="c1">// This is necessary to prevent excessive CPU consumption when
+</span><span class="c1"></span>	<span class="c1">// GOMAXPROCS&gt;&gt;1 but the program parallelism is low.
+</span><span class="c1"></span>	<span class="nx">procs</span> <span class="o">:=</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">gomaxprocs</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">spinning</span> <span class="o">||</span> <span class="mi">2</span><span class="o">*</span><span class="nx">atomic</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">nmspinning</span><span class="p">)</span> <span class="p">&lt;</span> <span class="nx">procs</span><span class="o">-</span><span class="nx">atomic</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">npidle</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">!</span><span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">spinning</span> <span class="p">{</span>
+			<span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">spinning</span> <span class="p">=</span> <span class="kc">true</span>
+			<span class="nx">atomic</span><span class="p">.</span><span class="nf">Xadd</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">nmspinning</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+		<span class="p">}</span>
+
+		<span class="nx">gp</span><span class="p">,</span> <span class="nx">inheritTime</span><span class="p">,</span> <span class="nx">tnow</span><span class="p">,</span> <span class="nx">w</span><span class="p">,</span> <span class="nx">newWork</span> <span class="o">:=</span> <span class="nf">stealWork</span><span class="p">(</span><span class="nx">now</span><span class="p">)</span>
+		<span class="nx">now</span> <span class="p">=</span> <span class="nx">tnow</span>
+		<span class="k">if</span> <span class="nx">gp</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="c1">// Successfully stole.
+</span><span class="c1"></span>			<span class="k">return</span> <span class="nx">gp</span><span class="p">,</span> <span class="nx">inheritTime</span><span class="p">,</span> <span class="kc">false</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">newWork</span> <span class="p">{</span>
+			<span class="c1">// There may be new timer or GC work; restart to
+</span><span class="c1"></span>			<span class="c1">// discover.
+</span><span class="c1"></span>			<span class="k">goto</span> <span class="nx">top</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">w</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">pollUntil</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">w</span> <span class="p">&lt;</span> <span class="nx">pollUntil</span><span class="p">)</span> <span class="p">{</span>
+			<span class="c1">// Earlier timer to wait for.
+</span><span class="c1"></span>			<span class="nx">pollUntil</span> <span class="p">=</span> <span class="nx">w</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果上述过程都没有找到一个能够执行的 goroutine 的话，那么就意味着目前的处理器（P）十分有空并且当前整个程序运行的工作负载压力也不大，这时 <code>runtime.schedule</code> 就会去尝试干其它工作。如果我们这时正处于 <strong>GC mark</strong> 阶段的话，处理器就可以运行一个任务帮助进行对象的扫描与标记。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="c1">// If we&#39;re in the GC mark phase, can safely scan and blacken objects,
+</span><span class="c1"></span>	<span class="c1">// and have work to do, run idle-time marking rather than give up the P.
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">gcBlackenEnabled</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nf">gcMarkWorkAvailable</span><span class="p">(</span><span class="nx">_p_</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">gcController</span><span class="p">.</span><span class="nf">addIdleMarkWorker</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">node</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="nx">gcBgMarkWorkerNode</span><span class="p">)(</span><span class="nx">gcBgMarkWorkerPool</span><span class="p">.</span><span class="nf">pop</span><span class="p">())</span>
+		<span class="k">if</span> <span class="nx">node</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">_p_</span><span class="p">.</span><span class="nx">gcMarkWorkerMode</span> <span class="p">=</span> <span class="nx">gcMarkWorkerIdleMode</span>
+			<span class="nx">gp</span> <span class="o">:=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">gp</span><span class="p">.</span><span class="nf">ptr</span><span class="p">()</span>
+			<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Gwaiting</span><span class="p">,</span> <span class="nx">_Grunnable</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">trace</span><span class="p">.</span><span class="nx">enabled</span> <span class="p">{</span>
+				<span class="nf">traceGoUnpark</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">gp</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span>
+		<span class="p">}</span>
+		<span class="nx">gcController</span><span class="p">.</span><span class="nf">removeIdleMarkWorker</span><span class="p">()</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果当前确实没有任何工作可以进行，P 就可以“休息”了。调度器会将其放入空闲队列中，等待有任务需要处理时再将其调度出来，在这之前先要对操作上锁，并查看全局队列中是否出现了可以执行的任务，若有可以执行的任务处理器（P）便不会放入空闲队列中，转而去执行这个获取到的任务，否则，处理器（P）将被放入空闲队列。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="c1">// return P and block
+</span><span class="c1"></span>	<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">sched</span><span class="p">.</span><span class="nx">gcwaiting</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">_p_</span><span class="p">.</span><span class="nx">runSafePointFn</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="k">goto</span> <span class="nx">top</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">sched</span><span class="p">.</span><span class="nx">runqsize</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">gp</span> <span class="o">:=</span> <span class="nf">globrunqget</span><span class="p">(</span><span class="nx">_p_</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nx">gp</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nf">releasep</span><span class="p">()</span> <span class="o">!=</span> <span class="nx">_p_</span> <span class="p">{</span>
+		<span class="nf">throw</span><span class="p">(</span><span class="s">&#34;findrunnable: wrong p&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nf">pidleput</span><span class="p">(</span><span class="nx">_p_</span><span class="p">)</span>
+	<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在上述这些工作完成后就应该快进入到休眠阶段了，不过这时候调度器仍然还在尝试寻找一个可运行的任务，通过 <code>checkRunqsNoP()</code> 函数查找所有处理器（P）的 LRQ 中是否有待执行的 goroutines，以及 <code>checkIdleGCNoP</code> 函数查找进行 GC 任务的 Worker 是否还未被运行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">		<span class="c1">// Check all runqueues once again.
+</span><span class="c1"></span>		<span class="nx">_p_</span> <span class="p">=</span> <span class="nf">checkRunqsNoP</span><span class="p">(</span><span class="nx">allpSnapshot</span><span class="p">,</span> <span class="nx">idlepMaskSnapshot</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">_p_</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nf">acquirep</span><span class="p">(</span><span class="nx">_p_</span><span class="p">)</span>
+			<span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">spinning</span> <span class="p">=</span> <span class="kc">true</span>
+			<span class="nx">atomic</span><span class="p">.</span><span class="nf">Xadd</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">nmspinning</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+			<span class="k">goto</span> <span class="nx">top</span>
+		<span class="p">}</span>
+
+		<span class="c1">// Check for idle-priority GC work again.
+</span><span class="c1"></span>		<span class="nx">_p_</span><span class="p">,</span> <span class="nx">gp</span> <span class="p">=</span> <span class="nf">checkIdleGCNoP</span><span class="p">()</span>
+		<span class="k">if</span> <span class="nx">_p_</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nf">acquirep</span><span class="p">(</span><span class="nx">_p_</span><span class="p">)</span>
+			<span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">spinning</span> <span class="p">=</span> <span class="kc">true</span>
+			<span class="nx">atomic</span><span class="p">.</span><span class="nf">Xadd</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">nmspinning</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+			<span class="c1">// Run the idle worker.
+</span><span class="c1"></span>			<span class="nx">_p_</span><span class="p">.</span><span class="nx">gcMarkWorkerMode</span> <span class="p">=</span> <span class="nx">gcMarkWorkerIdleMode</span>
+			<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Gwaiting</span><span class="p">,</span> <span class="nx">_Grunnable</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">trace</span><span class="p">.</span><span class="nx">enabled</span> <span class="p">{</span>
+				<span class="nf">traceGoUnpark</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">gp</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span>
+		<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最后的最后，调度器还会尝试从网络轮询器中查找是否已经有准备好的 goroutine 等待执行，如果有的话就从空闲 P 队列中取出一个处理器，并返回队列中一个待执行的 goroutine。如果实在确实是找不到工作的话，就执行 <code>stopm</code> 将当前线程挂起进入睡眠。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">		<span class="nx">list</span> <span class="o">:=</span> <span class="nf">netpoll</span><span class="p">(</span><span class="nx">delay</span><span class="p">)</span> <span class="c1">// block until new work is available
+</span><span class="c1"></span>		<span class="nx">atomic</span><span class="p">.</span><span class="nf">Store64</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">pollUntil</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="nx">atomic</span><span class="p">.</span><span class="nf">Store64</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lastpoll</span><span class="p">,</span> <span class="nb">uint64</span><span class="p">(</span><span class="nf">nanotime</span><span class="p">()))</span>
+		<span class="k">if</span> <span class="nx">faketime</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">list</span><span class="p">.</span><span class="nf">empty</span><span class="p">()</span> <span class="p">{</span>
+			<span class="c1">// Using fake time and nothing is ready; stop M.
+</span><span class="c1"></span>			<span class="c1">// When all M&#39;s stop, checkdead will call timejump.
+</span><span class="c1"></span>			<span class="nf">stopm</span><span class="p">()</span>
+			<span class="k">goto</span> <span class="nx">top</span>
+		<span class="p">}</span>
+		<span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="nx">_p_</span> <span class="p">=</span> <span class="nf">pidleget</span><span class="p">()</span>
+		<span class="nf">unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">_p_</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nf">injectglist</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">list</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nf">acquirep</span><span class="p">(</span><span class="nx">_p_</span><span class="p">)</span>
+			<span class="k">if</span> <span class="p">!</span><span class="nx">list</span><span class="p">.</span><span class="nf">empty</span><span class="p">()</span> <span class="p">{</span>
+				<span class="nx">gp</span> <span class="o">:=</span> <span class="nx">list</span><span class="p">.</span><span class="nf">pop</span><span class="p">()</span>
+				<span class="nf">injectglist</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">list</span><span class="p">)</span>
+				<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Gwaiting</span><span class="p">,</span> <span class="nx">_Grunnable</span><span class="p">)</span>
+				<span class="k">if</span> <span class="nx">trace</span><span class="p">.</span><span class="nx">enabled</span> <span class="p">{</span>
+					<span class="nf">traceGoUnpark</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+				<span class="p">}</span>
+				<span class="k">return</span> <span class="nx">gp</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span>
+			<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>重新回到 <code>runtime.schedule</code> 函数中，当 <code>runtime.findRunnable</code> 找到一个可以执行的 Goroutine 后，便会由 <code>runtime.execute</code> 执行获取到的 Goroutine，其会对 Goroutine 的 g 结构体做一些初始化工作，最后通过 <code>runtime.gogo</code> 将 Goroutine 调度到当前线程上，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Schedules gp to run on the current M.
+</span><span class="c1">// If inheritTime is true, gp inherits the remaining time in the
+</span><span class="c1">// current time slice. Otherwise, it starts a new time slice.
+</span><span class="c1">// Never returns.
+</span><span class="c1">//
+</span><span class="c1">// Write barriers are allowed because this is called immediately after
+</span><span class="c1">// acquiring a P in several places.
+</span><span class="c1">//
+</span><span class="c1">//go:yeswritebarrierrec
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">execute</span><span class="p">(</span><span class="nx">gp</span> <span class="o">*</span><span class="nx">g</span><span class="p">,</span> <span class="nx">inheritTime</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">_g_</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">()</span>
+
+	<span class="c1">// Assign gp.m before entering _Grunning so running Gs have an
+</span><span class="c1"></span>	<span class="c1">// M.
+</span><span class="c1"></span>	<span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">curg</span> <span class="p">=</span> <span class="nx">gp</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">m</span> <span class="p">=</span> <span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span>
+	<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Grunnable</span><span class="p">,</span> <span class="nx">_Grunning</span><span class="p">)</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">waitsince</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">preempt</span> <span class="p">=</span> <span class="kc">false</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">stackguard0</span> <span class="p">=</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">lo</span> <span class="o">+</span> <span class="nx">_StackGuard</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">inheritTime</span> <span class="p">{</span>
+		<span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nf">ptr</span><span class="p">().</span><span class="nx">schedtick</span><span class="o">++</span>
+	<span class="p">}</span>
+
+	<span class="c1">// Check whether the profiler needs to be turned on or off.
+</span><span class="c1"></span>	<span class="nx">hz</span> <span class="o">:=</span> <span class="nx">sched</span><span class="p">.</span><span class="nx">profilehz</span>
+	<span class="k">if</span> <span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">profilehz</span> <span class="o">!=</span> <span class="nx">hz</span> <span class="p">{</span>
+		<span class="nf">setThreadCPUProfiler</span><span class="p">(</span><span class="nx">hz</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="nx">trace</span><span class="p">.</span><span class="nx">enabled</span> <span class="p">{</span>
+		<span class="c1">// GoSysExit has to happen when we have a P, but before GoStart.
+</span><span class="c1"></span>		<span class="c1">// So we emit it here.
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">syscallsp</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">sysblocktraced</span> <span class="p">{</span>
+			<span class="nf">traceGoSysExit</span><span class="p">(</span><span class="nx">gp</span><span class="p">.</span><span class="nx">sysexitticks</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nf">traceGoStart</span><span class="p">()</span>
+	<span class="p">}</span>
+
+	<span class="nf">gogo</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gp</span><span class="p">.</span><span class="nx">sched</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>runtime.gogo</code> 是一段用 Go 汇编写成的函数，在不同的处理器架构上有不同的实现，不过总体的实现大同小异，下面是该函数在 <strong>amd64</strong> 架构上的实现，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// func gogo(buf *gobuf)
+</span><span class="c1">// restore state from Gobuf; longjmp
+</span><span class="c1"></span><span class="nx">TEXT</span> <span class="nx">runtime</span><span class="err">·</span><span class="nf">gogo</span><span class="p">(</span><span class="nx">SB</span><span class="p">),</span> <span class="nx">NOSPLIT</span><span class="p">,</span> <span class="err">$</span><span class="mi">0</span><span class="o">-</span><span class="mi">8</span>
+	<span class="nx">MOVQ</span>	<span class="nx">buf</span><span class="o">+</span><span class="mi">0</span><span class="p">(</span><span class="nx">FP</span><span class="p">),</span> <span class="nx">BX</span>		<span class="c1">// gobuf
+</span><span class="c1"></span>	<span class="nx">MOVQ</span>	<span class="nf">gobuf_g</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">DX</span>
+	<span class="nx">MOVQ</span>	<span class="mi">0</span><span class="p">(</span><span class="nx">DX</span><span class="p">),</span> <span class="nx">CX</span>		<span class="c1">// make sure g != nil
+</span><span class="c1"></span>	<span class="nx">JMP</span>	<span class="nx">gogo</span><span class="p">&lt;&gt;(</span><span class="nx">SB</span><span class="p">)</span>
+
+<span class="nx">TEXT</span> <span class="nx">gogo</span><span class="p">&lt;&gt;(</span><span class="nx">SB</span><span class="p">),</span> <span class="nx">NOSPLIT</span><span class="p">,</span> <span class="err">$</span><span class="mi">0</span>
+	<span class="nf">get_tls</span><span class="p">(</span><span class="nx">CX</span><span class="p">)</span>
+	<span class="nx">MOVQ</span>	<span class="nx">DX</span><span class="p">,</span> <span class="nf">g</span><span class="p">(</span><span class="nx">CX</span><span class="p">)</span>
+	<span class="nx">MOVQ</span>	<span class="nx">DX</span><span class="p">,</span> <span class="nx">R14</span>		<span class="c1">// set the g register
+</span><span class="c1"></span>	<span class="nx">MOVQ</span>	<span class="nf">gobuf_sp</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">SP</span>	<span class="c1">// restore SP
+</span><span class="c1"></span>	<span class="nx">MOVQ</span>	<span class="nf">gobuf_ret</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">AX</span>
+	<span class="nx">MOVQ</span>	<span class="nf">gobuf_ctxt</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">DX</span>
+	<span class="nx">MOVQ</span>	<span class="nf">gobuf_bp</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">BP</span>
+	<span class="nx">MOVQ</span>	<span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="nf">gobuf_sp</span><span class="p">(</span><span class="nx">BX</span><span class="p">)</span>	<span class="c1">// clear to help garbage collector
+</span><span class="c1"></span>	<span class="nx">MOVQ</span>	<span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="nf">gobuf_ret</span><span class="p">(</span><span class="nx">BX</span><span class="p">)</span>
+	<span class="nx">MOVQ</span>	<span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="nf">gobuf_ctxt</span><span class="p">(</span><span class="nx">BX</span><span class="p">)</span>
+	<span class="nx">MOVQ</span>	<span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="nf">gobuf_bp</span><span class="p">(</span><span class="nx">BX</span><span class="p">)</span>
+	<span class="nx">MOVQ</span>	<span class="nf">gobuf_pc</span><span class="p">(</span><span class="nx">BX</span><span class="p">),</span> <span class="nx">BX</span> <span class="c1">// 获取待执行任务函数的程序计数器
+</span><span class="c1"></span>	<span class="nx">JMP</span>	<span class="nx">BX</span> <span class="c1">// 执行传入 goroutine 的任务代码
+</span></code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>runtime.gobuf.sp</code> 中存放了 <code>runtime.goexit</code> 的程序计数器，并被恢复到了当前栈 SP 位置上，当目标函数返回后，会从堆中查找调用的地址并跳转回调用方继续执行剩余代码（<code>runtime.goexit</code>）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// The top-most function running on a goroutine
+</span><span class="c1">// returns to goexit+PCQuantum.
+</span><span class="c1"></span><span class="nx">TEXT</span> <span class="nx">runtime</span><span class="err">·</span><span class="nf">goexit</span><span class="p">(</span><span class="nx">SB</span><span class="p">),</span><span class="nx">NOSPLIT</span><span class="p">|</span><span class="nx">TOPFRAME</span><span class="p">,</span><span class="err">$</span><span class="mi">0</span><span class="o">-</span><span class="mi">0</span>
+	<span class="nx">BYTE</span>	<span class="err">$</span><span class="mh">0x90</span>	<span class="c1">// NOP
+</span><span class="c1"></span>	<span class="nx">CALL</span>	<span class="nx">runtime</span><span class="err">·</span><span class="nf">goexit1</span><span class="p">(</span><span class="nx">SB</span><span class="p">)</span>	<span class="c1">// does not return
+</span><span class="c1"></span>	<span class="c1">// traceback from goexit1 must hit code range of goexit
+</span><span class="c1"></span>	<span class="nx">BYTE</span>	<span class="err">$</span><span class="mh">0x90</span>	<span class="c1">// NOP
+</span></code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>runtime.goexit1</code> 的实现如下，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Finishes execution of the current goroutine.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">goexit1</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">raceenabled</span> <span class="p">{</span>
+		<span class="nf">racegoend</span><span class="p">()</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">trace</span><span class="p">.</span><span class="nx">enabled</span> <span class="p">{</span>
+		<span class="nf">traceGoEnd</span><span class="p">()</span>
+	<span class="p">}</span>
+	<span class="nf">mcall</span><span class="p">(</span><span class="nx">goexit0</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过 <code>mcall</code> 其会在当前线程的 g0 的栈上调用 <code>runtime.goexit0</code> 函数，该函数会设置 Goroutine 相关状态、清理其中的一些字段、移除 Goroutine 和线程的关联，并调用 <code>runtime.gfput</code> 重新加入处理器的 Goroutine 空闲列表 gFree，最终重新调用 <code>runtime.schedule</code> 函数触发新一轮的 Goroutine 调度循环！</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">goexit0</span><span class="p">(</span><span class="nx">gp</span> <span class="o">*</span><span class="nx">g</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">_g_</span> <span class="o">:=</span> <span class="nf">getg</span><span class="p">()</span>
+	<span class="nx">_p_</span> <span class="o">:=</span> <span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nf">ptr</span><span class="p">()</span>
+
+	<span class="nf">casgstatus</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="nx">_Grunning</span><span class="p">,</span> <span class="nx">_Gdead</span><span class="p">)</span> <span class="c1">// Goroutine 状态转移
+</span><span class="c1"></span>	<span class="nx">gcController</span><span class="p">.</span><span class="nf">addScannableStack</span><span class="p">(</span><span class="nx">_p_</span><span class="p">,</span> <span class="o">-</span><span class="nb">int64</span><span class="p">(</span><span class="nx">gp</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">hi</span><span class="o">-</span><span class="nx">gp</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">lo</span><span class="p">))</span>
+	<span class="k">if</span> <span class="nf">isSystemGoroutine</span><span class="p">(</span><span class="nx">gp</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">atomic</span><span class="p">.</span><span class="nf">Xadd</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">sched</span><span class="p">.</span><span class="nx">ngsys</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">m</span> <span class="p">=</span> <span class="kc">nil</span>
+	<span class="nx">locked</span> <span class="o">:=</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">lockedm</span> <span class="o">!=</span> <span class="mi">0</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">lockedm</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">lockedg</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">preemptStop</span> <span class="p">=</span> <span class="kc">false</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">paniconfault</span> <span class="p">=</span> <span class="kc">false</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">_defer</span> <span class="p">=</span> <span class="kc">nil</span> <span class="c1">// should be true already but just in case.
+</span><span class="c1"></span>	<span class="nx">gp</span><span class="p">.</span><span class="nx">_panic</span> <span class="p">=</span> <span class="kc">nil</span> <span class="c1">// non-nil for Goexit during panic. points at stack-allocated data.
+</span><span class="c1"></span>	<span class="nx">gp</span><span class="p">.</span><span class="nx">writebuf</span> <span class="p">=</span> <span class="kc">nil</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">waitreason</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">param</span> <span class="p">=</span> <span class="kc">nil</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">labels</span> <span class="p">=</span> <span class="kc">nil</span>
+	<span class="nx">gp</span><span class="p">.</span><span class="nx">timer</span> <span class="p">=</span> <span class="kc">nil</span>
+
+	<span class="k">if</span> <span class="nx">gcBlackenEnabled</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">gp</span><span class="p">.</span><span class="nx">gcAssistBytes</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="c1">// Flush assist credit to the global pool. This gives
+</span><span class="c1"></span>		<span class="c1">// better information to pacing if the application is
+</span><span class="c1"></span>		<span class="c1">// rapidly creating an exiting goroutines.
+</span><span class="c1"></span>		<span class="nx">assistWorkPerByte</span> <span class="o">:=</span> <span class="nx">gcController</span><span class="p">.</span><span class="nx">assistWorkPerByte</span><span class="p">.</span><span class="nf">Load</span><span class="p">()</span>
+		<span class="nx">scanCredit</span> <span class="o">:=</span> <span class="nb">int64</span><span class="p">(</span><span class="nx">assistWorkPerByte</span> <span class="o">*</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">gp</span><span class="p">.</span><span class="nx">gcAssistBytes</span><span class="p">))</span>
+		<span class="nx">atomic</span><span class="p">.</span><span class="nf">Xaddint64</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">gcController</span><span class="p">.</span><span class="nx">bgScanCredit</span><span class="p">,</span> <span class="nx">scanCredit</span><span class="p">)</span>
+		<span class="nx">gp</span><span class="p">.</span><span class="nx">gcAssistBytes</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="p">}</span>
+
+	<span class="nf">dropg</span><span class="p">()</span> <span class="c1">// 移除当前 Goroutine 与线程的关联
+</span><span class="c1"></span>
+	<span class="k">if</span> <span class="nx">GOARCH</span> <span class="o">==</span> <span class="s">&#34;wasm&#34;</span> <span class="p">{</span> <span class="c1">// no threads yet on wasm
+</span><span class="c1"></span>		<span class="nf">gfput</span><span class="p">(</span><span class="nx">_p_</span><span class="p">,</span> <span class="nx">gp</span><span class="p">)</span>
+		<span class="nf">schedule</span><span class="p">()</span> <span class="c1">// never returns
+</span><span class="c1"></span>	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">lockedInt</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s">&#34;invalid m-&gt;lockedInt = &#34;</span><span class="p">,</span> <span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">lockedInt</span><span class="p">,</span> <span class="s">&#34;\n&#34;</span><span class="p">)</span>
+		<span class="nf">throw</span><span class="p">(</span><span class="s">&#34;internal lockOSThread error&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nf">gfput</span><span class="p">(</span><span class="nx">_p_</span><span class="p">,</span> <span class="nx">gp</span><span class="p">)</span> <span class="c1">// 将 Goroutine 键入处理器的 Goroutine 空闲列表 gFree
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">locked</span> <span class="p">{</span>
+		<span class="c1">// The goroutine may have locked this thread because
+</span><span class="c1"></span>		<span class="c1">// it put it in an unusual kernel state. Kill it
+</span><span class="c1"></span>		<span class="c1">// rather than returning it to the thread pool.
+</span><span class="c1"></span>
+		<span class="c1">// Return to mstart, which will release the P and exit
+</span><span class="c1"></span>		<span class="c1">// the thread.
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">GOOS</span> <span class="o">!=</span> <span class="s">&#34;plan9&#34;</span> <span class="p">{</span> <span class="c1">// See golang.org/issue/22227.
+</span><span class="c1"></span>			<span class="nf">gogo</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">g0</span><span class="p">.</span><span class="nx">sched</span><span class="p">)</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="c1">// Clear lockedExt on plan9 since we may end up re-using
+</span><span class="c1"></span>			<span class="c1">// this thread.
+</span><span class="c1"></span>			<span class="nx">_g_</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">lockedExt</span> <span class="p">=</span> <span class="mi">0</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="nf">schedule</span><span class="p">()</span> <span class="c1">// 重新触发新一轮的调度循环
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>至此，我们可以说 Goroutine 的调度没有结束，其永远不会返回，只会触发一轮又一轮的调度循环。</p>
+<h2 id="references">References</h2>
+<p><a href="https://go.dev/blog/" target="_blank" rel="noopener noreffer ">The Go Blog</a></p>
+<p><a href="https://github.com/golang/go" target="_blank" rel="noopener noreffer ">The Golang Repo</a></p>
+<p><a href="https://golang.design/go-questions/" target="_blank" rel="noopener noreffer ">Go 程序员面试笔试宝典</a></p>
+<p><a href="https://golang.design/under-the-hood/" target="_blank" rel="noopener noreffer ">Go 语言原本</a></p>
+<p><a href="https://draveness.me/golang/" target="_blank" rel="noopener noreffer ">Go 语言设计与实现</a></p>
+<p><a href="https://beyondkmp.com/books/golang/The.Go.Programming.Language.pdf" target="_blank" rel="noopener noreffer ">The Go Programming Language</a></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-09-25</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" data-title="Golang 面试驱动学习" data-via="p1nant0m" data-hashtags="golang"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" data-hashtag="golang"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" data-title="Golang 面试驱动学习"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" data-title="Golang 面试驱动学习"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" data-title="Golang 面试驱动学习"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/golang/">golang</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" class="prev" rel="prev" title="程序员修炼指南"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>程序员修炼指南</a>
+            <a href="/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" class="next" rel="next" title="在 K8s 集群上部署 Cilium 与 Hubble">在 K8s 集群上部署 Cilium 与 Hubble<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

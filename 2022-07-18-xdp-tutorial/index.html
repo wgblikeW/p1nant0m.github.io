@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>XDP-tutorial 学习如何编写 eBPF XDP 程序 - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="XDP-tutorial 学习如何编写 eBPF XDP 程序" />
+<meta property="og:description" content="XDP-Tutorial ⭐ 本文章仍然在不断的更新中，因此文章结构以及内容可能会时常发生变化。同时本领域也是作者刚刚涉及的领域，难免在文本内容中出现错误，还望指正，大家一同学习共勉。 XDP-Tutorial 是一个 Github 上的 repo，皆在指导人们如何遵循最基本的步骤，高效地实现为内核中的 XDP 系统进行编程。我会随着这个课程的步伐与大家一同探寻 Linux 内核世界的奥秘以及如何使用高性能的 XDP 程序对网络数据报进行处理。随着学习的深入，我会列出理解每一节课程的编程实现" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2022-07-18-xdp-tutorial/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-07-18T07:00:00+00:00" />
+<meta property="article:modified_time" content="2022-07-18T07:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="XDP-tutorial 学习如何编写 eBPF XDP 程序"/>
+<meta name="twitter:description" content="XDP-Tutorial ⭐ 本文章仍然在不断的更新中，因此文章结构以及内容可能会时常发生变化。同时本领域也是作者刚刚涉及的领域，难免在文本内容中出现错误，还望指正，大家一同学习共勉。 XDP-Tutorial 是一个 Github 上的 repo，皆在指导人们如何遵循最基本的步骤，高效地实现为内核中的 XDP 系统进行编程。我会随着这个课程的步伐与大家一同探寻 Linux 内核世界的奥秘以及如何使用高性能的 XDP 程序对网络数据报进行处理。随着学习的深入，我会列出理解每一节课程的编程实现"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2022-07-18-xdp-tutorial/" /><link rel="prev" href="https://p1nant0m.com/2022-03-16-infosec-2/" /><link rel="next" href="https://p1nant0m.com/2022-07-25-ebpf-tracing/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "XDP-tutorial 学习如何编写 eBPF XDP 程序",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2022-07-18-xdp-tutorial\/"
+        },"genre": "posts","keywords": "eBPF, XDP, tutorial","wordcount":  4965 ,
+        "url": "https:\/\/p1nant0m.com\/2022-07-18-xdp-tutorial\/","datePublished": "2022-07-18T07:00:00+00:00","dateModified": "2022-07-18T07:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2022-07-18-xdp-tutorial/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2022-07-18-xdp-tutorial/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">XDP-tutorial 学习如何编写 eBPF XDP 程序</h1><h2 class="single-subtitle">跟着 xdp-tutorial repo 以及 Linux repo bpf/samples 从零开始学习编写 eBPF XDP 程序</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-07-18">2022-07-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4965 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 10 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#xdp-tutorial">XDP-Tutorial</a>
+      <ul>
+        <li><a href="#xdp-express-data-path-简介">XDP (eXpress Data Path) 简介</a></li>
+        <li><a href="#xdp-程序操作模式种类">XDP 程序操作模式种类</a></li>
+        <li><a href="#xdp-程序使用场景">XDP 程序使用场景</a></li>
+        <li><a href="#xdp-hook">XDP Hook</a></li>
+        <li><a href="#xdp-程序的编写">XDP 程序的编写</a>
+          <ul>
+            <li><a href="#basic-03---counting-with-bpf-maps">Basic 03 - counting with BPF maps</a></li>
+          </ul>
+        </li>
+        <li><a href="#tcp-协议报文结构">TCP 协议报文结构</a></li>
+        <li><a href="#ip-协议报文结构">IP 协议报文结构</a></li>
+        <li><a href="#references">References</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="xdp-tutorial">XDP-Tutorial</h2>
+<blockquote>
+<p>⭐ 本文章仍然在不断的更新中，因此文章结构以及内容可能会时常发生变化。同时本领域也是作者刚刚涉及的领域，难免在文本内容中出现错误，还望指正，大家一同学习共勉。</p>
+</blockquote>
+<p>XDP-Tutorial 是一个 Github 上的 repo，皆在指导人们如何遵循最基本的步骤，高效地实现为内核中的 XDP 系统进行编程。我会随着这个课程的步伐与大家一同探寻 Linux 内核世界的奥秘以及如何使用高性能的 XDP 程序对网络数据报进行处理。随着学习的深入，我会列出理解每一节课程的编程实现所需要前置知识，查漏补缺，帮助我们大家更好地理解其中的知识脉络，为以后单独开发相关的系统提供思路支撑。</p>
+<h3 id="xdp-express-data-path-简介">XDP (eXpress Data Path) 简介</h3>
+<p>XDP 是 Linux 内核上游（Linux 内核原始版本非 Linux 分发版）的一部分，它为用户提供了将用户编写的包处理程序安装进入内核的通道，安装进入内核的包处理程序会在系统接收到包（还未对数据包进行任何处理）的时候触发执行，从而提供了一种高性能的方式允许用户自定义处理内核接收到数据包时的行为。</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" title="https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" data-thumbnail="https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" data-sub-html="<h2>XDP 与内核协议栈的整合</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png"
+            data-srcset="https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png, https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png 1.5x, https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/XDP_integration_with_linux_network_stack.png" />
+    </a><figcaption class="image-caption">XDP 与内核协议栈的整合</figcaption>
+    </figure>
+<h3 id="xdp-程序操作模式种类">XDP 程序操作模式种类</h3>
+<p>原生模式  (Native XDP) 卸载模式 (Offloaded XDP) 通用模式 (Generic XDP)</p>
+<blockquote>
+<p>Native XDP：</p>
+<p>​	该模式是默认模式。在这种模式下，XDP 的 BPF 程序 在网络驱动程序的早期接收路径之外直接运行。使用该模式需要硬件设备的支持。使用 <code>git grep -l XDP_SETUP_PROG drivers</code> 命令可以检查驱动程序是否支持此模式。</p>
+<p>Offloaded XDP：</p>
+<p>​	在卸载模式下，XDP 的 BPF 程序直接卸载到网卡上，而不是在主机 CPU 上执行。因本就仅有相当低开销的 XDP 程序的执行从 CPU 上转移到网卡上，从而这种模式能够比原生 XDP 具有更高的性能。使用这种操作模式的 XDP 程序需要得到网卡的支持。使用 <code>git grep -l XDP_SETUP_PROG_HW drivers</code> 可以检查哪些网卡驱动程序支持 Offloaded 模式。</p>
+<p>Generic XDP：</p>
+<p>​	对于没有提供 Offloaded 或 Native 模式支持的网卡设备来说，内核提供了一个使用 XDP 通用模式的选项。使用此模式不需要需要任何的驱动支持，因为其运行在一个相对于网络内核栈中相对靠后的位置。其存在主要的目的是为了开发人员在不支持上述两种模式的环境中进行 XDP 程序的开发与调试。在该模式下，XDP 程序的运行性能没有前两者那么高效，因此在生产环境中</p>
+</blockquote>
+<h3 id="xdp-程序使用场景">XDP 程序使用场景</h3>
+<ul>
+<li>
+<p>缓解 DDoS 攻击，防火墙</p>
+<p>利用 XDP BPF 的特性我们可以自行定义驱动丢弃恶意网络包的行为逻辑。通过在对数据包进行处理的早期阶段令数据包处理器向网络驱动抛出 <code>XDP_DROP</code> 丢弃恶意数据包，我们能够仅付出极小代价的情况下将数据包丢弃，维持系统资源处于一个健康可用的状态。另外，利用 <code>XDP_TX</code> <code>XDP_PASS</code> <code>XDP_REDIRECT</code> 我们还能够自定义逻辑对流量进行清洗、控制流量的走向，实现对主机的保护。</p>
+<p>借助 XDP，我们可以在网卡或其驱动程序中以完全可编程的方式获得相同的功能，而这相比于昂贵的防火墙硬件设备来的非常便宜且快速。<strong><u>并且我们可以通过远程调用 API 更改规则来控制映射，然后将映射中的规则集动态传递给每台特定计算机中加载的 XDP 程序，这样就能够动态的控制集群中网络拓扑结构</u></strong>。</p>
+</li>
+<li>
+<p>负载均衡</p>
+<p>上面提到过数据包处理器可以通过向网络驱动抛出状态码影响网络驱动的对数据包的行为，在负载均衡的场景中，我们可以使用 <code>XDP_TX</code> 或者 <code>XDP_REDIRECT</code> ，将经过 XDP 程序处理后的数据包发往接收到该数据包的网卡或将其推至另外的网卡中传输。</p>
+<blockquote>
+<p>直接将该数据包传入到一类特殊的套接字家族 (AF_XDP) 中</p>
+</blockquote>
+</li>
+<li>
+<p>先于内核协议栈的包过滤/处理</p>
+<p>在 Linux 内核协议栈正式处理抵达的数据包之前，XDP 程序可以根据用户自定义的策略对到达的数据包进行过滤，这可以通过 <code>XDP_DROP</code> 指示网络驱动丢弃掉不符合规则的数据包实现。</p>
+<blockquote>
+<p>例如，当我们确定某一节点上运行的服务流量只有 TCP 流量时，我们可以使用 XDP 程序丢弃所有使用其它四层协议（UDP、SCTP）的流量。</p>
+</blockquote>
+<p>我们也可以使用 XDP 程序去实现自有协议的封装与解封装，这对内核协议栈是透明的。不仅如此，我们还能够在接收到的数据包头部（非数据包区域）前增加一段元数据，这些元数据对于内核协议栈来说是透明的，但对于 TC 程序来说它可以获取到相关的元数据信息，从而控制其程序的行为逻辑，完成相关的数据包解析工作。</p>
+</li>
+<li>
+<p>监控</p>
+<p>使用 XDP 程序对到达的网络数据流进行特征统计与流量分析，也可以对数据包进行一些复杂的分析（比如恶意特征提取与检测）。XDP 与以往的一些技术解决方案相比具有以下优势：1）XDP 允许在较早的阶段对网络数据包进行介入，能够截断或是将数据包中的载荷提取出来并通过 Linux 内核提供的 perf 基础设施（快速、无锁、每一个 CPU 都具有的内存环形缓冲区域）推送至用户空间的应用程序中进行下一步处理，这种数据通路的处理性能比以往的解决方案要更加动态快速。</p>
+<p>在云原生安全中，我们需要强调基础设施的可观测性，对于节点、容器、应用、服务等各层次等系统构成元素来说，我们需要监控其运行状态获取其性能指标，也需要对一个进入集群的请求进行追踪，对各组件产生的日记信息进行收集汇总，汇总各个维度的数据信息，为编排平台进行决策以及事件溯源提供充足的信息支撑。XDP 程序可以与其它组件以及数据源进行搭配组合，通过实时的监测指标以及运行状态数据统计，动态地改变集群内部的网络拓扑结构，最终实现服务集群的高可用。</p>
+</li>
+</ul>
+<h3 id="xdp-hook">XDP Hook</h3>
+<p>使用 LLVM 对内核态的 XDP 程序进行编译后，我们可以使用两种方式将 ELF 文件中的 BPF 字节码加载进入内核并挂载至指定的网络设备当中。</p>
+<ul>
+<li>
+<p>编写 C 用户态程序，使用 BPF Loader 将编译后的 XDP ELF 文件加载进入内核之中</p>
+</li>
+<li>
+<p>通过 <code>iproute2 ip</code> 挂载 （该方式所使用的 BPF Loader 并不是通过 Libbpf 库实现的，这意味着当我们开始使用 BPF Maps 的时候可能会出现不兼容的情况），下面将给出一段示例展示如何使用 <code>ip</code> 工具将编译后的 ELF 文件加载进入内核之中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 向 lo 网络设备上以 xdpgeneric 方式挂载 xdp_pass_kern.o ELF 文件中 section 为 xdp 的字节码</span>
+ip link <span class="nb">set</span> dev lo xdpgeneric obj xdp_pass_kern.o sec xdp
+</code></pre></td></tr></table>
+</div>
+</div><p>有了挂载的方式我们还需要有查看和卸载 XDP 程序的方式，下面将介绍使用该工具进行查看和卸载的方式，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 展示 lo 网络设备的相关信息</span>
+ip link show dev lo
+<span class="c1"># 方式 2</span>
+bpftool net list dev lo
+
+<span class="c1"># 从 lo 网络设备中卸载以 xdpgeneric 方式挂载的 XDP 程序</span>
+ip link <span class="nb">set</span> dev lo xdpgeneric off
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>Go 语言使用 libbpfgo 库加载 ELF 文件中的 XDP 程序字节码，这个方式是本人认为最优雅的方式</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 加载 eBPF 程序编译后的 ELF 文件 	
+</span><span class="c1"></span><span class="nx">bpfModule</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">bpf</span><span class="p">.</span><span class="nf">NewModuleFromFile</span><span class="p">(</span><span class="s">&#34;main.bpf.o&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintln</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="c1">// 加载其中的 eBPF 对象
+</span><span class="c1"></span><span class="nx">err</span> <span class="p">=</span> <span class="nx">bpfModule</span><span class="p">.</span><span class="nf">BPFLoadObject</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintln</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="c1">// 提取其中的内核态程序 &#34;target&#34; 是自编写的 XDP 程序函数名
+</span><span class="c1"></span><span class="nx">xdpProg</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">bpfModule</span><span class="p">.</span><span class="nf">GetProgram</span><span class="p">(</span><span class="s">&#34;target&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">xdpProg</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintln</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="c1">// 指定需要挂载的网络设备 lo
+</span><span class="c1"></span><span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">xdpProg</span><span class="p">.</span><span class="nf">AttachXDP</span><span class="p">(</span><span class="s">&#34;lo&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintln</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p>在上述 Go 程序代码我们可以发现 <code>bpfModule.GetProgram(&quot;target&quot;)</code> 指定了我们想要从 ELF 文件中加载的 eBPF 程序对象，这意味着我们可以在一个 ELF 文件可以包含多个 XDP 程序，我们可以从中选择我们所需要的进行加载。这种能力是 libbpfgo 封装 libbpf 得来的，而 libbpf 是通过封装系统调用得到的。</p>
+<p>在 libbpf 中内部使用 <code>struct bpf_object</code> <code>struct bpf_program</code> <code>struct bpf_map</code> 三类结构体去管理和抽象 eBPF 程序，用户需要使用 libbpf 对外暴露的 API 接口去操作相关的数据结构。</p>
+<blockquote>
+<p>XDP 程序操作模式种类：原生模式  (Native XDP) 卸载模式 (Offloaded XDP) 通用模式 (Generic XDP)</p>
+<p>Native XDP：</p>
+<p>​	该模式是默认模式。在这种模式下，XDP 的 BPF 程序 在网络驱动程序的早期接收路径之外直接运行。使用该模式需要硬件设备的支持。使用 <code>git grep -l XDP_SETUP_PROG drivers</code> 命令可以检查驱动程序是否支持此模式。</p>
+<p>Offloaded XDP：</p>
+<p>​	在卸载模式下，XDP 的 BPF 程序直接卸载到网卡上，而不是在主机 CPU 上执行。因本就仅有相当低开销的 XDP 程序的执行从 CPU 上转移到网卡上，从而这种模式能够比原生 XDP 具有更高的性能。使用这种操作模式的 XDP 程序需要得到网卡的支持。使用 <code>git grep -l XDP_SETUP_PROG_HW drivers</code> 可以检查哪些网卡驱动程序支持 Offloaded 模式。</p>
+<p>Generic XDP：</p>
+<p>​	对于没有提供 Offloaded 或 Native 模式支持的网卡设备来说，内核提供了一个使用 XDP 通用模式的选项。使用此模式不需要需要任何的驱动支持，因为其运行在一个相对于网络内核栈中相对靠后的位置。其存在主要的目的是为了开发人员在不支持上述两种模式的环境中进行 XDP 程序的开发与调试。在该模式下，XDP 程序的运行性能没有前两者那么高效，因此在生产环境中推荐使用前两种模式。</p>
+</blockquote>
+<h3 id="xdp-程序的编写">XDP 程序的编写</h3>
+<h4 id="basic-03---counting-with-bpf-maps">Basic 03 - counting with BPF maps</h4>
+<p>我们可以通过定义一个全局结构体 <code>bpf_map_def</code> 并带上 <code>SEC(&quot;maps&quot;)</code> 宏来创建一个 BPF map，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="p">{</span>
+	<span class="n">__uint</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">BPF_MAP_TYPE_ARRAY</span><span class="p">);</span>
+	<span class="n">__type</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">__u32</span><span class="p">);</span>
+	<span class="n">__type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="k">struct</span> <span class="n">datarec</span><span class="p">);</span>
+	<span class="n">__uint</span><span class="p">(</span><span class="n">max_entries</span><span class="p">,</span> <span class="n">XDP_ACTION_MAX</span><span class="p">);</span>
+<span class="p">}</span> <span class="n">xdp_stats_map</span> <span class="n">SEC</span><span class="p">(</span><span class="s">&#34;.maps&#34;</span><span class="p">);</span>
+
+<span class="k">struct</span> <span class="p">{</span>
+    <span class="n">__uint</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">BPF_MAP_TYPE_PERCPU_ARRAY</span><span class="p">);</span>
+    <span class="n">__type</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">__u32</span><span class="p">);</span>
+    <span class="n">__type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="k">struct</span> <span class="n">datarec</span><span class="p">);</span>
+    <span class="n">__uint</span><span class="p">(</span><span class="n">max_entries</span><span class="p">,</span> <span class="n">MAX_ENTRIES</span><span class="p">);</span>
+<span class="p">}</span> <span class="n">xdp_stats_map_percpu</span> <span class="n">SEC</span><span class="p">(</span><span class="s">&#34;.maps&#34;</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>BPF Maps 创建 —— 代码示范<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>当你需要创建数量较多的 BPF Maps 时，你可以参考以下创建示例来简化你的代码逻辑，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define BPF_MAP(_name, _type, _key_type, _value_type, _max_entries)                                \
+</span><span class="cp">    struct {                                                                                       \
+</span><span class="cp">        __uint(type, _type);                                                                       \
+</span><span class="cp">        __uint(max_entries, _max_entries);                                                         \
+</span><span class="cp">        __type(key, _key_type);                                                                    \
+</span><span class="cp">        __type(value, _value_type);                                                                \
+</span><span class="cp">    } _name SEC(&#34;.maps&#34;);
+</span><span class="cp"></span>
+<span class="cp">#define BPF_HASH(_name, _key_type, _value_type, _max_entries)                                      \
+</span><span class="cp">    BPF_MAP(_name, BPF_MAP_TYPE_HASH, _key_type, _value_type, _max_entries)
+</span><span class="cp"></span>
+<span class="cp">#define BPF_LRU_HASH(_name, _key_type, _value_type, _max_entries)                                  \
+</span><span class="cp">    BPF_MAP(_name, BPF_MAP_TYPE_LRU_HASH, _key_type, _value_type, _max_entries)
+</span><span class="cp"></span>
+<span class="n">BPF_HASH</span><span class="p">(</span><span class="n">kconfig_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>
+<span class="n">BPF_HASH</span><span class="p">(</span><span class="n">interpreter_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">file_info_t</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>      
+<span class="n">BPF_HASH</span><span class="p">(</span><span class="n">containers_map</span><span class="p">,</span> <span class="n">u32</span><span class="p">,</span> <span class="n">u8</span><span class="p">,</span> <span class="mi">10240</span><span class="p">);</span>  
+</code></pre></td></tr></table>
+</div>
+</div><p>上述示例代码来自 <a href="https://github.com/aquasecurity/tracee" target="_blank" rel="noopener noreffer ">tracee</a></p>
+</div>
+        </div>
+    </div>
+<p>BPF maps 是通用的键值对存储方式，在上述定义中 <code>__uint(type, BPF_MAP_TYPE_ARRAY)</code> 用于指定特定类型的 BPF maps（这里给出了 v5.4 内核版本中所有的 <a href="https://elixir.bootlin.com/linux/v5.4/source/include/uapi/linux/bpf.h#L115" target="_blank" rel="noopener noreffer ">BPF maps 类型</a>），<code>__type(key, __u32)</code> 用于指定 Key 对应的数据类型，<code>__type(value, struct datarec)</code> 用于指定 Value 对应的数据类型，<code>__uint(max_entries, XDP_ACTION_MAX)</code> 用于指定可存放的最大元素个数。</p>
+<p>使用 <code>bpf_object_find_map_by_name()</code> 函数可以通过 BPF maps 的名字找到其对应的 <code>bpf_map</code> 对象，通过 <code>bpf_map_fd()</code> 函数可以获得 map 的文件描述符，libbpf 库中提供了一个函数<code>bpf_object__find_map_fd_by_name()</code> 用于直接完成上述两个步骤。</p>
+<div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>eBPF Maps 特性<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">所有处于内核态的 BPF 程序以及用户空间中的应用程序都能够访问 BPF Maps。</div>
+        </div>
+    </div>
+<p>在用户空间中，我们可以通过函数 <code>bpf_map_lookup_elem()</code> 在用户空间中读取 BPF Maps 中的内容。</p>
+<p>在上述代码中，我们分别定义了两种不同类型的 BPF Maps，它们分别是 <code>BPF_MAP_TYPE_ARRAY</code> 与 <code>BPF_MAP_TYPE_PERCPU_ ARRAY</code> ，它们两者之间最大的区别 <strong>【对持有的数据对象进行操作是否需要加锁】</strong> ，对于前者来说多个数据操作主体对一片共享内存空间进行操作，所以在这片内存空间之上进行操作时需要持有锁（操作需要是原子的），而对于后者来说，由于各数据操作主体独有一片自用的内存空间，便不存在了临界区，我们可以直接在这片区域上进行读写。<strong>不过，这时候我们在用户空间代码中的操作可能会有些许不同，这是由于数据被各 CPU 所持有，要想获取完整的数据需要遍历所有 CPU 持有的 Map 对象</strong>。注意到考虑硬件平台可能会支持 CPU 热插拔，所以 Linux Kernel 在初始化时会为这些潜在的可能能够上线的 CPU 初始化相应的 Buffer，分配相应的 CPU ID。若要查看当前环境中所有可能存在的 CPU 数量，可以在 root 权限下查看 <code>/sys/devices/system/cpu/possible</code> 文件来获取内核认为可能会存在的 CPU 数目，从而当我们读取 per-cpu buffer 时，需要读取这些所有可能存在 CPU 的 buffer。有关 <code>num_possible_cpus</code> 的讨论可以参考<a href="https://github.com/libbpf/libbpf/issues/383" target="_blank" rel="noopener noreffer ">此处</a>。</p>
+<div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>eBPF 程序编写指南<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">在编写 BPF 程序时，遇到不熟悉的函数或者用法，可以查看 bpf-helpers。通过 <code>man bpf-helpers</code> 命令可以查看各函数相关入参、使用方法描述以及函数的返回值。</div>
+        </div>
+    </div>
+<p>我在本课程中使用 Go 语言编写对应的用户态代码，主要使用到了 <code>github.com/aquasecurity/libbpfgo</code> <a href="https://github.com/aquasecurity/libbpfgo" target="_blank" rel="noopener noreffer ">这个库</a>，其中遇到了一些坑（也许是我不会用 😅）</p>
+<p>我们可以通过 <code>bpfModule.GetMap(&quot;xdp_stats_map_percpu&quot;)</code> 获取 BPF Maps 对象，此后便可以将其卸载到指定的 NIC 上，监听该网卡上接收到的数据包。接着使用 <code> bpfMap.GetValu e(unsafe.Pointer(&amp;XDP_PASS))</code> 我们便可以获取 Map 对应 Key 所存储的数据。但我尝试从 <code>BPF_MAP_TYPE_PERCPU_ARRAY</code> 类型的 Map 中获取数据时却没有得到预期中的结果。我随即查阅了 <code>(*BPFMap) GetValue(unsafe.Pointer)</code> 函数的相关实现，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// GetValue takes a pointer to the key which is stored in the map.
+</span><span class="c1">// It returns the associated value as a slice of bytes.
+</span><span class="c1">// All basic types, and structs are supported as keys.
+</span><span class="c1">//
+</span><span class="c1">// NOTE: Slices and arrays are also supported but special care
+</span><span class="c1">// should be taken as to take a reference to the first element
+</span><span class="c1">// in the slice or array instead of the slice/array itself, as to
+</span><span class="c1">// avoid undefined behavior.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">BPFMap</span><span class="p">)</span> <span class="nf">GetValue</span><span class="p">(</span><span class="nx">key</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">)</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">value</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nf">ValueSize</span><span class="p">())</span>
+	<span class="nx">valuePtr</span> <span class="o">:=</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+	<span class="nx">ret</span><span class="p">,</span> <span class="nx">errC</span> <span class="o">:=</span> <span class="nx">C</span><span class="p">.</span><span class="nf">bpf_map_lookup_elem</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">fd</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">valuePtr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">ret</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to lookup value %v in map %s: %w&#34;</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">errC</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">value</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到其中 value 分配的内存空间只有 <code>b.ValueSize()</code> 也即单个 Value 数据结构的空间，但当我们使用 <code>BPF_MAP_TYPE_PERCPU_ARRAY</code> Map 类型时，<code>bpf_map_lookup_elem</code> 返回的是所有 CPU 各自持有的 Map 对象中的数据，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">	<span class="k">struct</span> <span class="n">datarec</span> <span class="n">values</span><span class="p">[</span><span class="n">nr_cpus</span><span class="p">];</span> <span class="c1">// sizeof(struct datarec) * nr_cpus
+</span><span class="c1"></span>	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">((</span><span class="n">bpf_map_lookup_elem</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span>
+			<span class="s">&#34;ERR: bpf_map_lookup_elem failed key:0x%X</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+		<span class="k">return</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nr_cpus</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">sum_pkts</span>  <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">rx_packets</span><span class="p">;</span>
+		<span class="n">sum_bytes</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">rx_bytes</span><span class="p">;</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>bpf_map_*</code> 系列函数都是通过 <code>bpf()</code> 系统调用实现的，具体实现<a href="https://elixir.bootlin.com/linux/v5.4/source/tools/lib/bpf/bpf.c#L371" target="_blank" rel="noopener noreffer ">参考此处</a>，也可以参考 <code>bpf</code> 系统调用手册。</p>
+<center>    <img style="border-radius: 0.3125em;    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08); zoom:67%;"     src="https://image.p1nant0m.com/bpf_basic03.png">    <br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;    display: inline-block;    color: #999;    padding: 2px;">示例代码运行输出</div> </center>
+<p>秉着有问题就要暴露出来的想法，我去 libbpfgo 仓库下提了一个 <a href="https://github.com/aquasecurity/libbpfgo/issues/191" target="_blank" rel="noopener noreffer ">issues</a>，最终也得到了解答。</p>
+<h3 id="tcp-协议报文结构">TCP 协议报文结构</h3>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc793" target="_blank" rel="noopener noreffer ">RFC 793</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">                    <span class="m">0</span>                   <span class="m">1</span>                   <span class="m">2</span>                   <span class="m">3</span>
+                    <span class="m">0</span> <span class="m">1</span> <span class="m">2</span> <span class="m">3</span> <span class="m">4</span> <span class="m">5</span> <span class="m">6</span> <span class="m">7</span> <span class="m">8</span> <span class="m">9</span> <span class="m">0</span> <span class="m">1</span> <span class="m">2</span> <span class="m">3</span> <span class="m">4</span> <span class="m">5</span> <span class="m">6</span> <span class="m">7</span> <span class="m">8</span> <span class="m">9</span> <span class="m">0</span> <span class="m">1</span> <span class="m">2</span> <span class="m">3</span> <span class="m">4</span> <span class="m">5</span> <span class="m">6</span> <span class="m">7</span> <span class="m">8</span> <span class="m">9</span> <span class="m">0</span> <span class="m">1</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>          Source Port          <span class="p">|</span>       Destination Port        <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>                        Sequence Number                        <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>                    Acknowledgment Number                      <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>  Data <span class="p">|</span>           <span class="p">|</span>U<span class="p">|</span>A<span class="p">|</span>P<span class="p">|</span>R<span class="p">|</span>S<span class="p">|</span>F<span class="p">|</span>                               <span class="p">|</span>
+                   <span class="p">|</span> Offset<span class="p">|</span> Reserved  <span class="p">|</span>R<span class="p">|</span>C<span class="p">|</span>S<span class="p">|</span>S<span class="p">|</span>Y<span class="p">|</span>I<span class="p">|</span>            Window             <span class="p">|</span>
+                   <span class="p">|</span>       <span class="p">|</span>           <span class="p">|</span>G<span class="p">|</span>K<span class="p">|</span>H<span class="p">|</span>T<span class="p">|</span>N<span class="p">|</span>N<span class="p">|</span>                               <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>           Checksum            <span class="p">|</span>         Urgent Pointer        <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>                    Options                    <span class="p">|</span>    Padding    <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>                             data                              <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                                            TCP Header Format
+</code></pre></td></tr></table>
+</div>
+</div><p>相关字段含义网络上已经有非常多详细的说明，在本文中便不再赘述。</p>
+<h3 id="ip-协议报文结构">IP 协议报文结构</h3>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc791" target="_blank" rel="noopener noreffer ">RFC 791</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">                    <span class="m">0</span>                   <span class="m">1</span>                   <span class="m">2</span>                   <span class="m">3</span>
+                    <span class="m">0</span> <span class="m">1</span> <span class="m">2</span> <span class="m">3</span> <span class="m">4</span> <span class="m">5</span> <span class="m">6</span> <span class="m">7</span> <span class="m">8</span> <span class="m">9</span> <span class="m">0</span> <span class="m">1</span> <span class="m">2</span> <span class="m">3</span> <span class="m">4</span> <span class="m">5</span> <span class="m">6</span> <span class="m">7</span> <span class="m">8</span> <span class="m">9</span> <span class="m">0</span> <span class="m">1</span> <span class="m">2</span> <span class="m">3</span> <span class="m">4</span> <span class="m">5</span> <span class="m">6</span> <span class="m">7</span> <span class="m">8</span> <span class="m">9</span> <span class="m">0</span> <span class="m">1</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>Version<span class="p">|</span>  IHL  <span class="p">|</span>Type of Service<span class="p">|</span>          Total Length         <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>         Identification        <span class="p">|</span>Flags<span class="p">|</span>      Fragment Offset    <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>  Time to Live <span class="p">|</span>    Protocol   <span class="p">|</span>         Header Checksum       <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>                       Source Address                          <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>                    Destination Address                        <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   <span class="p">|</span>                    Options                    <span class="p">|</span>    Padding    <span class="p">|</span>
+                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                                    Example Internet Datagram Header
+</code></pre></td></tr></table>
+</div>
+</div><p>相关字段含义网络上已经有非常多详细的说明，在本文中便不再赘述。</p>
+<h3 id="references">References</h3>
+<ol>
+<li><a href="https://github.com/xdp-project/xdp-tutorial" target="_blank" rel="noopener noreffer ">Github repo</a> for Learning XDP Programming</li>
+<li><a href="https://cilium.readthedocs.io/en/latest/bpf/" target="_blank" rel="noopener noreffer ">Cilium BPF reference guide</a> for building industrial application with BPF</li>
+<li>General Introduction to XDP in <a href="https://github.com/xdp-project/xdp-paper/blob/master/xdp-the-express-data-path.pdf" target="_blank" rel="noopener noreffer ">the academic paper</a> or <a href="https://github.com/xdp-project/xdp-paper/blob/master/xdp-presentation.pdf" target="_blank" rel="noopener noreffer ">the presentation</a>.</li>
+<li><a href="https://item.jd.com/12939760.html" target="_blank" rel="noopener noreffer ">Linux 内核观测技术 BPF</a></li>
+<li>极客时间课程，倪鹏飞老师的 eBPF 核心技术与实战</li>
+<li><a href="https://github.com/cilium/cilium" target="_blank" rel="noopener noreffer ">Cilium: eBPF-based Networking, Security, and Observability</a></li>
+<li><a href="https://github.com/aquasecurity/tracee" target="_blank" rel="noopener noreffer ">tracee: Linux Runtime Security and Forensics using eBPF</a></li>
+<li><a href="https://ebpf.io/zh-cn/" target="_blank" rel="noopener noreffer ">ebpf official</a></li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-07-18</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2022-07-18-xdp-tutorial/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2022-07-18-xdp-tutorial/" data-title="XDP-tutorial 学习如何编写 eBPF XDP 程序" data-via="p1nant0m" data-hashtags="eBPF,XDP,tutorial"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2022-07-18-xdp-tutorial/" data-hashtag="eBPF"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2022-07-18-xdp-tutorial/" data-title="XDP-tutorial 学习如何编写 eBPF XDP 程序"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2022-07-18-xdp-tutorial/" data-title="XDP-tutorial 学习如何编写 eBPF XDP 程序"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2022-07-18-xdp-tutorial/" data-title="XDP-tutorial 学习如何编写 eBPF XDP 程序"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/ebpf/">eBPF</a>,&nbsp;<a href="/tags/xdp/">XDP</a>,&nbsp;<a href="/tags/tutorial/">tutorial</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2022-03-16-infosec-2/" class="prev" rel="prev" title="InfoSec-Lab2-apollo"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>InfoSec-Lab2-apollo</a>
+            <a href="/2022-07-25-ebpf-tracing/" class="next" rel="next" title="eBPF-tracing 使用 eBPF 编写监控类程序">eBPF-tracing 使用 eBPF 编写监控类程序<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

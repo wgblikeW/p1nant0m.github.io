@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Tracee 漫游指北 - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="Tracee 漫游指北" />
+<meta property="og:description" content="项目仓库地址：https://github.com/aquasecurity/tracee 前言 这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-09-05T09:29:17+00:00" />
+<meta property="article:modified_time" content="2022-09-05T09:29:17+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="Tracee 漫游指北"/>
+<meta name="twitter:description" content="项目仓库地址：https://github.com/aquasecurity/tracee 前言 这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" /><link rel="prev" href="https://p1nant0m.com/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/" /><link rel="next" href="https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Tracee 漫游指北",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97\/"
+        },"genre": "posts","keywords": "eBPF, OpenSource Project, Security Issues","wordcount":  4243 ,
+        "url": "https:\/\/p1nant0m.com\/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97\/","datePublished": "2022-09-05T09:29:17+00:00","dateModified": "2022-09-05T09:29:17+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Tracee 漫游指北</h1><h2 class="single-subtitle">Tracee 使用 eBPF 构建的 Linux 运行时安全与取证项目</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-05">2022-09-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4243 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#前言">前言</a></li>
+        <li><a href="#tracee-项目简介">Tracee 项目简介</a></li>
+        <li><a href="#tracee-quickstart">Tracee QuickStart</a></li>
+        <li><a href="#tracee-ebpf-组件初体验">Tracee-ebpf 组件初体验</a></li>
+        <li><a href="#tracee-rules-组件初体验">Tracee-rules 组件初体验</a></li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://image.p1nant0m.com/header_opensource.png"
+        data-srcset="https://image.p1nant0m.com/header_opensource.png, https://image.p1nant0m.com/header_opensource.png 1.5x, https://image.p1nant0m.com/header_opensource.png 2x"
+        data-sizes="auto"
+        alt="https://image.p1nant0m.com/header_opensource.png"
+        title="header_" /></p>
+<p>项目仓库地址：<a href="https://github.com/aquasecurity/tracee" target="_blank" rel="noopener noreffer ">https://github.com/aquasecurity/tracee</a></p>
+<h3 id="前言">前言</h3>
+<p>这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技术构建的 <a href="https://cilium.io/" target="_blank" rel="noopener noreffer ">Cilium</a> 也于 <strong>2021 年 10 月 13 日</strong> 成为了 CNCF 的孵化项目，受到开源社区较大的关注。</p>
+<p>也许会写一系列文章来介绍相关的开源项目及其产品设计思路，主要的角度应该是从功能性、架构设计、以及技术选型出发探究这些优秀开源作品的底层设计逻辑，从中窥探目前业界技术、架构发展的趋势。至于编码层面的细节可能只会稍微提一提有意思的设计，重心还是会放在技术应用于产品上对某一揽子问题的通用解决思路。</p>
+<p>从目前收集到的信息来看，使用 Go 作为主要编程语言的相关开源项目有，</p>
+<ul>
+<li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Tracee</li>
+<li><i class="far fa-square fa-fw" aria-hidden="true"></i> Tetragon</li>
+<li><i class="far fa-square fa-fw" aria-hidden="true"></i> Cilium</li>
+</ul>
+<h3 id="tracee-项目简介">Tracee 项目简介</h3>
+<p>Tracee 是一个使用 eBPF 技术构建的运行时安全与取证项目，其主要由以下两部分组件构成，</p>
+<p><strong>（1）</strong> Tracee-eBPF 使用 eBPF 技术向内核插入探针捕获内核层面发生的事件，并将这些受到用户关注的内核事件信息通过 BPF Maps 传递至用户态形成事件流，告知用户当前内核层面正在发生什么，是整个项目的数据来源。</p>
+<p><strong>（2）</strong> Tracee-Rules 是一个运行时安全检测引擎，其负责分析 Tracee-eBPF 提交上来的事件流，从而判断在当前安全上下文环境中是否有异常行为发生，通过自定义或内置的规则（Signature/Rules) 产生实时告警，以告知管理员潜在的安全威胁。</p>
+<h3 id="tracee-quickstart">Tracee QuickStart</h3>
+<p>根据 <a href="https://aquasecurity.github.io/tracee/v0.8.1/#quickstart" target="_blank" rel="noopener noreffer ">官方文档</a>，我们可以使用 Docker 快速部署 Tracee 项目，提供内核层面的可观测性。不过，在部署之前我们需要确认当前运行的 Linux 系统内核版本是否支持 eBPF 特性以及是否存在 eBPF 程序运行需要确定的内核数据结构文件，相关详情可以参考官方文档的 <a href="https://aquasecurity.github.io/tracee/v0.8.1/installing/prerequisites/" target="_blank" rel="noopener noreffer ">Prerequisites</a>.</p>
+<p>在一切都准备妥当之后，我们便可以使用 Docker 部署 Tracee 项目了，不过为了方便后续介绍 Tracee 的两个重要组件，我们在这里选择使用 <a href="https://github.com/aquasecurity/tracee/releases" target="_blank" rel="noopener noreffer ">分发的 Binary 版本</a> 来进行演示。</p>
+<p>在官方项目 repo Releases 页面中下载最新的项目构建版本（笔者当时下载的版本是 v0.8.1），并将压缩包中的内容解压到何时的位置，最终实验环境的目录结构如下，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">.
+├── rules
+│   ├── anti_debugging_ptraceme.rego
+│   ├── cgroup_release_agent_modification.rego
+│   ├── code_injection.rego
+│   ├── disk_mount.rego
+│   ├── dropped_executable.rego
+│   ├── dynamic_code_loading.rego
+│   ├── fileless_execution.rego
+│   ├── helpers.rego
+│   ├── illegitimate_shell.rego
+│   ├── kernel_module_loading.rego
+│   ├── kubernetes_certificate_theft_attempt.rego
+│   ├── ld_preload.rego
+│   └── syscall_table_hooking.rego
+├── tracee.bpf.core.o
+├── tracee-ebpf
+└── tracee-rules
+</code></pre></td></tr></table>
+</div>
+</div><p><code>rules</code> 文件夹中存放的是 tracee-rules 的内置规则，<code>tracee.bpf.core.o</code> 是经过编译后的一系列 eBPF 探针程序，<code>tracee-ebpf</code> 与 <code>tracee-rules</code> 便是我们上述提到的 tracee 项目中的两大组件。</p>
+<p>执行下述命令，我们可以启动 tracee-ebpf 程序进行内核事件捕获并将相关的信息通过 pipe 重定向至 tracee-rules 的输入流中，tracee-rules 通过内置的规则对相关事件流进行研判分析，最终捕获异常事件的执行，在标准输出流中产生告警，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo ./tracee-ebpf --output format:gob --output option:parse-arguments <span class="p">|</span> ./tracee-rules --input-tracee file:stdin --input-tracee format:gob
+</code></pre></td></tr></table>
+</div>
+</div><p>我们可以在另外一个 Terminal 中执行 <code>strace ls</code> 命令，跟踪执行 <code>ls</code> 程序时进行的系统调用以及其传入的相关参数。当我们再次回到原先的 Terminal 处时，可以发现在标准输出流中产生了相关的告警，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">*** Detection ***
+Time: 2022-09-07T06:25:10Z
+Signature ID: TRC-2
+Signature: Anti-Debugging
+Data: map<span class="o">[]</span>
+Command: strace
+Hostname:  <span class="o">{</span>my-hostname<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>与该告警相关的描述为，</p>
+<blockquote>
+<p>Process uses anti-debugging technique to block debugger</p>
+</blockquote>
+<p>到这我们展示了如何简单地使用 Tracee 进行内核事件监测以及异常行为告警的功能演示。后面的章节中，我们将会继续发掘 tracee-ebpf 的其它功能，在玩耍之中学习该项目的精髓，体会 eBPF 技术带来的强大底层观测以及操控能力。</p>
+<h3 id="tracee-ebpf-组件初体验">Tracee-ebpf 组件初体验</h3>
+<p>tracee-ebpf 在 Tracee 项目中扮演了信息收集者的角色，通过向值得关注的内核函数或事件中插入预定义的探针，收集相关的上下文信息，并最终通过 BPF Maps 将信息汇总至用户态 Go 程序，为用户展示了内核世界发生的图景。</p>
+<p>下图展示了整个 <a href="https://aquasecurity.github.io/tracee/v0.8.1/architecture/" target="_blank" rel="noopener noreffer ">Tracee 项目的架构</a>,</p>
+<figure><a class="lightgallery" href="https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png" title="https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png" data-thumbnail="https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png" data-sub-html="<h2>Tracee 项目架构图</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png"
+            data-srcset="https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png, https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png 1.5x, https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png 2x"
+            data-sizes="auto"
+            alt="https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png" />
+    </a><figcaption class="image-caption">Tracee 项目架构图</figcaption>
+    </figure>
+<p>其中，左上角部分便是 tracee-ebpf 在项目中的位置，负责内核事件的采集以及通过 BPF Maps 将相关的信息从内核态中传出到用户态。</p>
+<div class="details admonition note">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>🌟 Starpoint<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>Tracee 项目中将信息收集的模块与事件分析研判的模块进行了解耦分离，这也是大多是安全平台项目的架构思路。</p>
+<p>一整个大的安全体系需要由多个具有不同职责的模块共同工作来进行构建，这其中又无外乎有这么几个抽象的功能点，包括，</p>
+<ul>
+<li>
+<p>（1）由某些主体的行为导致的一系列事件的产生，这些事件可能分散于系统的各个部分，发生的时间点也可能有所不同，但他们都是由同一个因导致的。</p>
+</li>
+<li>
+<p>（2）一个收集的方法，将游离于系统各处（时间和空间上的）的事件进行收集、关联、聚合，成为具有高度上下文语义信息的聚合体。</p>
+</li>
+<li>
+<p>（3）一个进行分析的方法，有了丰富的上下文环境信息之后，我们需要一个高效的检测方法来识别其中偏离系统基准的行为事件，通俗的来说就是异常事件。</p>
+</li>
+<li>
+<p>（4）根据检出的异常事件以及当前系统的安全上下文，定义威胁度等级以及相应的行为动作，匹配安全策略。</p>
+</li>
+<li>
+<p>（5）对进行异常操作的行为主体进行封堵或诱捕，通过预先定义的通知渠道告知相关责任人，最终以求实现安全事件响应处置闭环。</p>
+</li>
+</ul>
+<p>上述每一项功能点都有足够的深度可以进行研究发掘。目前没有来说还没有出现一家独大的场面，各安全厂商也都在积极布局云原生安全，适应这种敏捷轻量的安全体系建设思路。</p>
+</div>
+        </div>
+    </div>
+<p><strong>✨ tracee-ebpf 命令行工具主要功能介绍</strong></p>
+<p>tracee-ebpf 主要的工作为：（1）将预先编译好的 eBPF 程序加载进入内核，对内核事件进行观测；（2）从各种类型的 BPF Maps 中取出事件相关信息，并将数据汇总输出。</p>
+<p>tracee-ebpf 目前提供了一些较为简易的 Filters 用于从海量的内核事件中挑选出用户关心的那些事件以及一些敏感的入参。并且，tracee-ebpf 向 Prometheus 暴露了 Metrics 采集接口。用户可以根据需求决定是否需要这些外部功能，这都可以通过向 tracee-ebpf CLI 传入相关参数来决定。</p>
+<p>执行以下命令可以追踪以 <code>zsh</code> 为进程名的 <code>execve</code> 的事件，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo ./tracee-ebpf --trace <span class="nv">comm</span><span class="o">=</span>zsh --trace <span class="nv">event</span><span class="o">=</span>execve
+</code></pre></td></tr></table>
+</div>
+</div><p>在另外一个终端上随便执行一些命令，再回到原终端，可以看到有如下输出结果，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">TIME             UID    COMM             PID     TID     RET              EVENT                ARGS
+17:03:59:874600  <span class="m">1000</span>   zsh              <span class="m">12388</span>   <span class="m">12388</span>   <span class="m">0</span>                execve               pathname: /usr/bin/git, argv: <span class="o">[</span>git rev-parse --git-dir<span class="o">]</span>
+17:04:01:888219  <span class="m">1000</span>   zsh              <span class="m">12391</span>   <span class="m">12391</span>   <span class="m">0</span>                execve               pathname: /usr/bin/git, argv: <span class="o">[</span>clear<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>根据需要，我们还能够指定事件输出的格式以及将事件流输出至文件中，进行更加复杂的事件过滤，有兴趣的读者可以自行参考官方文档进行实践。</p>
+<h3 id="tracee-rules-组件初体验">Tracee-rules 组件初体验</h3>
+<p>tracee-rules 是一个运行时安全检测引擎，用于从数据源中（目前仅支持 tracee-ebpf）分析是否存在于规则（Signatures）匹配的事件行为，若发现了预定义的异常行为，则会产生告警。当告警发生时可以通过 webhook 触发预先注册的行为事件，例如通过微信告知管理员当前告警信息。</p>
+<p><strong>✨ tracee-rules 用户自定义规则实现</strong></p>
+<p>tracee-rules 支持用户自定义规则（Signatures），目前支持以下三种方式：</p>
+<ul>
+<li>通过 Golang 编码实现 Signature 接口，用户便可以实现高度定制化的匹配规则与响应逻辑，这也是官方推荐的方式。你也可以使用 Go Plugin 的形式编写 signature，并在程序运行时动态加载，不过这种方式有诸多限制，所以并不被推荐。</li>
+<li>通过 <a href="https://www.openpolicyagent.org/docs/latest/#rego" target="_blank" rel="noopener noreffer ">Rego</a> 编写定制化的 Signature. 编写的 rule 文件大概长这个样子，</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">tracee</span><span class="p">.</span><span class="nx">TRC_2</span>
+
+<span class="nx">__rego_metadoc__</span> <span class="o">:=</span> <span class="p">{</span>
+        <span class="s">&#34;id&#34;</span><span class="p">:</span> <span class="s">&#34;TRC-2&#34;</span><span class="p">,</span>
+        <span class="s">&#34;version&#34;</span><span class="p">:</span> <span class="s">&#34;0.1.0&#34;</span><span class="p">,</span>
+        <span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;Anti-Debugging&#34;</span><span class="p">,</span>
+        <span class="s">&#34;description&#34;</span><span class="p">:</span> <span class="s">&#34;Process uses anti-debugging technique to block debugger&#34;</span><span class="p">,</span>
+        <span class="s">&#34;tags&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#34;linux&#34;</span><span class="p">,</span> <span class="s">&#34;container&#34;</span><span class="p">],</span>
+        <span class="s">&#34;properties&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#34;Severity&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="s">&#34;MITRE ATT&amp;CK&#34;</span><span class="p">:</span> <span class="s">&#34;Defense Evasion: Execution Guardrails&#34;</span><span class="p">,</span>
+        <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="nx">tracee_selected_events</span><span class="p">[</span><span class="nx">eventSelector</span><span class="p">]</span> <span class="p">{</span>
+        <span class="nx">eventSelector</span> <span class="o">:=</span> <span class="p">{</span>
+                <span class="s">&#34;source&#34;</span><span class="p">:</span> <span class="s">&#34;tracee&#34;</span><span class="p">,</span>
+                <span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;ptrace&#34;</span><span class="p">,</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">tracee_match</span> <span class="p">{</span>
+        <span class="nx">input</span><span class="p">.</span><span class="nx">eventName</span> <span class="o">==</span> <span class="s">&#34;ptrace&#34;</span>
+        <span class="nx">arg</span> <span class="o">:=</span> <span class="nx">input</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="nx">_</span><span class="p">]</span>
+        <span class="nx">arg</span><span class="p">.</span><span class="nx">name</span> <span class="o">==</span> <span class="s">&#34;request&#34;</span>
+        <span class="nx">arg</span><span class="p">.</span><span class="nx">value</span> <span class="o">==</span> <span class="s">&#34;PTRACE_TRACEME&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>通过 <a href="https://github.com/google/cel-go" target="_blank" rel="noopener noreffer ">Go-Cel</a> 编写定制化的 Signature. 需要注意的是这种编写 rules 的方式目前仍然处于 POC (Proof Of Concept) 阶段，是一个实验性的功能，用于有可能需要添加相应的代码段才能够让程序正常识别所编写的 rules，如果你使用 <strong>Go-Cel</strong>，编写的 rule 文件大概长这个样子，</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">SignaturesConfig</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">tracee.aquasecurity.github.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">signatures</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Mine-0.1.0&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;0.1.0&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;My Own Signature&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;My Own Signature Detects Stuff&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="s2">&#34;linux&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">eventSelectors</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l">tracee</span><span class="w">
+</span><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">openat</span><span class="w">
+</span><span class="w">    </span><span class="nt">expression</span><span class="p">:</span><span class="w"> </span><span class="p">|-</span><span class="sd">
+</span><span class="sd">        input.eventName == &#39;openat&#39; &amp;&amp;
+</span><span class="sd">        input.stringArg(&#39;pathname&#39;).startsWith(&#39;/etc/passwd&#39;)</span><span class="w">        
+</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>目前，Tracee 内置的 rules 可以通过 <code>tracee-rules --list</code> 命令查看，这里截取其中的一部分，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">ID         NAME                                VERSION DESCRIPTION
+TRC-2      Anti-Debugging                      0.1.0   Process uses anti-debugging technique to block debugger
+TRC-14     CGroups Release Agent File Modification 0.1.0   An Attempt to modify CGroups release agent file was detected. CGroups are a Linux kernel feature which can change a process<span class="err">&#39;</span>s resource limitations. Adversaries may use this feature <span class="k">for</span> container escaping.
+TRC-3      Code injection                      0.1.0   Possible code injection into another process
+TRC-11     Container Device Mount Detected     0.1.0   Container device filesystem mount detected. A mount of a host device filesystem can be exploited by adversaries to perform container escape.
+TRC-9      New Executable Was Dropped During Runtime 0.1.0   An Executable file was dropped in your system during runtime. Usually container images are built with all binaries needed inside, a dropped binary may indicate an adversary infiltrated into your container
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，tracee-rules 检测引擎的工作本质是对语义化安全策略与源事件信息进行匹配，若事件在上下文语义中携带有策略所指定的信息，便会产生告警，拿上面提到的 <code>Anti-Debugging</code> Signature 为例，其具体的策略信息如下所示，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Go" data-lang="Go"><span class="nx">tracee_selected_events</span><span class="p">[</span><span class="nx">eventSelector</span><span class="p">]</span> <span class="p">{</span>
+        <span class="nx">eventSelector</span> <span class="o">:=</span> <span class="p">{</span>
+                <span class="s">&#34;source&#34;</span><span class="p">:</span> <span class="s">&#34;tracee&#34;</span><span class="p">,</span>
+                <span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;ptrace&#34;</span><span class="p">,</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">tracee_match</span> <span class="p">{</span>
+        <span class="nx">input</span><span class="p">.</span><span class="nx">eventName</span> <span class="o">==</span> <span class="s">&#34;ptrace&#34;</span>
+        <span class="nx">arg</span> <span class="o">:=</span> <span class="nx">input</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="nx">_</span><span class="p">]</span>
+        <span class="nx">arg</span><span class="p">.</span><span class="nx">name</span> <span class="o">==</span> <span class="s">&#34;request&#34;</span>
+        <span class="nx">arg</span><span class="p">.</span><span class="nx">value</span> <span class="o">==</span> <span class="s">&#34;PTRACE_TRACEME&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>eventSelector</code> 指定了我们关心的事件名称，这本质上就是一个过滤器，与在 <code>tracee-ebpf</code> 中指定 <code>--trace event=ptrace</code> 相差不大，在 <code>tracee_match</code> 中指定了策略所关心的相关 <code>ptrace</code> 系统调用入参的信息，其中指定了 <code>request</code> 参数值为 <code>PTRACE_TRACEME</code> 的 <code>ptrace</code> 调用。若在事件流中出现了满足上述策略定义的事件，tracee-rules 便会产生告警。</p>
+<div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>ptrace 手册<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p><code>ptrace</code> 的函数签名如下所示，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-C" data-lang="C">       <span class="kt">long</span> <span class="nf">ptrace</span><span class="p">(</span><span class="k">enum</span> <span class="n">__ptrace_request</span> <span class="n">request</span><span class="p">,</span> <span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span>
+                   <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中与 <code>request</code> 入参对应值 <code>PTRACE_TRACEME</code> 的相关释义为，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown">       PTRACE_TRACEME
+              Indicate that this process is to be traced by its parent.  A process probably shouldn&#39;t make this request if its parent isn&#39;t expecting to trace it.  (pid, addr, and data are
+              ignored.)
+
+              The PTRACE_TRACEME request is used only by the tracee; the remaining requests are used only by the tracer.  In the following requests, pid specifies  the  thread  ID  of  the
+              tracee to be acted on.  For requests other than PTRACE_ATTACH, PTRACE_SEIZE, PTRACE_INTERRUPT, and PTRACE_KILL, the tracee must be stopped.
+</code></pre></td></tr></table>
+</div>
+</div><p>更多的信息可以参考<a href="https://man7.org/linux/man-pages/man2/ptrace.2.html" target="_blank" rel="noopener noreffer ">手册</a>。</p>
+</div>
+        </div>
+    </div>
+<h3 id="总结">总结</h3>
+<p>Tracee 项目由两大基本组件构成：<strong>1）</strong> tracee-ebpf 负责加载 eBPF 探针程序到 Linux 内核之中，采集发生在内核层面的安全事件，并将收集到的收集到的原始信息加以聚合整理，形成具有安全上下文语义的事件流，可供事件分析引擎进行监测。<strong>2）</strong> tracee-rules 是运行时安全检测引擎，目前其仅支持 tracee-ebpf 数据源。通过内置或用户自定义的 Signatures（rules），tracee-rules 在事件流中匹配相关的规则上下文，对成功匹配到的事件进行用户侧告警。</p>
+<p>目前，Tracee 项目并不支持对违背安全策略的事件进行实时阻断拦截，社区中也有相关对于增加阻断拦截功能的相关讨论，团队成员目前也有增加相关支持的计划，主要将会使用到 LSM-BPF 去实现阻断拦截的功能需求。不过，要想使用 LSM-BPF 需要使用版本较新的 Linux 内核（5.7+），并且该功能模块并不是 Linux 内核的默认配置，需要用户在编译阶段指定相应的选项去进行内核配置，并且在启动阶段设置相关的 flags。 这些都是用户使用 LSM-BPF 的成本。</p>
+<div class="details admonition note">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>设计思考<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>除了实时阻断这一种设计方向外，我们若能够容忍异常行为的执行（这时候信息资产可能已经受到了损害），采取一种事后补救的措施也是可供思考的设计方向之一。</p>
+<p>比如，对进行异常行为的外部实体进行封禁，拒绝其后续的行为，并对其操作进行回溯，找出具有安全风险的入口点，恢复其作出的更改，对相关入口采取应急措施。若出现文件落盘行为，则对相关文件进行进一步的沙盒分析，找出相关的回连地址，后续的操作可以有非常多的选择，可以设置蜜罐继续诱捕攻击者，又或是简单的将外联行为禁止等等。</p>
+</div>
+        </div>
+    </div>
+<p>Tracee 项目还未发布其正式版本（v1.0.0），还有许多功能特性以及 Bug 需要进行修复，多平台/架构的支持工作仍在继续，其设计思路以及编码风格可以为初学者提供比较清晰易懂的切入点。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-09-05</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" data-title="Tracee 漫游指北" data-via="p1nant0m" data-hashtags="eBPF,OpenSource Project,Security Issues"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" data-hashtag="eBPF"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" data-title="Tracee 漫游指北"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" data-title="Tracee 漫游指北"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" data-title="Tracee 漫游指北"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/ebpf/">eBPF</a>,&nbsp;<a href="/tags/opensource-project/">OpenSource Project</a>,&nbsp;<a href="/tags/security-issues/">Security Issues</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/" class="prev" rel="prev" title="大白话讲 Golang Channel 实现"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>大白话讲 Golang Channel 实现</a>
+            <a href="/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" class="next" rel="next" title="云原生安全：攻防实践与体系构建阅读笔记">云原生安全：攻防实践与体系构建阅读笔记<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

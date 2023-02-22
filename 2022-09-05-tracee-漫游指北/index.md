@@ -1,0 +1,260 @@
+# Tracee 漫游指北
+
+
+![header_](https://image.p1nant0m.com/header_opensource.png)
+
+项目仓库地址：[https://github.com/aquasecurity/tracee](https://github.com/aquasecurity/tracee)
+
+### 前言
+
+这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技术构建的 [Cilium](https://cilium.io/) 也于 **2021 年 10 月 13 日** 成为了 CNCF 的孵化项目，受到开源社区较大的关注。
+
+也许会写一系列文章来介绍相关的开源项目及其产品设计思路，主要的角度应该是从功能性、架构设计、以及技术选型出发探究这些优秀开源作品的底层设计逻辑，从中窥探目前业界技术、架构发展的趋势。至于编码层面的细节可能只会稍微提一提有意思的设计，重心还是会放在技术应用于产品上对某一揽子问题的通用解决思路。
+
+从目前收集到的信息来看，使用 Go 作为主要编程语言的相关开源项目有，
+
+- [x] Tracee
+- [ ] Tetragon
+- [ ] Cilium
+
+### Tracee 项目简介
+
+Tracee 是一个使用 eBPF 技术构建的运行时安全与取证项目，其主要由以下两部分组件构成，
+
+**（1）** Tracee-eBPF 使用 eBPF 技术向内核插入探针捕获内核层面发生的事件，并将这些受到用户关注的内核事件信息通过 BPF Maps 传递至用户态形成事件流，告知用户当前内核层面正在发生什么，是整个项目的数据来源。
+
+**（2）** Tracee-Rules 是一个运行时安全检测引擎，其负责分析 Tracee-eBPF 提交上来的事件流，从而判断在当前安全上下文环境中是否有异常行为发生，通过自定义或内置的规则（Signature/Rules) 产生实时告警，以告知管理员潜在的安全威胁。
+
+### Tracee QuickStart
+
+根据 [官方文档](https://aquasecurity.github.io/tracee/v0.8.1/#quickstart)，我们可以使用 Docker 快速部署 Tracee 项目，提供内核层面的可观测性。不过，在部署之前我们需要确认当前运行的 Linux 系统内核版本是否支持 eBPF 特性以及是否存在 eBPF 程序运行需要确定的内核数据结构文件，相关详情可以参考官方文档的 [Prerequisites](https://aquasecurity.github.io/tracee/v0.8.1/installing/prerequisites/). 
+
+在一切都准备妥当之后，我们便可以使用 Docker 部署 Tracee 项目了，不过为了方便后续介绍 Tracee 的两个重要组件，我们在这里选择使用 [分发的 Binary 版本](https://github.com/aquasecurity/tracee/releases) 来进行演示。
+
+在官方项目 repo Releases 页面中下载最新的项目构建版本（笔者当时下载的版本是 v0.8.1），并将压缩包中的内容解压到何时的位置，最终实验环境的目录结构如下，
+
+```bash
+.
+├── rules
+│   ├── anti_debugging_ptraceme.rego
+│   ├── cgroup_release_agent_modification.rego
+│   ├── code_injection.rego
+│   ├── disk_mount.rego
+│   ├── dropped_executable.rego
+│   ├── dynamic_code_loading.rego
+│   ├── fileless_execution.rego
+│   ├── helpers.rego
+│   ├── illegitimate_shell.rego
+│   ├── kernel_module_loading.rego
+│   ├── kubernetes_certificate_theft_attempt.rego
+│   ├── ld_preload.rego
+│   └── syscall_table_hooking.rego
+├── tracee.bpf.core.o
+├── tracee-ebpf
+└── tracee-rules
+```
+
+`rules` 文件夹中存放的是 tracee-rules 的内置规则，`tracee.bpf.core.o` 是经过编译后的一系列 eBPF 探针程序，`tracee-ebpf` 与 `tracee-rules` 便是我们上述提到的 tracee 项目中的两大组件。
+
+执行下述命令，我们可以启动 tracee-ebpf 程序进行内核事件捕获并将相关的信息通过 pipe 重定向至 tracee-rules 的输入流中，tracee-rules 通过内置的规则对相关事件流进行研判分析，最终捕获异常事件的执行，在标准输出流中产生告警，
+
+```bash
+sudo ./tracee-ebpf --output format:gob --output option:parse-arguments | ./tracee-rules --input-tracee file:stdin --input-tracee format:gob
+```
+
+我们可以在另外一个 Terminal 中执行 `strace ls` 命令，跟踪执行 `ls` 程序时进行的系统调用以及其传入的相关参数。当我们再次回到原先的 Terminal 处时，可以发现在标准输出流中产生了相关的告警，
+
+```bash
+*** Detection ***
+Time: 2022-09-07T06:25:10Z
+Signature ID: TRC-2
+Signature: Anti-Debugging
+Data: map[]
+Command: strace
+Hostname:  {my-hostname}
+```
+
+与该告警相关的描述为，
+
+> Process uses anti-debugging technique to block debugger
+
+到这我们展示了如何简单地使用 Tracee 进行内核事件监测以及异常行为告警的功能演示。后面的章节中，我们将会继续发掘 tracee-ebpf 的其它功能，在玩耍之中学习该项目的精髓，体会 eBPF 技术带来的强大底层观测以及操控能力。
+
+### Tracee-ebpf 组件初体验
+
+tracee-ebpf 在 Tracee 项目中扮演了信息收集者的角色，通过向值得关注的内核函数或事件中插入预定义的探针，收集相关的上下文信息，并最终通过 BPF Maps 将信息汇总至用户态 Go 程序，为用户展示了内核世界发生的图景。
+
+下图展示了整个 [Tracee 项目的架构](https://aquasecurity.github.io/tracee/v0.8.1/architecture/),
+
+{{< image src="https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png" caption="Tracee 项目架构图" src_s="https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png" src_l="https://aquasecurity.github.io/tracee/v0.8.1/images/architecture.png" >}}
+
+其中，左上角部分便是 tracee-ebpf 在项目中的位置，负责内核事件的采集以及通过 BPF Maps 将相关的信息从内核态中传出到用户态。
+
+{{< admonition type=note title="🌟 Starpoint" open=false >}}
+
+Tracee 项目中将信息收集的模块与事件分析研判的模块进行了解耦分离，这也是大多是安全平台项目的架构思路。
+
+一整个大的安全体系需要由多个具有不同职责的模块共同工作来进行构建，这其中又无外乎有这么几个抽象的功能点，包括，
+
+- （1）由某些主体的行为导致的一系列事件的产生，这些事件可能分散于系统的各个部分，发生的时间点也可能有所不同，但他们都是由同一个因导致的。
+
+- （2）一个收集的方法，将游离于系统各处（时间和空间上的）的事件进行收集、关联、聚合，成为具有高度上下文语义信息的聚合体。
+
+- （3）一个进行分析的方法，有了丰富的上下文环境信息之后，我们需要一个高效的检测方法来识别其中偏离系统基准的行为事件，通俗的来说就是异常事件。
+
+- （4）根据检出的异常事件以及当前系统的安全上下文，定义威胁度等级以及相应的行为动作，匹配安全策略。
+
+- （5）对进行异常操作的行为主体进行封堵或诱捕，通过预先定义的通知渠道告知相关责任人，最终以求实现安全事件响应处置闭环。
+
+上述每一项功能点都有足够的深度可以进行研究发掘。目前没有来说还没有出现一家独大的场面，各安全厂商也都在积极布局云原生安全，适应这种敏捷轻量的安全体系建设思路。
+
+{{< /admonition >}}
+
+**✨ tracee-ebpf 命令行工具主要功能介绍**
+
+tracee-ebpf 主要的工作为：（1）将预先编译好的 eBPF 程序加载进入内核，对内核事件进行观测；（2）从各种类型的 BPF Maps 中取出事件相关信息，并将数据汇总输出。
+
+tracee-ebpf 目前提供了一些较为简易的 Filters 用于从海量的内核事件中挑选出用户关心的那些事件以及一些敏感的入参。并且，tracee-ebpf 向 Prometheus 暴露了 Metrics 采集接口。用户可以根据需求决定是否需要这些外部功能，这都可以通过向 tracee-ebpf CLI 传入相关参数来决定。
+
+执行以下命令可以追踪以 `zsh` 为进程名的 `execve` 的事件，
+
+```bash
+sudo ./tracee-ebpf --trace comm=zsh --trace event=execve
+```
+
+在另外一个终端上随便执行一些命令，再回到原终端，可以看到有如下输出结果，
+
+```bash
+TIME             UID    COMM             PID     TID     RET              EVENT                ARGS
+17:03:59:874600  1000   zsh              12388   12388   0                execve               pathname: /usr/bin/git, argv: [git rev-parse --git-dir]
+17:04:01:888219  1000   zsh              12391   12391   0                execve               pathname: /usr/bin/git, argv: [clear]
+```
+
+根据需要，我们还能够指定事件输出的格式以及将事件流输出至文件中，进行更加复杂的事件过滤，有兴趣的读者可以自行参考官方文档进行实践。
+
+### Tracee-rules 组件初体验
+
+tracee-rules 是一个运行时安全检测引擎，用于从数据源中（目前仅支持 tracee-ebpf）分析是否存在于规则（Signatures）匹配的事件行为，若发现了预定义的异常行为，则会产生告警。当告警发生时可以通过 webhook 触发预先注册的行为事件，例如通过微信告知管理员当前告警信息。
+
+**✨ tracee-rules 用户自定义规则实现**
+
+tracee-rules 支持用户自定义规则（Signatures），目前支持以下三种方式：
+
+- 通过 Golang 编码实现 Signature 接口，用户便可以实现高度定制化的匹配规则与响应逻辑，这也是官方推荐的方式。你也可以使用 Go Plugin 的形式编写 signature，并在程序运行时动态加载，不过这种方式有诸多限制，所以并不被推荐。
+- 通过 [Rego](https://www.openpolicyagent.org/docs/latest/#rego) 编写定制化的 Signature. 编写的 rule 文件大概长这个样子，
+```go
+package tracee.TRC_2
+
+__rego_metadoc__ := {
+        "id": "TRC-2",
+        "version": "0.1.0",
+        "name": "Anti-Debugging",
+        "description": "Process uses anti-debugging technique to block debugger",
+        "tags": ["linux", "container"],
+        "properties": {
+                "Severity": 3,
+                "MITRE ATT&CK": "Defense Evasion: Execution Guardrails",
+        },
+}
+
+tracee_selected_events[eventSelector] {
+        eventSelector := {
+                "source": "tracee",
+                "name": "ptrace",
+        }
+}
+
+tracee_match {
+        input.eventName == "ptrace"
+        arg := input.args[_]
+        arg.name == "request"
+        arg.value == "PTRACE_TRACEME"
+}
+```
+- 通过 [Go-Cel](https://github.com/google/cel-go) 编写定制化的 Signature. 需要注意的是这种编写 rules 的方式目前仍然处于 POC (Proof Of Concept) 阶段，是一个实验性的功能，用于有可能需要添加相应的代码段才能够让程序正常识别所编写的 rules，如果你使用 **Go-Cel**，编写的 rule 文件大概长这个样子，
+
+```yaml
+kind: SignaturesConfig
+apiVersion: tracee.aquasecurity.github.io/v1alpha1
+signatures:
+  - metadata:
+      id: "Mine-0.1.0"
+      version: "0.1.0"
+      name: "My Own Signature"
+      description: "My Own Signature Detects Stuff"
+      tags:
+        - "linux"
+    eventSelectors:
+      - source: tracee
+        name: openat
+    expression: |-
+        input.eventName == 'openat' &&
+        input.stringArg('pathname').startsWith('/etc/passwd')
+
+```
+
+目前，Tracee 内置的 rules 可以通过 `tracee-rules --list` 命令查看，这里截取其中的一部分，
+```bash
+ID         NAME                                VERSION DESCRIPTION
+TRC-2      Anti-Debugging                      0.1.0   Process uses anti-debugging technique to block debugger
+TRC-14     CGroups Release Agent File Modification 0.1.0   An Attempt to modify CGroups release agent file was detected. CGroups are a Linux kernel feature which can change a process's resource limitations. Adversaries may use this feature for container escaping.
+TRC-3      Code injection                      0.1.0   Possible code injection into another process
+TRC-11     Container Device Mount Detected     0.1.0   Container device filesystem mount detected. A mount of a host device filesystem can be exploited by adversaries to perform container escape.
+TRC-9      New Executable Was Dropped During Runtime 0.1.0   An Executable file was dropped in your system during runtime. Usually container images are built with all binaries needed inside, a dropped binary may indicate an adversary infiltrated into your container
+```
+
+可以看到，tracee-rules 检测引擎的工作本质是对语义化安全策略与源事件信息进行匹配，若事件在上下文语义中携带有策略所指定的信息，便会产生告警，拿上面提到的 `Anti-Debugging` Signature 为例，其具体的策略信息如下所示，
+
+```Go
+tracee_selected_events[eventSelector] {
+        eventSelector := {
+                "source": "tracee",
+                "name": "ptrace",
+        }
+}
+
+tracee_match {
+        input.eventName == "ptrace"
+        arg := input.args[_]
+        arg.name == "request"
+        arg.value == "PTRACE_TRACEME"
+}
+```
+
+其中 `eventSelector` 指定了我们关心的事件名称，这本质上就是一个过滤器，与在 `tracee-ebpf` 中指定 `--trace event=ptrace` 相差不大，在 `tracee_match` 中指定了策略所关心的相关 `ptrace` 系统调用入参的信息，其中指定了 `request` 参数值为 `PTRACE_TRACEME` 的 `ptrace` 调用。若在事件流中出现了满足上述策略定义的事件，tracee-rules 便会产生告警。
+
+{{< admonition type=tip title="ptrace 手册" open=false >}}
+`ptrace` 的函数签名如下所示，
+
+```C
+       long ptrace(enum __ptrace_request request, pid_t pid,
+                   void *addr, void *data);
+```
+
+其中与 `request` 入参对应值 `PTRACE_TRACEME` 的相关释义为，
+
+```markdown
+       PTRACE_TRACEME
+              Indicate that this process is to be traced by its parent.  A process probably shouldn't make this request if its parent isn't expecting to trace it.  (pid, addr, and data are
+              ignored.)
+
+              The PTRACE_TRACEME request is used only by the tracee; the remaining requests are used only by the tracer.  In the following requests, pid specifies  the  thread  ID  of  the
+              tracee to be acted on.  For requests other than PTRACE_ATTACH, PTRACE_SEIZE, PTRACE_INTERRUPT, and PTRACE_KILL, the tracee must be stopped.
+```
+
+更多的信息可以参考[手册](https://man7.org/linux/man-pages/man2/ptrace.2.html)。
+{{< /admonition >}}
+
+### 总结
+
+Tracee 项目由两大基本组件构成：**1）** tracee-ebpf 负责加载 eBPF 探针程序到 Linux 内核之中，采集发生在内核层面的安全事件，并将收集到的收集到的原始信息加以聚合整理，形成具有安全上下文语义的事件流，可供事件分析引擎进行监测。**2）** tracee-rules 是运行时安全检测引擎，目前其仅支持 tracee-ebpf 数据源。通过内置或用户自定义的 Signatures（rules），tracee-rules 在事件流中匹配相关的规则上下文，对成功匹配到的事件进行用户侧告警。
+
+目前，Tracee 项目并不支持对违背安全策略的事件进行实时阻断拦截，社区中也有相关对于增加阻断拦截功能的相关讨论，团队成员目前也有增加相关支持的计划，主要将会使用到 LSM-BPF 去实现阻断拦截的功能需求。不过，要想使用 LSM-BPF 需要使用版本较新的 Linux 内核（5.7+），并且该功能模块并不是 Linux 内核的默认配置，需要用户在编译阶段指定相应的选项去进行内核配置，并且在启动阶段设置相关的 flags。 这些都是用户使用 LSM-BPF 的成本。
+
+{{< admonition type=note title="设计思考" open=false >}}
+除了实时阻断这一种设计方向外，我们若能够容忍异常行为的执行（这时候信息资产可能已经受到了损害），采取一种事后补救的措施也是可供思考的设计方向之一。
+
+比如，对进行异常行为的外部实体进行封禁，拒绝其后续的行为，并对其操作进行回溯，找出具有安全风险的入口点，恢复其作出的更改，对相关入口采取应急措施。若出现文件落盘行为，则对相关文件进行进一步的沙盒分析，找出相关的回连地址，后续的操作可以有非常多的选择，可以设置蜜罐继续诱捕攻击者，又或是简单的将外联行为禁止等等。
+{{< /admonition >}}
+
+Tracee 项目还未发布其正式版本（v1.0.0），还有许多功能特性以及 Bug 需要进行修复，多平台/架构的支持工作仍在继续，其设计思路以及编码风格可以为初学者提供比较清晰易懂的切入点。

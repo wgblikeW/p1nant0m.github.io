@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>云原生安全：攻防实践与体系构建阅读笔记 - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="云原生安全：攻防实践与体系构建阅读笔记" />
+<meta property="og:description" content="云原生安全——攻防实践与体系构建 1云原生安全 在本章节中我们首先介绍云原生的含义和特性，然后介绍云原生安全的含义、体系、关键问题和现状。 1.1云原生：云计算下半场 CNCF对云原生的见解是：“云原生技术有利于各组织在公有云、私有云和混合云等新型动态环境中，构建和运行可弹性扩展的应用。云原生的代表技术包括容器、服务网络、微服务、不可变基础设施和声明式API。这些技术能够构建容错性好、易于管理和便于观察的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-09-07T21:12:13+00:00" />
+<meta property="article:modified_time" content="2022-09-07T21:12:13+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="云原生安全：攻防实践与体系构建阅读笔记"/>
+<meta name="twitter:description" content="云原生安全——攻防实践与体系构建 1云原生安全 在本章节中我们首先介绍云原生的含义和特性，然后介绍云原生安全的含义、体系、关键问题和现状。 1.1云原生：云计算下半场 CNCF对云原生的见解是：“云原生技术有利于各组织在公有云、私有云和混合云等新型动态环境中，构建和运行可弹性扩展的应用。云原生的代表技术包括容器、服务网络、微服务、不可变基础设施和声明式API。这些技术能够构建容错性好、易于管理和便于观察的"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" /><link rel="prev" href="https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" /><link rel="next" href="https://p1nant0m.com/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "云原生安全：攻防实践与体系构建阅读笔记",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA\/"
+        },"genre": "posts","keywords": "Cloud Native Security, Book Reading Notes","wordcount":  4325 ,
+        "url": "https:\/\/p1nant0m.com\/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA\/","datePublished": "2022-09-07T21:12:13+00:00","dateModified": "2022-09-07T21:12:13+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">云原生安全：攻防实践与体系构建阅读笔记</h1><h2 class="single-subtitle">这是一篇纯纯的阅读笔记</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-07">2022-09-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4325 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#11云原生云计算下半场">1.1云原生：云计算下半场</a></li>
+    <li><a href="#12-什么是云原生安全">1.2 什么是云原生安全</a>
+      <ul>
+        <li><a href="#121-面向云原生环境的安全">1.2.1 面向云原生环境的安全</a></li>
+        <li><a href="#122-具有云原生特征的安全">1.2.2 具有云原生特征的安全</a></li>
+        <li><a href="#123原生安全融合的云原生安全">1.2.3原生安全：融合的云原生安全</a></li>
+      </ul>
+    </li>
+    <li><a href="#13面向云原生环境的安全体系">1.3面向云原生环境的安全体系</a>
+      <ul>
+        <li><a href="#131容器安全">1.3.1容器安全</a></li>
+        <li><a href="#132-编排系统安全">1.3.2 编排系统安全</a></li>
+        <li><a href="#133云原生应用安全">1.3.3云原生应用安全</a></li>
+      </ul>
+    </li>
+    <li><a href="#14云原生安全的关键问题">1.4云原生安全的关键问题</a>
+      <ul>
+        <li><a href="#141如何防护短生命周期的容器">1.4.1如何防护短生命周期的容器</a></li>
+        <li><a href="#142如何降低安全运营成本">1.4.2如何降低安全运营成本</a></li>
+        <li><a href="#143-devsecops">1.4.3 DevSecOps</a></li>
+        <li><a href="#144如何实现安全的云原生化">1.4.4如何实现安全的云原生化</a></li>
+      </ul>
+    </li>
+    <li><a href="#15云原生安全现状">1.5云原生安全现状</a>
+      <ul>
+        <li><a href="#151云原生新范式dockerkubernetes">1.5.1云原生新范式：Docker+Kubernetes</a></li>
+        <li><a href="#152镜像安全问题仍然很突出">1.5.2镜像安全问题仍然很突出</a></li>
+        <li><a href="#153安全配置规范执行和密钥凭证管理不理想">1.5.3安全配置规范执行和密钥凭证管理不理想</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#21容器技术">2.1容器技术</a>
+      <ul>
+        <li><a href="#211容器与虚拟化">2.1.1容器与虚拟化</a></li>
+        <li><a href="#212容器镜像">2.1.2容器镜像</a></li>
+        <li><a href="#213容器存储">2.1.3容器存储</a></li>
+        <li><a href="#214容器网络">2.1.4容器网络</a></li>
+        <li><a href="#215容器运行时">2.1.5容器运行时</a></li>
+      </ul>
+    </li>
+    <li><a href="#22容器编排">2.2容器编排</a></li>
+    <li><a href="#23微服务">2.3微服务</a></li>
+    <li><a href="#24服务网格service-mesh">2.4服务网格（Service Mesh）</a></li>
+    <li><a href="#25-serverless">2.5 Serverless</a></li>
+    <li><a href="#26-devops">2.6 DevOps</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h1 id="云原生安全攻防实践与体系构建">云原生安全——攻防实践与体系构建</h1>
+<h1 id="1云原生安全">1云原生安全</h1>
+<p>在本章节中我们首先介绍云原生的含义和特性，然后介绍云原生安全的含义、体系、关键问题和现状。</p>
+<h2 id="11云原生云计算下半场">1.1云原生：云计算下半场</h2>
+<p>CNCF对云原生的见解是：“云原生技术有利于各组织在公有云、私有云和混合云等新型动态环境中，构建和运行可弹性扩展的应用。云原生的代表技术包括容器、服务网络、微服务、不可变基础设施和声明式API。这些技术能够构建容错性好、易于管理和便于观察的松耦合系统。结合可靠的自动化手段，云原生技术使工程师能够轻松地对系统做出频繁和可预测的重大变更。</p>
+<p>云原生系统的一般特征：</p>
+<ul>
+<li>轻、快、不变的基础设施</li>
+</ul>
+<p>只更新镜像而不改变容器运行时的模式称为不变的基础设施（inmmutable infrastructure）</p>
+<ul>
+<li>弹性服务编排</li>
+</ul>
+<p>服务编排（orchestration）提供了分布式的计算、存储和网络资源管理功能，可以按需、弹性地控制服务的位置、容量、版本，监控并保证服务的可访问性。</p>
+<ul>
+<li>开发运营一体化（Devops）</li>
+</ul>
+<p>Goals：缩短软件开发周期，提供高质量软件的持续交付。Devops不等于敏捷开发（更多的是在消除开发和运营侧的隔阂，聚焦于加速软件部署），但它是敏捷开发的有益补充。</p>
+<p>Devops的开发理念：自动化构建和测试、持续集成和持续交付等</p>
+<ul>
+<li>微服务架构</li>
+</ul>
+<p>传统单体应用的功能被拆解成大量独立、细粒度的服务。</p>
+<p>微服务架构使得每个服务聚焦在自己的功能上，做到小而精，然后通过应用编排组装，进而实现等价于传统单体应用的复杂功能。</p>
+<p>其优点使后续业务修改时可复用现有的微服务，而不需要关心其内部实现，可最大限度地减少重构开销。</p>
+<ul>
+<li>无服务模型</li>
+</ul>
+<p>无服务聚焦在函数计算本身，隐藏了底层复杂的实现方式，使开发者能够聚焦于业务本身。</p>
+<h2 id="12-什么是云原生安全">1.2 什么是云原生安全</h2>
+<p>两层含义：<strong>面向云原生环境的安全</strong>和<strong>具有云原生特征的安全</strong></p>
+<h3 id="121-面向云原生环境的安全">1.2.1 面向云原生环境的安全</h3>
+<p>Security Goals：防护云原生环境中基础设施、编排系统和微服务等系统的安全。</p>
+<p>这类安全机制不一定具备云原生的特性：例如分布式拒绝服务缓解机制（DDoS Mitigation）一般都是以硬件形态交付和部署的。</p>
+<p>云原生内部的安全机制以云原生形态居多：1）服务网格的安全通常使用旁挂串接（Sidecar）的安全容器，微服务API安全通常使用微API网关容器，这些安全容器都是云原生的部署模式，具有云原生的特性。</p>
+<h3 id="122-具有云原生特征的安全">1.2.2 具有云原生特征的安全</h3>
+<p>具有云原生特征的各类安全机制，此类安全机制具有弹性、敏捷、轻量级、可编排等特性，它防护的对象可以是传统的业务系统。</p>
+<p>在本书中讨论的更多是面向云原生环境的安全，即在云原生环境中识别各个系统和组件的脆弱性和安全风险，进而提出和设计<strong>面向云原生环境的安全</strong>，而相应的安全机制必须应用于云原生环境。</p>
+<h3 id="123原生安全融合的云原生安全">1.2.3原生安全：融合的云原生安全</h3>
+<p>作者认为原生安全有两个特点：基于云原生且无处不在，即使用了云原生技术，适用于各类场景。</p>
+<ul>
+<li>
+<p><strong>云原生安全能力</strong>：容器/虚拟化/宿主机运行时安全=&gt;编排平台/服务网格安全=&gt;微服务/无服务安全</p>
+</li>
+<li>
+<p><strong>原生安全架构</strong>：安全应用=&gt;安全编排=&gt;虚拟安全资源</p>
+</li>
+<li>
+<p><strong>原生安全能力</strong>：终端安全=&gt;网络安全=&gt;应用安全</p>
+</li>
+</ul>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://image.p1nant0m.com/202209082118466.png"
+        data-srcset="https://image.p1nant0m.com/202209082118466.png, https://image.p1nant0m.com/202209082118466.png 1.5x, https://image.p1nant0m.com/202209082118466.png 2x"
+        data-sizes="auto"
+        alt="https://image.p1nant0m.com/202209082118466.png"
+        title="https://image.p1nant0m.com/202209082118466.png" /></p>
+<ol>
+<li>
+<p>当前云原生技术发展迅速，但相应的安全防护匮乏。如何将现有成熟的安全能力，如隔离、访问控制、入侵检测、应用安全，应用于云原生环境，构建安全的云原生系统。</p>
+</li>
+<li>
+<p>赋予传统安全产品云原生的特性（轻/快/不变的基础设施、弹性服务编排、开发运营一体化）从而提供弹性、按需、云原生的安全能力，提高”防护——检测——响应“闭环的效率。</p>
+</li>
+<li>
+<p>通过安全设备或平台云原生化后，就能提供（云）原生的安全能力，在各种场景下都能够提供弹性、按需的安全服务，最终成为无处不在的安全。</p>
+</li>
+</ol>
+<h2 id="13面向云原生环境的安全体系">1.3面向云原生环境的安全体系</h2>
+<p>根据云原生环境的构成，面向云原生环境的安全体系可包含三个层面的安全机制：<strong>容器安全</strong>，<strong>编排系统安全</strong>，<strong>云原生应用安全</strong>。</p>
+<h3 id="131容器安全">1.3.1容器安全</h3>
+<p>容器技术是云原生体系的底层，因而容器安全也是云原生安全的基石。容器层面的安全可以分为以下几部分。</p>
+<p>1）容器环境基础设施的安全性；侧重于运行容器的宿主机上的安全性，主机上的安全漏洞和恶意进程是否影响到容器，容器内的进程是否可以利用主机上的安全漏洞，主机上的安全配置是否回影响到其上运行的容器。</p>
+<p>2）容器的镜像安全；镜像中的软件是否存在安全漏洞，镜像在构建过程中是否存在安全风险，镜像在传输过程中是否被恶意篡改。</p>
+<p>3）容器运行时安全；运行时容器间的隔离是否充分，容器间的通信是否安全的，容器内的恶意程序是否回影响到主机或者其他容器，容器的资源使用情况是否安全。</p>
+<p>4）整个容器生态的安全性；Docker自身的安全性如何？Service Mesh/Serverless 对容器安全有什么影响，容器中安全密钥的管理与传统环境有什么不同？容器化后的数据隐私保护与传统的数据隐私保护是否一致？</p>
+<p>容器云环境的安全可以粗略分为两个主要方面：容器云内部的安全，宿主机安全、虚拟化安全、容器（东西向）网络的安全、管理平台的安全以及数据安全等；另一方面就是容器云内外之间的网络安全，也就是通常讲的南北向网络安全。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://image.p1nant0m.com/202209082119258.png"
+        data-srcset="https://image.p1nant0m.com/202209082119258.png, https://image.p1nant0m.com/202209082119258.png 1.5x, https://image.p1nant0m.com/202209082119258.png 2x"
+        data-sizes="auto"
+        alt="https://image.p1nant0m.com/202209082119258.png"
+        title="https://image.p1nant0m.com/202209082119258.png" /></p>
+<p>容器云安全解决方案可以分别从两个方面进行设计：对于南北向的网络安全，可以通过安全资源池引流的方式，实现相应的安全检测与防护；对于容器云内部的安全，可以通过相应的容器安全机制实现。最后将这两部分统一接入云安全集中管理系统，进行统一的安全管理与运营。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://image.p1nant0m.com/202209082119600.png"
+        data-srcset="https://image.p1nant0m.com/202209082119600.png, https://image.p1nant0m.com/202209082119600.png 1.5x, https://image.p1nant0m.com/202209082119600.png 2x"
+        data-sizes="auto"
+        alt="https://image.p1nant0m.com/202209082119600.png"
+        title="https://image.p1nant0m.com/202209082119600.png" /></p>
+<h3 id="132-编排系统安全">1.3.2 编排系统安全</h3>
+<p>Kubernetes已经成为事实上的云原生编排系统，那么Kubernetes的安全就成为非常重要的编排安全部分，本书将在第四章曝光针对Kubernetes的攻击手段。</p>
+<h3 id="133云原生应用安全">1.3.3云原生应用安全</h3>
+<p>无服务、服务网格等新型微服务体系同样存在各种安全风险，例如，攻击者通过编写一段无服务的代码获得运行无服务容器的Shell权限，进而对容器网络进行渗透。</p>
+<p>与云原生应用相关的安全：面向云原生应用的零信任体系、云原生应用的传统安全机制、业务安全和API安全。</p>
+<h2 id="14云原生安全的关键问题">1.4云原生安全的关键问题</h2>
+<p>云原生安全与传统以虚拟化安全为主的云计算安全又巨大差别：</p>
+<ul>
+<li>
+<p>容器不是轻量级的虚拟化，容器安全不是轻量级的虚拟化安全。</p>
+</li>
+<li>
+<p>虚拟化安全关注的是资源，云原生安全关注的是应用。</p>
+</li>
+<li>
+<p>安全左移是云原生安全的必经之路。</p>
+</li>
+</ul>
+<p>为了加深对这三点的认识，我们需要来回顾云原生安全的关键问题。</p>
+<h3 id="141如何防护短生命周期的容器">1.4.1如何防护短生命周期的容器</h3>
+<p>容器的生命周期分布呈三种类型：1）虚拟机型；2）原生型；3）编排型；容器安全和虚拟化安全的最大差别看似是隔离技术的强度，但其实应是生命周期，甚至没有之一，因为这会影响到攻防双方的战术偏好。攻击者投入大部分精力去攻击更为持久化的东西，如代码、第三方库、镜像等资产，<strong>开发安全和供应链安全将是云原生环境中的重点安全措施</strong>。</p>
+<p>终端检测与响应（Endpoint Detection and Response, EDR）</p>
+<p>用户和实体行为分析（User and Entity Behavior Analytics, UEBA）</p>
+<h3 id="142如何降低安全运营成本">1.4.2如何降低安全运营成本</h3>
+<p><strong>安全的本质在于对抗以及攻防投入产出比的平衡。</strong></p>
+<p>攻击容器的代价较高，而收益较小；但对第三方软件库、项目依赖的镜像“投毒”的持久化代价较小，而其收益远高于攻击容器。</p>
+<p>Shift Left（安全左移）：将软件的生命周期从左到右展开，即开发、测试、集成、部署、运行阶段，安全左移的含义就是将安全防护从传统运行时运营转向开发侧（从重视运行时安全转向先从开发侧解决最基本和最容易的问题）</p>
+<h3 id="143-devsecops">1.4.3 DevSecOps</h3>
+<p>容器技术天然具有的隔离性、运行时环境一致性、镜像仓库等特性直接推动了DevOps的落地。</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209082119099.png" title="https://image.p1nant0m.com/202209082119099.png" data-thumbnail="https://image.p1nant0m.com/202209082119099.png" data-sub-html="<h2>DevSecOps闭环</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202209082119099.png"
+            data-srcset="https://image.p1nant0m.com/202209082119099.png, https://image.p1nant0m.com/202209082119099.png 1.5x, https://image.p1nant0m.com/202209082119099.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202209082119099.png" />
+    </a><figcaption class="image-caption">DevSecOps闭环</figcaption>
+    </figure>
+<h3 id="144如何实现安全的云原生化">1.4.4如何实现安全的云原生化</h3>
+<p>（1）安全架构具备编排能力；（2）容器和宿主机安全：安全特权容器；（3）业务安全：Sidercar安全容器；</p>
+<h2 id="15云原生安全现状">1.5云原生安全现状</h2>
+<h3 id="151云原生新范式dockerkubernetes">1.5.1云原生新范式：Docker+Kubernetes</h3>
+<p><a href="https://dig.sysdig.com/c/pf-2021-container-security-and-usage-report?x=BdTQJx&amp;utm_source=gated-organic&amp;utm_medium=website" target="_blank" rel="noopener noreffer ">pf-2021-container-security-and-usage-report</a></p>
+<p>镜像安全、配置规范和运行时安全越来越多的受到容器使用者的关注。</p>
+<h3 id="152镜像安全问题仍然很突出">1.5.2镜像安全问题仍然很突出</h3>
+<p>Docker Hub上的镜像安全并不理想，有大量的官方镜像存在高危漏洞。</p>
+<h3 id="153安全配置规范执行和密钥凭证管理不理想">1.5.3安全配置规范执行和密钥凭证管理不理想</h3>
+<p><a href="https://falco.org/" target="_blank" rel="noopener noreffer ">Falco</a></p>
+<h1 id="2-云原生技术">2 云原生技术</h1>
+<h2 id="21容器技术">2.1容器技术</h2>
+<h3 id="211容器与虚拟化">2.1.1容器与虚拟化</h3>
+<p>容器技术在操作系统层面实现了对计算机系统资源的虚拟化，在操作系统中，通过对CPU、内存和文件系统等资源的隔离、划分和控制，实现进程之间透明的资源使用。</p>
+<h3 id="212容器镜像">2.1.2容器镜像</h3>
+<p>容器镜像不是一个文件，是分层存储的文件系统。</p>
+<h3 id="213容器存储">2.1.3容器存储</h3>
+<ol>
+<li>
+<p>镜像元数据</p>
+</li>
+<li>
+<p>存储驱动</p>
+</li>
+<li>
+<p>数据卷</p>
+</li>
+</ol>
+<h3 id="214容器网络">2.1.4容器网络</h3>
+<p>目前容器网络可以简单分为主机网络和集群网络，其中主机网络以Docker为例主要分为None网络模式、Bridge网络模式、Host网络模式和Container网络模式。集群网络以Kubernetes为例，Pod作为Kubernetes应用运行的基本单元，每个Pod中包含一个或多个相关的容器，这些容器都会运行在同一个主机中，并且共享相同的网络命名空间和相同的Linux协议栈。集群网络基于Pod主要涉及以下三种通信：<strong>同一个Pod内，容器和容器之间的通信</strong>；<strong>同一个主机内不同Pod之间的通信</strong>；<strong>跨主机Pod之间的通信</strong>。</p>
+<h3 id="215容器运行时">2.1.5容器运行时</h3>
+<p>容器运行时负责管理容器运行的整个生命周期，包括但不限于指定容器镜像格式、构建镜像、上传和拉取镜像、管理镜像、管理容器实例、运行容器等。</p>
+<p><a href="https://opencontainers.org/" target="_blank" rel="noopener noreffer ">https://opencontainers.org/</a></p>
+<p><a href="https://github.com/opencontainers" target="_blank" rel="noopener noreffer ">https://github.com/opencontainers</a></p>
+<p><a href="https://github.com/opencontainers/runtime-spec" target="_blank" rel="noopener noreffer ">https://github.com/opencontainers/runtime-spec</a></p>
+<p><a href="https://github.com/opencontainers/image-spec" target="_blank" rel="noopener noreffer ">https://github.com/opencontainers/image-spec</a></p>
+<p><a href="https://kubernetes.io/zh/docs/setup/production-environment/container-runtimes/" target="_blank" rel="noopener noreffer ">https://kubernetes.io/zh/docs/setup/production-environment/container-runtimes/</a></p>
+<h2 id="22容器编排">2.2容器编排</h2>
+<p>当前关注度和使用率比较高的几种容器编排平台主要包括Kubernetes、Apache Mesos、Docker Swarm</p>
+<p>OpenShift、Rancher等，Kubernetes在容器编排领域占据较大优势。</p>
+<h2 id="23微服务">2.3微服务</h2>
+<p>Martin Fowler对微服务概念的定义如下：微服务就是将一个完整应用中所有的模块拆分成多个不同的服务，其中每个服务都可以独立部署、维护和扩展，服务之间通常通过 <a href="https://zh.wikipedia.org/zh-tw/%e8%a1%a8%e7%8e%b0%e5%b1%82%e7%8a%b6%e6%80%81%e8%bd%ac%e6%8d%a2" target="_blank" rel="noopener noreffer ">RESTful API</a> 通信，这些服务围绕业务能力构建，且每个服务均可使用不同的编程语言和不同的数据存储技术。</p>
+<h2 id="24服务网格service-mesh">2.4服务网格（Service Mesh）</h2>
+<p>服务网格通常通过一组轻量级网络代理实现，这些代理与应用程序一起部署，而无须感知应用程序本身。</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/image_tC-kNjSovf.png" title="https://image.p1nant0m.com/image_tC-kNjSovf.png" data-thumbnail="https://image.p1nant0m.com/image_tC-kNjSovf.png" data-sub-html="<h2>Service Mesh Architecture</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/image_tC-kNjSovf.png"
+            data-srcset="https://image.p1nant0m.com/image_tC-kNjSovf.png, https://image.p1nant0m.com/image_tC-kNjSovf.png 1.5x, https://image.p1nant0m.com/image_tC-kNjSovf.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/image_tC-kNjSovf.png" />
+    </a><figcaption class="image-caption">Service Mesh Architecture</figcaption>
+    </figure>
+<h2 id="25-serverless">2.5 Serverless</h2>
+<p>Goals：<strong>业务逻辑实现与基础设施分离</strong></p>
+<p><a href="https://martinfowler.com/articles/serverless.html" target="_blank" rel="noopener noreffer ">Serverless</a> 可在不考虑服务器的情况下构建并允许应用程序和服务，它使开发者避免了<strong>基础设施管理，如集群配置、漏洞修补、系统维护</strong>等。</p>
+<p>Serverless通常可分为两种实现方式，即BaaS（Backend as a Service, 后端即服务）和FaaS（Function as a Service, 函数即服务），其中FaaS是Serverless的主要实现方式。</p>
+<h2 id="26-devops">2.6 DevOps</h2>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209082119136.png" title="https://image.p1nant0m.com/202209082119136.png" data-thumbnail="https://image.p1nant0m.com/202209082119136.png" data-sub-html="<h2>DevOps Process</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202209082119136.png"
+            data-srcset="https://image.p1nant0m.com/202209082119136.png, https://image.p1nant0m.com/202209082119136.png 1.5x, https://image.p1nant0m.com/202209082119136.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202209082119136.png" />
+    </a><figcaption class="image-caption">DevOps Process</figcaption>
+    </figure>
+<p>作者认为 <a href="https://aws.amazon.com/cn/devops/what-is-devops/" target="_blank" rel="noopener noreffer ">DevOps</a> 成为云原生基础不可或缺的一环，究其根本原因，有以下几点，</p>
+<ul>
+<li>
+<p>云原生提供DevOps基础设施</p>
+</li>
+<li>
+<p>微服务架构加速DevOps的应用</p>
+</li>
+<li>
+<p>DevOps赋能服务网格</p>
+</li>
+<li>
+<p>DevOps加速Serverless应用迁移</p>
+</li>
+</ul>
+<h1 id="references">References</h1>
+<p><a href="https://blog.container-solutions.com/linux-capabilities-in-practice" target="_blank" rel="noopener noreffer ">https://blog.container-solutions.com/linux-capabilities-in-practice</a></p>
+<p><a href="https://www.cnblogs.com/sparkdev/p/8359028.html" target="_blank" rel="noopener noreffer ">https://www.cnblogs.com/sparkdev/p/8359028.html</a></p>
+<p><a href="https://kubernetes.io/zh/docs/tutorials/clusters/seccomp/" target="_blank" rel="noopener noreffer ">https://kubernetes.io/zh/docs/tutorials/clusters/seccomp/</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Seccomp" target="_blank" rel="noopener noreffer ">https://en.wikipedia.org/wiki/Seccomp</a></p>
+<p><a href="https://grpc.io/" target="_blank" rel="noopener noreffer ">https://grpc.io/</a></p>
+<p><a href="https://katacontainers.io/" target="_blank" rel="noopener noreffer ">https://katacontainers.io/</a></p>
+<p><a href="https://opencontainers.org/" target="_blank" rel="noopener noreffer ">https://opencontainers.org/</a></p>
+<p><a href="https://man7.org/linux/man-pages/" target="_blank" rel="noopener noreffer ">https://man7.org/linux/man-pages/</a></p>
+<p><a href="https://github.com/cloud-hypervisor/cloud-hypervisor#1-what-is-cloud-hypervisor" target="_blank" rel="noopener noreffer ">https://github.com/cloud-hypervisor/cloud-hypervisor#1-what-is-cloud-hypervisor</a></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-09-07</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" data-title="云原生安全：攻防实践与体系构建阅读笔记" data-via="p1nant0m" data-hashtags="Cloud Native Security,Book Reading Notes"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" data-hashtag="Cloud Native Security"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" data-title="云原生安全：攻防实践与体系构建阅读笔记"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" data-title="云原生安全：攻防实践与体系构建阅读笔记"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/" data-title="云原生安全：攻防实践与体系构建阅读笔记"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/cloud-native-security/">Cloud Native Security</a>,&nbsp;<a href="/tags/book-reading-notes/">Book Reading Notes</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/" class="prev" rel="prev" title="Tracee 漫游指北"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Tracee 漫游指北</a>
+            <a href="/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/" class="next" rel="next" title="程序员修炼指南">程序员修炼指南<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

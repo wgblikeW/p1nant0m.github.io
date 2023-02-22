@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>在 K8s 集群上部署 Cilium 与 Hubble - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="在 K8s 集群上部署 Cilium 与 Hubble" />
+<meta property="og:description" content="关于笔者 目前，笔者还是一名在校大学生，就读于信息安全专业，对云原生安全、分布式系统、观测领域有较大的兴趣。因而小站上的很多文章都是萌新学习踩坑的经验分享，更多的是“玩”的心态向优秀、有趣的项目，学习其设计思路、编码风格、文档编写、开源社区/团队协作方面的知识，并辅以自己小小的见解。作为一名还未有充分经验的用户，文章中难免有所纰漏，还望能够与大家交流学习，共勉。 在 K8s 集群上部署 Cilium 与 Hubble 近段时间一直在思考" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-09-27T14:57:27+00:00" />
+<meta property="article:modified_time" content="2022-09-27T14:57:27+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="在 K8s 集群上部署 Cilium 与 Hubble"/>
+<meta name="twitter:description" content="关于笔者 目前，笔者还是一名在校大学生，就读于信息安全专业，对云原生安全、分布式系统、观测领域有较大的兴趣。因而小站上的很多文章都是萌新学习踩坑的经验分享，更多的是“玩”的心态向优秀、有趣的项目，学习其设计思路、编码风格、文档编写、开源社区/团队协作方面的知识，并辅以自己小小的见解。作为一名还未有充分经验的用户，文章中难免有所纰漏，还望能够与大家交流学习，共勉。 在 K8s 集群上部署 Cilium 与 Hubble 近段时间一直在思考"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" /><link rel="prev" href="https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" /><link rel="next" href="https://p1nant0m.com/2022-10-08-%E4%BC%98%E9%9B%85%E7%9A%84%E5%88%9B%E5%BB%BA-cli-%E7%A8%8B%E5%BA%8F.zh-ch/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "在 K8s 集群上部署 Cilium 与 Hubble",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble\/"
+        },"genre": "posts","keywords": "eBPF, kubernetes, cilium","wordcount":  4704 ,
+        "url": "https:\/\/p1nant0m.com\/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble\/","datePublished": "2022-09-27T14:57:27+00:00","dateModified": "2022-09-27T14:57:27+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">在 K8s 集群上部署 Cilium 与 Hubble</h1><h2 class="single-subtitle">实践出真知——在使用 kind 搭建的 k8s 集群上部署 Cilium 与 Hubble</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-09-27">2022-09-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4704 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 10 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#在-k8s-集群上部署-cilium-与-hubble">在 K8s 集群上部署 Cilium 与 Hubble</a>
+          <ul>
+            <li><a href="#使用-kind-部署-k8s-集群">使用 Kind 部署 K8s 集群</a></li>
+            <li><a href="#安装-cilium-cli-终端并在集群中部署-cilium">安装 Cilium CLI 终端并在集群中部署 Cilium</a></li>
+            <li><a href="#启用-hubble-ui">启用 Hubble UI</a></li>
+            <li><a href="#部署一些简单的-workload-star-wars-demo并在-hubble-ui-中观察网络流">部署一些简单的 Workload （Star Wars Demo）并在 Hubble UI 中观察网络流</a></li>
+            <li><a href="#使用-cilium-对-layer-3-4-7-流量进行控制">使用 Cilium 对 Layer 3, 4, 7 流量进行控制</a>
+              <ul>
+                <li><a href="#应用-l3l4-层网络安全策略">应用 L3/L4 层网络安全策略</a></li>
+                <li><a href="#应用-l7-层网络安全策略">应用 L7 层网络安全策略</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>关于笔者<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">目前，笔者还是一名在校大学生，就读于信息安全专业，对云原生安全、分布式系统、观测领域有较大的兴趣。因而小站上的很多文章都是萌新学习踩坑的经验分享，更多的是“玩”的心态向优秀、有趣的项目，学习其设计思路、编码风格、文档编写、开源社区/团队协作方面的知识，并辅以自己小小的见解。作为一名还未有充分经验的用户，文章中难免有所纰漏，还望能够与大家交流学习，共勉。</div>
+        </div>
+    </div>
+<h3 id="在-k8s-集群上部署-cilium-与-hubble">在 K8s 集群上部署 Cilium 与 Hubble</h3>
+<p>近段时间一直在思考与研究云原生中应用的网络、性能与行为监控/控制平台，Cilium 作为 CNCF 中的后起之秀，利用eBPF 提供对于内核行为观测的强大能力，实现了 K8s 集群工作负载的网络、可观测性以及安全，它的实现方式以及架构思路给了我极大的启发。下图给出了 Cilium 的基本架构，</p>
+<figure><a class="lightgallery" href="https://cilium.io/static/diagram-9836e6891afc6fcbf30b85b31ca2b37e.svg" title="https://cilium.io/static/diagram-9836e6891afc6fcbf30b85b31ca2b37e.svg" data-thumbnail="https://cilium.io/static/diagram-9836e6891afc6fcbf30b85b31ca2b37e.svg" data-sub-html="<h2>Cilium 基本架构</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://cilium.io/static/diagram-9836e6891afc6fcbf30b85b31ca2b37e.svg"
+            data-srcset="https://cilium.io/static/diagram-9836e6891afc6fcbf30b85b31ca2b37e.svg, https://cilium.io/static/diagram-9836e6891afc6fcbf30b85b31ca2b37e.svg 1.5x, https://cilium.io/static/diagram-9836e6891afc6fcbf30b85b31ca2b37e.svg 2x"
+            data-sizes="auto"
+            alt="https://cilium.io/static/diagram-9836e6891afc6fcbf30b85b31ca2b37e.svg" />
+    </a><figcaption class="image-caption">Cilium 基本架构</figcaption>
+    </figure>
+<h4 id="使用-kind-部署-k8s-集群">使用 Kind 部署 K8s 集群</h4>
+<p>我们有三种方式去创建 K8s 集群，在这里我们仅作为一个 demo 来去对 Cilium 进行考察，因此我们选择使用最简单的方式去部署 K8s 集群，它为我们免去了许多对集群繁琐的配置，皆在帮助开发者快速的搭建一个集群，并通过这个简易集群来测试自己的云原生应用。想要详细了解 <a href="https://kind.sigs.k8s.io/" target="_blank" rel="noopener noreffer ">Kind</a> 的可以点击此处，我们这里仅使用其进行快速集群创建。</p>
+<p>在 Cilium 的官方文档中给出了使用 Kind 来创建集群所使用的命令，我们会跟随着文档来一步步的创建使用 Cilium 作为 CNI 组件的 K8s 集群。</p>
+<blockquote>
+<p>鉴于国内特殊的网络环境情况，在创建集群或在 apply yaml 的时候会出现很多因网络问题导致的错误，这里也会给出笔者自己摸索出来的解决方案，这可能不是最好的解决方案但是它可行。😊</p>
+</blockquote>
+<p>我们直接复制 Cilium 文档中给出的命令，使用 Kind 创建 K8s 集群，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">curl -LO https://raw.githubusercontent.com/cilium/cilium/1.12.0/Documentation/gettingstarted/kind-config.yaml
+kind create cluster --config<span class="o">=</span>kind-config.yaml
+</code></pre></td></tr></table>
+</div>
+</div><p>稍微看一下用户创建集群的 yaml 文件配置，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Cluster</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kind.x-k8s.io/v1alpha4</span><span class="w">
+</span><span class="w"></span><span class="nt">nodes</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">control-plane</span><span class="w">
+</span><span class="w"></span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w"></span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w"></span>- <span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l">worker</span><span class="w">
+</span><span class="w"></span><span class="nt">networking</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">disableDefaultCNI</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>你可以根据需要和机器性能增添或删减工作节点的数量，笔者在这里便使用官方给出的定义。在我们执行第二条命令后 kind 会使用 docker 拉取对应的镜像，但 kind 中并不会显示拉取的进度，你可以自行使用 <code>docker pull</code> 拉取对应版本的 kind 镜像并确认你的网络环境是否能够访问对应的仓库。</p>
+<p>值得一提的是，在我们创建的 k8s 集群中，默认的 CNI 插件已经被 <strong>disable</strong>，我们在下一步中安装的 Cilium 会提供相应的 CNI 实现。</p>
+<p>若一切的顺利执行，你的 K8s 集群便会被顺利创建，你可以使用 <code>kubectl cluster-info</code> 查看你的集群是否已成功部署，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281510675.png" title="https://image.p1nant0m.com/202209281510675.png" data-thumbnail="https://image.p1nant0m.com/202209281510675.png" data-sub-html="<h2>kubectl cluster-info 命令执行情况</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202209281510675.png"
+            data-srcset="https://image.p1nant0m.com/202209281510675.png, https://image.p1nant0m.com/202209281510675.png 1.5x, https://image.p1nant0m.com/202209281510675.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202209281510675.png" />
+    </a><figcaption class="image-caption">kubectl cluster-info 命令执行情况</figcaption>
+    </figure>
+<p>使用 <code>docker ps</code> 命令查看在本地机器上已经启动了的工作节点以及控制平面，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281510146.png" title="https://image.p1nant0m.com/202209281510146.png" data-thumbnail="https://image.p1nant0m.com/202209281510146.png" data-sub-html="<h2>docker ps 命令查看运行的“节点”</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202209281510146.png"
+            data-srcset="https://image.p1nant0m.com/202209281510146.png, https://image.p1nant0m.com/202209281510146.png 1.5x, https://image.p1nant0m.com/202209281510146.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202209281510146.png" />
+    </a><figcaption class="image-caption">docker ps 命令查看运行的“节点”</figcaption>
+    </figure>
+<p><strong>容器中代理服务的配置</strong></p>
+<p>值得一提的是，受限于国内网络环境情况，许多镜像在拉取时会出现问题，这将导致 Kubernetes 部署一些 Pod 的时候会出现经常失败的情况。因此，我在 Systemd 启动 Docker 守护进程的相关配置中增加了相关的代理配置内容，具体的可以参考 <a href="https://docs.docker.com/config/daemon/systemd/#httphttps-proxy" target="_blank" rel="noopener noreffer ">HTTP/HTTPS proxy</a> ，这样便可以在 Docker 容器内注入相关的环境变量，实现代理。</p>
+<p>还有一种方式是通过 <code>kind load</code> 命令向相关容器中加载指定的镜像，但是这种方式在一些特殊的场景下比较麻烦，有兴趣的朋友可以试试。</p>
+<div class="details admonition warning">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>代理的问题<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>当你选择代理后，会出现非常多奇奇怪怪的问题，这在很多情况下是因为代理网络与集群网络的原因。</p>
+<p>一个比较典型的例子是访问某些 Pod 容器中进程暴露的健康状态检测探针 REST API 接口。因为代理的原因，你很有可能访问不到相关资源的路径，从而导致超时，进而 k8s 会根据相关的策略去重启相关的服务，如此反复。</p>
+</div>
+        </div>
+    </div>
+<h4 id="安装-cilium-cli-终端并在集群中部署-cilium">安装 Cilium CLI 终端并在集群中部署 Cilium</h4>
+<p>根据官方文档，我们下一步需要安装 Cilium 的 CLI 二进制程序，该程序用于提供自动在 k8s 集群中部署安装 Cilium 提供的 CNI 实现以及能够检查 Cilium 的安装状态，启停相关特性等功能。出于安全原因的考虑，你可以参考<a href="https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/#install-the-cilium-cli" target="_blank" rel="noopener noreffer ">官方文档</a>来完成此步骤的安装。</p>
+<p>在 Cilium 部署相关组件时，执行相关命令的进程会阻塞等待 k8s 集群完成组件的部署，我们可以在另一个命令行终端中执行 <code>kubectl get pods --all-namespace -w</code> 来实时查看相关进度。</p>
+<div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>郁闷<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content">k8s 在相关节点拉取 YAML 文件中指定的镜像时并没有能够显示拉取进度的地方，有时候都不知道网络是不是正常的，只能等到它失败或是成功，心里没底，有点慌。</div>
+        </div>
+    </div>
+<p>一切都正常执行完毕后，你可以使用 <code>cilium status</code> 命令来查看集群中 Cilium 的状态，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281537611.png" title="https://image.p1nant0m.com/202209281537611.png" data-thumbnail="https://image.p1nant0m.com/202209281537611.png" data-sub-html="<h2>cilium status 命令执行</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202209281537611.png"
+            data-srcset="https://image.p1nant0m.com/202209281537611.png, https://image.p1nant0m.com/202209281537611.png 1.5x, https://image.p1nant0m.com/202209281537611.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202209281537611.png" />
+    </a><figcaption class="image-caption">cilium status 命令执行</figcaption>
+    </figure>
+<h4 id="启用-hubble-ui">启用 Hubble UI</h4>
+<p>Hubble 是 Cilium 项目的可观测层，它可以用来获取集群范围内在网络以及安全层面的可观测性，从而为运维人员提供进行排障工作的信息依据。</p>
+<p>执行 <code>cilium hubble enable --ui</code> 启用 <strong>hubble UI</strong> 特性，Cilium 将会通过 Patch cilium-confg、重启 Cilium Pods 、部署 Hubble UI 相关组件的方式来启用相关服务，最终部署执行完成后执行 <code>cilium hubble ui</code> 命令将相关服务映射到我们本地的端口上，访问相关页面，可以看到 hubble-ui 与服务健康检测探针之间通信的数据流。</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281620041.png" title="https://image.p1nant0m.com/202209281620041.png" data-thumbnail="https://image.p1nant0m.com/202209281620041.png" data-sub-html="<h2>Hubble UI 前端页面</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202209281620041.png"
+            data-srcset="https://image.p1nant0m.com/202209281620041.png, https://image.p1nant0m.com/202209281620041.png 1.5x, https://image.p1nant0m.com/202209281620041.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202209281620041.png" />
+    </a><figcaption class="image-caption">Hubble UI 前端页面</figcaption>
+    </figure>
+<h4 id="部署一些简单的-workload-star-wars-demo并在-hubble-ui-中观察网络流">部署一些简单的 Workload （Star Wars Demo）并在 Hubble UI 中观察网络流</h4>
+<p>Cilium 官方文档中提供了一些示例 Demo 展示 Cilium 基于身份和 HTTP 的策略执行，其中一个 Demo 便是 Star Wars ⭐。根据 <a href="https://docs.cilium.io/en/stable/gettingstarted/http/#deploy-the-demo-application" target="_blank" rel="noopener noreffer ">Docs</a> 里的示例，我们可以快速部署这样的 Demo Workload。官方给出的 Demo 应用拓扑结构图如下所示，</p>
+<figure><a class="lightgallery" href="https://docs.cilium.io/en/stable/_images/cilium_http_gsg.png" title="https://docs.cilium.io/en/stable/_images/cilium_http_gsg.png" data-thumbnail="https://docs.cilium.io/en/stable/_images/cilium_http_gsg.png" data-sub-html="<h2>应用拓扑结构图</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://docs.cilium.io/en/stable/_images/cilium_http_gsg.png"
+            data-srcset="https://docs.cilium.io/en/stable/_images/cilium_http_gsg.png, https://docs.cilium.io/en/stable/_images/cilium_http_gsg.png 1.5x, https://docs.cilium.io/en/stable/_images/cilium_http_gsg.png 2x"
+            data-sizes="auto"
+            alt="https://docs.cilium.io/en/stable/_images/cilium_http_gsg.png" />
+    </a><figcaption class="image-caption">应用拓扑结构图</figcaption>
+    </figure>
+<p>我们可以通过调用这几个服务的 REST API 接口来产生相应的网络流量，比如在 xwing Pod 中调用 <code>kubectl exec xwing -- curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing</code> 向 <code>deathstar</code> 服务的 <code>/v1/request-landing</code> 接口发出降落请求，该服务会将该请求转发给相应的后端 Pod 处理。</p>
+<p>同样，我们也可以在 tierfighter 中执行相似的命令，<code>kubectl exec tiefighter -- curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing</code>，其效果与上一个例子相似。我们能够在 hubble-ui 的 default 命名空间下看到相关 Pod 的网络流量，如下所示，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281648078.png" title="https://image.p1nant0m.com/202209281648078.png" data-thumbnail="https://image.p1nant0m.com/202209281648078.png" data-sub-html="<h2>default 命名空间下 Pods 间的网络流量</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202209281648078.png"
+            data-srcset="https://image.p1nant0m.com/202209281648078.png, https://image.p1nant0m.com/202209281648078.png 1.5x, https://image.p1nant0m.com/202209281648078.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202209281648078.png" />
+    </a><figcaption class="image-caption">default 命名空间下 Pods 间的网络流量</figcaption>
+    </figure>
+<p>不过，这里有一个奇怪的地方，盟军的 xwing 战机竟然能够落到帝国的 deathstar 上！这里我们便引出本文后续的内容，使用 Cilium 对网络流量进行 Policy Enforement。</p>
+<h4 id="使用-cilium-对-layer-3-4-7-流量进行控制">使用 Cilium 对 Layer 3, 4, 7 流量进行控制</h4>
+<p>所有的 Pod 在 Cilium 中都表示为一个 Endpoint，我们在 Cilium Pod 上执行 <code>cilium</code> 工具去将集群中 Endpoints 罗列出来，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span><span class="lnt">94
+</span><span class="lnt">95
+</span><span class="lnt">96
+</span><span class="lnt">97
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl -n kube-system <span class="nb">exec</span> cilium-gvmxn -- cilium endpoint list
+Defaulted container <span class="s2">&#34;cilium-agent&#34;</span> out of: cilium-agent, mount-cgroup <span class="o">(</span>init<span class="o">)</span>, clean-cilium-state <span class="o">(</span>init<span class="o">)</span>
+ENDPOINT   POLICY <span class="o">(</span>ingress<span class="o">)</span>   POLICY <span class="o">(</span>egress<span class="o">)</span>   IDENTITY   LABELS <span class="o">(</span>source:key<span class="o">[=</span>value<span class="o">])</span>                                                         IPv6   IPv4           STATUS
+           ENFORCEMENT        ENFORCEMENT
+
+<span class="m">858</span>        Disabled           Disabled          <span class="m">1</span>          k8s:node-role.kubernetes.io/control-plane                                                                 ready
+                                                           k8s:node.kubernetes.io/exclude-from-external-load-balancers
+
+                                                           reserved:host
+
+<span class="m">889</span>        Disabled           Disabled          <span class="m">26464</span>      k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name<span class="o">=</span>kube-system                 10.244.0.60    ready
+                                                           k8s:io.cilium.k8s.policy.cluster<span class="o">=</span>kind-kind
+
+                                                           k8s:io.cilium.k8s.policy.serviceaccount<span class="o">=</span>coredns
+
+                                                           k8s:io.kubernetes.pod.namespace<span class="o">=</span>kube-system
+
+                                                           k8s:k8s-app<span class="o">=</span>kube-dns
+
+<span class="m">982</span>        Disabled           Disabled          <span class="m">28376</span>      k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name<span class="o">=</span>kube-system                 10.244.0.36    ready
+                                                           k8s:io.cilium.k8s.policy.cluster<span class="o">=</span>kind-kind
+
+                                                           k8s:io.cilium.k8s.policy.serviceaccount<span class="o">=</span>hubble-relay
+
+                                                           k8s:io.kubernetes.pod.namespace<span class="o">=</span>kube-system
+
+                                                           k8s:k8s-app<span class="o">=</span>hubble-relay
+
+<span class="m">1282</span>       Disabled           Disabled          <span class="m">5963</span>       k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name<span class="o">=</span>kube-system                 10.244.0.151   ready
+                                                           k8s:io.cilium.k8s.policy.cluster<span class="o">=</span>kind-kind
+
+                                                           k8s:io.cilium.k8s.policy.serviceaccount<span class="o">=</span>hubble-ui
+
+                                                           k8s:io.kubernetes.pod.namespace<span class="o">=</span>kube-system
+
+                                                           k8s:k8s-app<span class="o">=</span>hubble-ui
+
+<span class="m">1610</span>       Disabled           Disabled          <span class="m">26464</span>      k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name<span class="o">=</span>kube-system                 10.244.0.19    ready
+                                                           k8s:io.cilium.k8s.policy.cluster<span class="o">=</span>kind-kind
+
+                                                           k8s:io.cilium.k8s.policy.serviceaccount<span class="o">=</span>coredns
+
+                                                           k8s:io.kubernetes.pod.namespace<span class="o">=</span>kube-system
+
+                                                           k8s:k8s-app<span class="o">=</span>kube-dns
+
+<span class="m">1758</span>       Disabled           Disabled          <span class="m">9328</span>       k8s:app.kubernetes.io/name<span class="o">=</span>xwing
+                              10.244.0.95    ready
+                                                           k8s:class<span class="o">=</span>xwing
+
+                                                           k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name<span class="o">=</span>default
+                                                           k8s:io.cilium.k8s.policy.cluster<span class="o">=</span>kind-kind
+
+                                                           k8s:io.cilium.k8s.policy.serviceaccount<span class="o">=</span>default
+
+                                                           k8s:io.kubernetes.pod.namespace<span class="o">=</span>default
+
+                                                           k8s:org<span class="o">=</span>alliance
+
+<span class="m">2090</span>       Disabled           Disabled          <span class="m">21851</span>      k8s:app.kubernetes.io/name<span class="o">=</span>deathstar
+                              10.244.0.72    ready
+                                                           k8s:class<span class="o">=</span>deathstar
+
+                                                           k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name<span class="o">=</span>default
+                                                           k8s:io.cilium.k8s.policy.cluster<span class="o">=</span>kind-kind
+
+                                                           k8s:io.cilium.k8s.policy.serviceaccount<span class="o">=</span>default
+
+                                                           k8s:io.kubernetes.pod.namespace<span class="o">=</span>default
+
+                                                           k8s:org<span class="o">=</span>empire
+
+<span class="m">2319</span>       Disabled           Disabled          <span class="m">4</span>          reserved:health
+                              10.244.0.209   ready
+<span class="m">2349</span>       Disabled           Disabled          <span class="m">21851</span>      k8s:app.kubernetes.io/name<span class="o">=</span>deathstar
+                              10.244.0.169   ready
+                                                           k8s:class<span class="o">=</span>deathstar
+
+                                                           k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name<span class="o">=</span>default
+                                                           k8s:io.cilium.k8s.policy.cluster<span class="o">=</span>kind-kind
+
+                                                           k8s:io.cilium.k8s.policy.serviceaccount<span class="o">=</span>default
+
+                                                           k8s:io.kubernetes.pod.namespace<span class="o">=</span>default
+
+                                                           k8s:org<span class="o">=</span>empire
+
+<span class="m">2579</span>       Disabled           Disabled          <span class="m">13871</span>      k8s:app.kubernetes.io/name<span class="o">=</span>tiefighter
+                              10.244.0.240   ready
+                                                           k8s:class<span class="o">=</span>tiefighter
+
+                                                           k8s:io.cilium.k8s.namespace.labels.kubernetes.io/metadata.name<span class="o">=</span>default
+                                                           k8s:io.cilium.k8s.policy.cluster<span class="o">=</span>kind-kind
+
+                                                           k8s:io.cilium.k8s.policy.serviceaccount<span class="o">=</span>default
+
+                                                           k8s:io.kubernetes.pod.namespace<span class="o">=</span>default
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到上述 Pod 中并没有对 Ingress 或 Egress 向流量进行 Policy Enforcement，我们下一步就是要去创建对应的 Policy，实现我们对三层、四层以及七层流量的控制。</p>
+<h5 id="应用-l3l4-层网络安全策略">应用 L3/L4 层网络安全策略</h5>
+<p>使用 Cilium 与 Kubernetes 部署 L4 网络策略，我们可以使用在创建 Pod 时为它们指定的标签来构建我们的安全策略，这样我们就不需要知道它们到底具体 Pod 运行在集群的哪一个网络位置在何时运行了。这提供了一层抽象，让用户只需要关心具体的业务逻辑，而不需要对底层的细节进行过多的干预或操心，Kubernetes 会为我们准备好一切！</p>
+<p>例如，在上述我们用到的星战例子中，xwing Pod 中我们添加了标签 <code>class=xwing org=alliance</code>，而在 tierfighter Pod 中我们的标签则是 <code>class=tiefighter org=empire</code>，我们可以在编写安全策略时直接使用这些标签，Kubernetes 和 Cilium 会帮助我们找到对应的后端。</p>
+<p>下图展示的是我们想要达成的目标，</p>
+<figure><a class="lightgallery" href="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_gsg.png" title="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_gsg.png" data-thumbnail="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_gsg.png" data-sub-html="<h2>xwing 战机不能降落在死星上！</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_gsg.png"
+            data-srcset="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_gsg.png, https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_gsg.png 1.5x, https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_gsg.png 2x"
+            data-sizes="auto"
+            alt="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_gsg.png" />
+    </a><figcaption class="image-caption">xwing 战机不能降落在死星上！</figcaption>
+    </figure>
+<p>为了达成我们的目标，我们可以通过编写 <strong>CiliumNetworkPolicy</strong> 实现，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;cilium.io/v2&#34;</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CiliumNetworkPolicy</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;rule1&#34;</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;L3-L4 policy to restrict deathstar access to empire ships only&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">endpointSelector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">org</span><span class="p">:</span><span class="w"> </span><span class="l">empire</span><span class="w">
+</span><span class="w">      </span><span class="nt">class</span><span class="p">:</span><span class="w"> </span><span class="l">deathstar</span><span class="w">
+</span><span class="w">  </span><span class="nt">ingress</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">fromEndpoints</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">org</span><span class="p">:</span><span class="w"> </span><span class="l">empire</span><span class="w">
+</span><span class="w">    </span><span class="nt">toPorts</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;80&#34;</span><span class="w">
+</span><span class="w">        </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>上述规则是一个白名单规则，其仅允许标签为 <code>org:empire</code> 的 Pod 通过 TCP 协议访问具有标签 <code>org:empire class:deathstar</code> Endpoint 的 80 端口，其它不符合规则的入向流量都会被丢弃。这样我们便实现了 L3/L4 的 Policy Enforcement.</p>
+<p>在 Hubble UI 中，我们可以看到由 Pod xwing 发出的流量被 Pod deathstar 丢弃，</p>
+<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281930575.png" title="https://image.p1nant0m.com/202209281930575.png" data-thumbnail="https://image.p1nant0m.com/202209281930575.png" data-sub-html="<h2>Policy Enforement 丢弃相关数据包</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.com/202209281930575.png"
+            data-srcset="https://image.p1nant0m.com/202209281930575.png, https://image.p1nant0m.com/202209281930575.png 1.5x, https://image.p1nant0m.com/202209281930575.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.com/202209281930575.png" />
+    </a><figcaption class="image-caption">Policy Enforement 丢弃相关数据包</figcaption>
+    </figure>
+<p>我们可以在此执行上面提到的查看 Cilium Endpoint 的命令，这时候我们发现 deathstar Pod 中 Ingress Policy Enforcement 被激活。我们也可以通过执行 <code>kubectl describe cnp</code> 来查看相关的 CiliumNetworkPolicy 规则。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">kubectl describe cnp
+Name:         rule1
+Namespace:    default
+Labels:       &lt;none&gt;
+Annotations:  &lt;none&gt;
+API Version:  cilium.io/v2
+Kind:         CiliumNetworkPolicy
+Metadata:
+  Creation Timestamp:  2022-09-28T11:27:31Z
+  Generation:          <span class="m">1</span>
+  Managed Fields:
+    API Version:  cilium.io/v2
+    Fields Type:  FieldsV1
+    fieldsV1:
+      f:spec:
+        .:
+        f:description:
+        f:endpointSelector:
+          .:
+          f:matchLabels:
+            .:
+            f:class:
+            f:org:
+        f:ingress:
+    Manager:         kubectl-create
+    Operation:       Update
+    Time:            2022-09-28T11:27:31Z
+  Resource Version:  <span class="m">21081</span>
+  UID:               5c405d24-b059-4992-8250-f9963a42858b
+Spec:
+  Description:  L3-L4 policy to restrict deathstar access to empire ships only
+  Endpoint Selector:
+    Match Labels:
+      Class:  deathstar
+      Org:    empire
+  Ingress:
+    From Endpoints:
+      Match Labels:
+        Org:  empire
+    To Ports:
+      Ports:
+        Port:      <span class="m">80</span>
+        Protocol:  TCP
+Events:            &lt;none&gt;
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="应用-l7-层网络安全策略">应用 L7 层网络安全策略</h5>
+<p>有些时候我们需要更加细粒度的规则去进行过滤，L3/L4 层中的语义相对来说更加偏向底层且与应用本身无关，而 L7 层的报文信息具有更加丰富的语义并且与应用相关，对 L7 层进行安全访问控制能够取得更好的防护效果、同时也能够针对不同的应用、不同的使用场景来进行个性化需求定制，给用户更加丰富多样的选择。</p>
+<p>回到我们在 Star War 中的例子，假设现在 deathstar 中有一个 api <code>/v1/exhaust-port</code>，它能够让死星爆炸💣！对其进行访问需要进行严格的访问控制，并不是任何帝国飞船都能够发出请求并成功响应的！如果不对其进行任何限制，可能会有下面的悲剧发生（盟军可要高兴坏了！），</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">kubectl <span class="nb">exec</span> tiefighter -- curl -s -XPUT deathstar.default.svc.cluster.local/v1/exhaust-port
+Panic: deathstar exploded
+
+goroutine <span class="m">1</span> <span class="o">[</span>running<span class="o">]</span>:
+main.HandleGarbage<span class="o">(</span>0x2080c3f50, 0x2, 0x4, 0x425c0, 0x5, 0xa<span class="o">)</span>
+        /code/src/github.com/empire/deathstar/
+        temp/main.go:9 +0x64
+main.main<span class="o">()</span>
+        /code/src/github.com/empire/deathstar/
+        temp/main.go:5 +0x85
+</code></pre></td></tr></table>
+</div>
+</div><p>通过 <strong>CiliumNetworkPolicy</strong>， 我们最终需要达成下图所示的目标，</p>
+<figure><a class="lightgallery" href="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_l7_gsg.png" title="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_l7_gsg.png" data-thumbnail="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_l7_gsg.png" data-sub-html="<h2>安全策略的目标</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_l7_gsg.png"
+            data-srcset="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_l7_gsg.png, https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_l7_gsg.png 1.5x, https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_l7_gsg.png 2x"
+            data-sizes="auto"
+            alt="https://docs.cilium.io/en/stable/_images/cilium_http_l3_l4_l7_gsg.png" />
+    </a><figcaption class="image-caption">安全策略的目标</figcaption>
+    </figure>
+<p>我们可以通过下述策略进行 L7 层的访问控制，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;cilium.io/v2&#34;</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">CiliumNetworkPolicy</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;rule1&#34;</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;L7 policy to restrict access to specific HTTP call&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">endpointSelector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">org</span><span class="p">:</span><span class="w"> </span><span class="l">empire</span><span class="w">
+</span><span class="w">      </span><span class="nt">class</span><span class="p">:</span><span class="w"> </span><span class="l">deathstar</span><span class="w">
+</span><span class="w">  </span><span class="nt">ingress</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">fromEndpoints</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">org</span><span class="p">:</span><span class="w"> </span><span class="l">empire</span><span class="w">
+</span><span class="w">    </span><span class="nt">toPorts</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;80&#34;</span><span class="w">
+</span><span class="w">        </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span><span class="w">      </span><span class="nt">rules</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">http</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;POST&#34;</span><span class="w">
+</span><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/v1/request-landing&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>上述策略对带有 <code>org:empire</code> 标签的 Pod 能对 <code>org:empire class:deathstar</code> 的 Pod 进行的操作做出了限制，符合目标的 Pod 只能够通过 HTTP POST 方法访问目的 Pod （Deathstar）的 <code>/v1/request-landing</code> 接口。</p>
+<p>我们再次访问 Service 的 <code>/v1/request-landing</code> 接口，可以看到我们这次的请求被拒绝了，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ kubectl <span class="nb">exec</span> tiefighter -- curl -s -XPUT deathstar.default.svc.cluster.local/v1/exhaust-port
+Access denied
+</code></pre></td></tr></table>
+</div>
+</div><p>这便是简单使用 Cilium 进行 L3/L4、L7 层访问控制的示例，以及我们能够从 Hubble UI 中获得相关的数据信息。</p>
+<h3 id="总结">总结</h3>
+<p>Cilium 使用 eBPF 技术实现 CNI 网络插件，并且利用 eBPF 在安全方面的能力，实现用户自定义策略的 Policy Enforcement，这让人们看到 eBPF 在网络与安全方面的巨大潜能。不过，Cilium 项目本身还有许多可以改进的地方。</p>
+<p>比如我们在上述的 Hubble UI 中看到的数据维度还是相对来说较为单一的，只能看见数据包的端到端的流向而无法看到其中的载荷信息，也不能通过前端运维面板或 dashboard 的形式实时下发策略。另外，在安全策略编写方面的可扩展性和语义仍较为简单，编写具有丰富安全上下文信息的安全策略受限（可以看看 OPA，或者cel-go？）。</p>
+<p>笔者认为在云原生环境下，架构的复杂性以及通信的流量的纵横交错本身就会给系统的观测和维护带来挑战，但于此同时也会带来巨大的上下文环境语义信息，业界对于可观测性也有比较好的解决方案（Tracing、Logging、Metric），安全作为系统的重要一环，本身就可以受益于可观测性提升带来的可供分析的信息量增加。强语义、智能的 Policy Enforcement 结合 HIDS、IAST、RASP 等前沿安全技术的应用，能够解决大多数云原生应用场景下的运行安全问题，能够给运维工程师、安全工程师提供充分、精确的数据去分析相关的安全事件，从而能够尽早进行研判、封堵，形成安全事件闭环。</p>
+<p>平台层应用除了提供数据的采集、聚合/聚类、关联、可视化、持久化之外，还需要提供主动的手段，对相关行为进行反制。譬如对实时的入侵者进行热动态蜜罐迁移、身份实体封禁，化被动安全为主动安全。</p>
+<div class="details admonition note">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw" aria-hidden="true"></i>猜想<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>eBPF 与网络相关的程序中有 XDP 和 TC 类别，TC 程序能够访问内核的路由表，从而决定数据包发出的方向，使用 eBPF 技术可以实现 LoadBalancer，对 L3/L4 层流量进行负载均衡，这是在分布式系统中架构中的使用。</p>
+<p>在安全方案，这种动态低成本的网络“改道”能力似乎很适合用作蜜罐，云原生环境下可以快速部署一个容器环境，并将被标记的相关流量牵引于此，由于是蜜罐，我们可以在里面加载尽可能多的探针，尽可能精确的捕获攻击者的行为图谱，从而发现业务代码的漏洞，并对其进行及时的修复和处理。</p>
+</div>
+        </div>
+    </div>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-09-27</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" data-title="在 K8s 集群上部署 Cilium 与 Hubble" data-via="p1nant0m" data-hashtags="eBPF,kubernetes,cilium"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" data-hashtag="eBPF"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" data-title="在 K8s 集群上部署 Cilium 与 Hubble"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" data-title="在 K8s 集群上部署 Cilium 与 Hubble"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/" data-title="在 K8s 集群上部署 Cilium 与 Hubble"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/ebpf/">eBPF</a>,&nbsp;<a href="/tags/kubernetes/">kubernetes</a>,&nbsp;<a href="/tags/cilium/">cilium</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/" class="prev" rel="prev" title="Golang 面试驱动学习"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Golang 面试驱动学习</a>
+            <a href="/2022-10-08-%E4%BC%98%E9%9B%85%E7%9A%84%E5%88%9B%E5%BB%BA-cli-%E7%A8%8B%E5%BA%8F.zh-ch/" class="next" rel="next" title="优雅的创建 CLI 程序">优雅的创建 CLI 程序<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"😷P1nant0m","id-2":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

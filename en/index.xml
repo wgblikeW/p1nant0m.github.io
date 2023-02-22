@@ -1,0 +1,51 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>p1nant0m</title>
+        <link>https://p1nant0m.com/en/</link>
+        <description>p1nant0m</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Tue, 21 Feb 2023 12:00:00 &#43;0000</lastBuildDate>
+            <atom:link href="https://p1nant0m.com/en/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+    <title>15 Best Practices for Working with Kubernetes</title>
+    <link>https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</link>
+    <pubDate>Tue, 21 Feb 2023 12:00:00 &#43;0000</pubDate>
+    <author>ChatGPT</author>
+    <guid>https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</guid>
+    <description><![CDATA[Introduction to Kubernetes Kubernetes is a popular and powerful container orchestration system that has become the de facto standard for managing containerized workloads. However, managing Kubernetes clusters can be complex and challenging, especially if you are new to the technology. In this post, we&rsquo;ll cover 15 best practices for working with Kubernetes that can help you optimize your clusters and improve the performance and reliability of your applications.
+15 Best Practices   Keep Your Clusters Up-to-Date
+Kubernetes is a rapidly evolving technology, with new features and bug fixes released regularly. It&rsquo;s important to keep your clusters up-to-date with the latest stable release to ensure you have access to the latest features, security patches, and bug fixes.
+  Use a Declarative Approach
+Kubernetes resources, such as deployments, services, and config maps, can be defined in YAML manifests or Helm charts. Use a declarative approach to managing your resources, which means you define the desired state of your resources and let Kubernetes handle the implementation details.
+  Define Resource Requests and Limits
+To ensure that your applications have the necessary resources to run properly and to prevent resource contention on your nodes, define resource requests and limits for your containers.]]></description>
+</item>
+<item>
+    <title>6.824-RaftLab-Part2D-Development Quicknotes</title>
+    <link>https://p1nant0m.com/en/2022-03-18-raft-part2d/</link>
+    <pubDate>Fri, 18 Mar 2022 09:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/en/2022-03-18-raft-part2d/</guid>
+    <description><![CDATA[Overview  This topic can be found under Lab2 instruction.
+ Modifying Raft to cooperate with services that persistently store a &ldquo;snapshot&rdquo; of their state from time to time, at which point Raft discards log entries that precede the snapshot.
+It&rsquo;s now possible for a follower to fall so far behind that the leader has discarded the log entries it needs to catch up; the leader must then send a snapshot plus the log starting at the time of the snapshot.
+diagram of Raft interactions
+KeyValue-Store Server Architecture" KeyValue-Store Server Architecture  Raft must provide the following function that the service can call with a serialized snapshot of its state. In this way, Raft can discard the log entries safely preceding this Snapshot()
+Snapshot(index int, snapshot []byte)
+The index argument indicates the highest log entry that&rsquo;s reflected in the snapshot. Raft should discard its log entries before that point. You&rsquo;ll need to revise your Raft code to operate while storing only the tail of the log.
+You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper that allows a Raft leader to tell a lagging Raft peer to replace its state with a snapshot. You will likely need to think through how InstallSnapshot should interact with the state and rules in Figure 2.]]></description>
+</item>
+<item>
+    <title>Forbbiden Fruit</title>
+    <link>https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/</link>
+    <pubDate>Wed, 20 Oct 2021 12:00:00 &#43;0000</pubDate>
+    <author>P1nant0m</author>
+    <guid>https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/</guid>
+    <description><![CDATA[Origin: http://aes.cryptohack.org/forbidden_fruit/
+0x1 DESCRIPTION Galois Counter Mode (GCM) is the most widely used block cipher mode in TLS today. It&rsquo;s an &ldquo;authenticated encryption with associated data&rdquo; cipher mode (AEAD), yet not resistant to misuse.
+See here for a great resource on the inner workings of GCM, as well as this attack.
+Source
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53  from Crypto.Cipher import AES import os IV = ? KEY = ? FLAG = ? @chal.route(&#39;/forbidden_fruit/decrypt/&lt;nonce&gt;/&lt;ciphertext&gt;/&lt;tag&gt;/&lt;associated_data&gt;/&#39;) def decrypt(nonce, ciphertext, tag, associated_data): ciphertext = bytes.fromhex(ciphertext) tag = bytes.fromhex(tag) header = bytes.fromhex(associated_data) nonce = bytes.fromhex(nonce) if header != b&#39;CryptoHack&#39;: return {&#34;error&#34;: &#34;Don&#39;t understand this message type&#34;} cipher = AES.new(KEY, AES.MODE_GCM, nonce=nonce) encrypted = cipher.update(header) try: decrypted = cipher.decrypt_and_verify(ciphertext, tag) except ValueError as e: return {&#34;error&#34;: &#34;Invalid authentication tag&#34;} if b&#39;give me the flag&#39; in decrypted: return {&#34;plaintext&#34;: FLAG.encode().hex()} return {&#34;plaintext&#34;: decrypted.hex()} @chal.route(&#39;/forbidden_fruit/encrypt/&lt;plaintext&gt;/&#39;) def encrypt(plaintext): plaintext = bytes.fromhex(plaintext) header = b&#34;CryptoHack&#34; cipher = AES.new(KEY, AES.MODE_GCM, nonce=IV) encrypted = cipher.]]></description>
+</item>
+</channel>
+</rss>

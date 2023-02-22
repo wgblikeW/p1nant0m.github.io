@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>eBPF-tracing 使用 eBPF 编写监控类程序 - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="eBPF-tracing 使用 eBPF 编写监控类程序" />
+<meta property="og:description" content="eBPF 程序的跟踪能力 The ability to attach eBPF programs to trace points as well as kernel and user application probe points allows unprecedented visibility into the runtime behavior of applications and the system itself. By giving introspection abilities to both the application and system side, both views can be combined, allowing powerful and unique insights to troubleshoot system performance problems. Advanced statistical data structures allow to extract meaningful visibility data in an efficient manner, without requiring the export of vast amounts of sampling data as typically done by similar systems. 如何找到你所需要的追踪点？ 首先，我们需要明确自身的需求，考虑清楚我们需要获取哪一些数据信息，再从这些数据信息的类型出发找到其对应的追踪位置。在 eBPF 程序中有以下这几种常用的追踪点类型： kprobe 内核探针 uprobe 用户程序探针 tracepoint 内核" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.com/2022-07-25-ebpf-tracing/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-07-24T14:00:00+00:00" />
+<meta property="article:modified_time" content="2022-07-24T14:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+
+<meta name="twitter:title" content="eBPF-tracing 使用 eBPF 编写监控类程序"/>
+<meta name="twitter:description" content="eBPF 程序的跟踪能力 The ability to attach eBPF programs to trace points as well as kernel and user application probe points allows unprecedented visibility into the runtime behavior of applications and the system itself. By giving introspection abilities to both the application and system side, both views can be combined, allowing powerful and unique insights to troubleshoot system performance problems. Advanced statistical data structures allow to extract meaningful visibility data in an efficient manner, without requiring the export of vast amounts of sampling data as typically done by similar systems. 如何找到你所需要的追踪点？ 首先，我们需要明确自身的需求，考虑清楚我们需要获取哪一些数据信息，再从这些数据信息的类型出发找到其对应的追踪位置。在 eBPF 程序中有以下这几种常用的追踪点类型： kprobe 内核探针 uprobe 用户程序探针 tracepoint 内核"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2022-07-25-ebpf-tracing/" /><link rel="prev" href="https://p1nant0m.com/2022-07-18-xdp-tutorial/" /><link rel="next" href="https://p1nant0m.com/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "eBPF-tracing 使用 eBPF 编写监控类程序",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.com\/2022-07-25-ebpf-tracing\/"
+        },"genre": "posts","keywords": "eBPF, tracing, tutorial","wordcount":  2831 ,
+        "url": "https:\/\/p1nant0m.com\/2022-07-25-ebpf-tracing\/","datePublished": "2022-07-24T14:00:00+00:00","dateModified": "2022-07-24T14:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2022-07-25-ebpf-tracing/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-3" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2022-07-25-ebpf-tracing/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">eBPF-tracing 使用 eBPF 编写监控类程序</h1><h2 class="single-subtitle">一些学习 eBPF 追踪程序编写的记录以及开源代码实例分析</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-07-24">2022-07-24</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2831 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#ebpf-程序的跟踪能力">eBPF 程序的跟踪能力</a></li>
+        <li><a href="#如何找到你所需要的追踪点">如何找到你所需要的追踪点？</a>
+          <ul>
+            <li><a href="#kprobe-a-idkprobea">kprobe <a id="kprobe"></a></a></li>
+            <li><a href="#wip-">WIP 🐱</a></li>
+            <li><a href="#uprobe-a-iduprobea">uprobe <a id="uprobe"></a></a></li>
+            <li><a href="#tracepoint">tracepoint</a></li>
+            <li><a href="#raw_tracepoint">raw_tracepoint</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://image.p1nant0m.com/header_opensource.png"
+        data-srcset="https://image.p1nant0m.com/header_opensource.png, https://image.p1nant0m.com/header_opensource.png 1.5x, https://image.p1nant0m.com/header_opensource.png 2x"
+        data-sizes="auto"
+        alt="https://image.p1nant0m.com/header_opensource.png"
+        title="header_" /></p>
+<h3 id="ebpf-程序的跟踪能力">eBPF 程序的跟踪能力</h3>
+<div id="id-1">The ability to attach eBPF programs to trace points as well as kernel and user application probe points allows unprecedented visibility into the runtime behavior of applications and the system itself. By giving introspection abilities to both the application and system side, both views can be combined, allowing powerful and unique insights to troubleshoot system performance problems. Advanced statistical data structures allow to extract meaningful visibility data in an efficient manner, without requiring the export of vast amounts of sampling data as typically done by similar systems.</div>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://ebpf.io/static/intro_tracing-ffa5e3fa3407ecb445b1549f85f590f5.png"
+        data-srcset="https://ebpf.io/static/intro_tracing-ffa5e3fa3407ecb445b1549f85f590f5.png, https://ebpf.io/static/intro_tracing-ffa5e3fa3407ecb445b1549f85f590f5.png 1.5x, https://ebpf.io/static/intro_tracing-ffa5e3fa3407ecb445b1549f85f590f5.png 2x"
+        data-sizes="auto"
+        alt="https://ebpf.io/static/intro_tracing-ffa5e3fa3407ecb445b1549f85f590f5.png"
+        title="img" /></p>
+<h3 id="如何找到你所需要的追踪点">如何找到你所需要的追踪点？</h3>
+<p>首先，我们需要明确自身的需求，考虑清楚我们需要获取哪一些数据信息，再从这些数据信息的类型出发找到其对应的追踪位置。在 eBPF 程序中有以下这几种常用的追踪点类型：</p>
+<ul>
+<li><a href="#kprobe" rel="">kprobe 内核探针</a></li>
+<li><a href="#uprobe" rel="">uprobe 用户程序探针</a></li>
+<li>tracepoint 内核静态跟踪点</li>
+<li>raw_tracepoint 原始跟踪点</li>
+</ul>
+<p>知道了有哪些种类的跟踪点还不够，我们还需要根据自身的需求找到对应类型具体的跟踪点对象。</p>
+<h4 id="kprobe-a-idkprobea">kprobe <a id="kprobe"></a></h4>
+<p>对于 krpobe 类型内核探针来说，我们可以使用 <code>bpftrace</code> 工具查看支持的所有内核探针，我们只需要在 CLI 终端中键入 <code>bpftrace -l &quot;kprobe:*&quot;</code>  便可以查看所有支持的内核探针。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kprobe:zswap_free_entry
+kprobe:zswap_frontswap_init
+kprobe:zswap_frontswap_invalidate_area
+kprobe:zswap_frontswap_invalidate_page
+kprobe:zswap_frontswap_load
+kprobe:zswap_frontswap_store
+</code></pre></td></tr></table>
+</div>
+</div><p>对于每一个内核探针来说，它都将被挂载在对应的内核函数之上，当该内核函数被调用后便会触发我们 Hook 在其之上的 eBPF 处理函数。如 <code>zswap_free_entry</code> 函数，在 <a href="https://elixir.bootlin.com/" target="_blank" rel="noopener noreffer ">https://elixir.bootlin.com/</a> 中，我们可以找到对应版本的 Linux kernel 查看相关内核函数的函数签名和实现，<code>zswap_free_entry</code> 函数的实现如下所示，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cm">/*
+</span><span class="cm"> * Carries out the common pattern of freeing and entry&#39;s zpool allocation,
+</span><span class="cm"> * freeing the entry itself, and decrementing the number of stored pages.
+</span><span class="cm"> */</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">zswap_free_entry</span><span class="p">(</span><span class="k">struct</span> <span class="n">zswap_entry</span> <span class="o">*</span><span class="n">entry</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">length</span><span class="p">)</span>
+		<span class="n">atomic_dec</span><span class="p">(</span><span class="o">&amp;</span><span class="n">zswap_same_filled_pages</span><span class="p">);</span>
+	<span class="k">else</span> <span class="p">{</span>
+		<span class="n">zpool_free</span><span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">pool</span><span class="o">-&gt;</span><span class="n">zpool</span><span class="p">,</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">handle</span><span class="p">);</span>
+		<span class="n">zswap_pool_put</span><span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="n">zswap_entry_cache_free</span><span class="p">(</span><span class="n">entry</span><span class="p">);</span>
+	<span class="n">atomic_dec</span><span class="p">(</span><span class="o">&amp;</span><span class="n">zswap_stored_pages</span><span class="p">);</span>
+	<span class="n">zswap_update_total_size</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们到这先停止以下，看看我们目前为止都做了哪一些工作：1）确定自身进行系统监控的需求；（2）根据需求找到需要进行跟踪的对象（在这里便是我们具体的 kprobe）；3）了解相关 kprobe 挂载的内核函数签名，<strong>更进一步可以明确函数的调用链，将其与具体的事件相关联</strong>。</p>
+<div class="details admonition tip">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-lightbulb fa-fw" aria-hidden="true"></i>想到的话就得说 😀<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>事件是触发一系列操作的因。</p>
+<p>比如，我们使用 <code>cat foo.txt</code> 命令将 <code>foo.txt</code> 文件的内容输出至标准输出流中时就涉及到了操作系统的一系列操作（执行 <code>/usr/bin/cat</code> 二进制文件，内存申请与分配，打开文件，读写文件等），期间操作系统执行系统调用，由用户态陷入内核态，进而在内核空间中执行相关的逻辑。利用操作系统的能力为上层应用提供对应的服务，让应用无需关心复杂的资源分配与调度问题（CPU、内存、I/O）。</p>
+<p>不过，了解内核函数何时被调用、被谁调用是一个较高的要求，它需要你对操作系统、对内核实现十分熟悉，对于非内核开发者来说无疑十分苦恼。</p>
+<p>不过有了 eBPF 程序，我们可以通过函数调用栈找到上层的 caller，进而观察被 Hook 函数调用的全过程，实现对触发事件的溯源。通过在敏感函数上 Hook eBPF 程序，我们可以发现并记录系统中发生的异常行为，从而为事后的分析溯源以及拦截阻断提供充足的决断依据。</p>
+</div>
+        </div>
+    </div>
+<p>接下来，我们就需要着手开始 eBPF 程序的编写了，我们先来看看一个 eBPF 程序的基本元素。</p>
+<ul>
+<li><strong>SEC Macro</strong>: SEC 宏展开后用于创建 ELF Section ，帮助 BPF 加载器找到对应元素的位置，比如像 libbpf 库就可以通过 ELF 文件中相应的 Section 来找到并加载对应的 eBPF 程序。</li>
+<li><strong>LICENSE</strong>: eBPF 程序的授权许可证，通常使用 GPL 许可。</li>
+</ul>
+<p>对于 kprobe 类型的 eBPF 程序（BPF_PROG_TYPE_KPROBE）来说，通常以 <code>SEC(kprobe/kernel_function_name)</code> 方式使用，比如 <code>SEC(kprobe/zswap_free_entry)</code> 。在其它类型的 eBPF 程序上也大同小异，通常为 <code>SEC(bpf_prog_type/instance_name)</code> ，例如 tracepoint 类型的 eBPF 程序使用 <code>SEC(tracepoint/tracepoint_name)</code> 对 eBPF 函数进行声明。</p>
+<p>上述工作都做完后，我们就正式进入到 eBPF 程序的编写过程了，在编写 eBPF 程序时我们要确定对于 eBPF 程序类型函数的入参。在 kprobe 类型的 eBPF 函数中，我见到了十分多对传入指针不同的类型解释，我们都一起来看看各项目实现都是如何使用的，</p>
+<p>在 <a href="https://github.com/aquasecurity/tracee" target="_blank" rel="noopener noreffer ">tracee</a> 中使用了 libbpf 库提供的 BPF_KPROBE Macro 去定义它们的 kprobe 类型 eBPF 程序，该宏定义如下所示，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cm">/*
+</span><span class="cm"> * BPF_KPROBE serves the same purpose for kprobes as BPF_PROG for
+</span><span class="cm"> * tp_btf/fentry/fexit BPF programs. It hides the underlying platform-specific
+</span><span class="cm"> * low-level way of getting kprobe input arguments from struct pt_regs, and
+</span><span class="cm"> * provides a familiar typed and named function arguments syntax and
+</span><span class="cm"> * semantics of accessing kprobe input paremeters.
+</span><span class="cm"> *
+</span><span class="cm"> * Original struct pt_regs* context is preserved as &#39;ctx&#39; argument. This might
+</span><span class="cm"> * be necessary when using BPF helpers like bpf_perf_event_output().
+</span><span class="cm"> */</span>
+<span class="cp">#define BPF_KPROBE(name, args...)					    \
+</span><span class="cp">name(struct pt_regs *ctx);						    \
+</span><span class="cp">static __attribute__((always_inline)) typeof(name(0))			    \
+</span><span class="cp">____##name(struct pt_regs *ctx, ##args);				    \
+</span><span class="cp">typeof(name(0)) name(struct pt_regs *ctx)				    \
+</span><span class="cp">{									    \
+</span><span class="cp">	_Pragma(&#34;GCC diagnostic push&#34;)					    \
+</span><span class="cp">	_Pragma(&#34;GCC diagnostic ignored \&#34;-Wint-conversion\&#34;&#34;)		    \
+</span><span class="cp">	return ____##name(___bpf_kprobe_args(args));			    \
+</span><span class="cp">	_Pragma(&#34;GCC diagnostic pop&#34;)					    \
+</span><span class="cp">}									    \
+</span><span class="cp">static __attribute__((always_inline)) typeof(name(0))			    \
+</span><span class="cp">____##name(struct pt_regs *ctx, ##args)
+</span></code></pre></td></tr></table>
+</div>
+</div><p>通过注释以及宏定义我们可以看到，该宏的用途主要是消除了不同平台从 <code>struct *pt_regs</code> 中读取数据的差异，具体的入参还是 <code>struct *pt_regs</code> ，当然也可以通过 <code>args</code> 指定其它的参数。</p>
+<p>通过 <code>struct *pt_regs</code> 我们能够获得调用被 Hook 函数时寄存器的状态，并能够获取其中的数据。对于不同的硬件平台，使用 <code>BPF_KPROBE</code> 宏能为我们抹除平台差异，让程序员能够以最熟悉的方式编写 eBPF 程序，<code>struct *pt_regs</code> 的定义如下所示，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">pt_regs</span> <span class="p">{</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">r15</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">r14</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">r13</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">r12</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">bp</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">bx</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">r11</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">r10</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">r9</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">r8</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">ax</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cx</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dx</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">si</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">di</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">orig_ax</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">ip</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cs</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">sp</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">ss</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过一些辅助宏，我们可以从中获取到被 Hook 函数的入参，在 libbpf 库中便有如下的宏可供我们使用，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define PT_REGS_PARM1(x) (__PT_REGS_CAST(x)-&gt;__PT_PARM1_REG)
+</span><span class="cp">#define PT_REGS_PARM2(x) (__PT_REGS_CAST(x)-&gt;__PT_PARM2_REG)
+</span><span class="cp">#define PT_REGS_PARM3(x) (__PT_REGS_CAST(x)-&gt;__PT_PARM3_REG)
+</span><span class="cp">#define PT_REGS_PARM4(x) (__PT_REGS_CAST(x)-&gt;__PT_PARM4_REG)
+</span><span class="cp">#define PT_REGS_PARM5(x) (__PT_REGS_CAST(x)-&gt;__PT_PARM5_REG)
+</span><span class="cp">#define PT_REGS_RET(x) (__PT_REGS_CAST(x)-&gt;__PT_RET_REG)
+</span><span class="cp">#define PT_REGS_FP(x) (__PT_REGS_CAST(x)-&gt;__PT_FP_REG)
+</span><span class="cp">#define PT_REGS_RC(x) (__PT_REGS_CAST(x)-&gt;__PT_RC_REG)
+</span><span class="cp">#define PT_REGS_SP(x) (__PT_REGS_CAST(x)-&gt;__PT_SP_REG)
+</span><span class="cp">#define PT_REGS_IP(x) (__PT_REGS_CAST(x)-&gt;__PT_IP_REG)
+</span></code></pre></td></tr></table>
+</div>
+</div><p>根据不同的硬件平台，这些宏获取函数入参的方式也并不相同，在 x86 平台下，它们获取函数入参的方式如下，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define __PT_PARM1_REG di
+</span><span class="cp">#define __PT_PARM2_REG si
+</span><span class="cp">#define __PT_PARM3_REG dx
+</span><span class="cp">#define __PT_PARM4_REG cx
+</span><span class="cp">#define __PT_PARM5_REG r8
+</span><span class="cp">#define __PT_RET_REG sp
+</span><span class="cp">#define __PT_FP_REG bp
+</span><span class="cp">#define __PT_RC_REG ax
+</span><span class="cp">#define __PT_SP_REG sp
+</span><span class="cp">#define __PT_IP_REG ip
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="details admonition info">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-info-circle fa-fw" aria-hidden="true"></i>新知<i class="details-icon fas fa-angle-right fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><p>不同的编译语言使用不同的调用惯例 (calling convention)，用于规定调用方与被调用方对函数调用的共识。</p>
+<p>这些共识有：函数参数、返回值使用何种方式进行传递以及参数的传递顺序、传递方式如何等。</p>
+<p>函数参数既可以放在寄存器中进行传递，也可以放在堆栈中进行传递（Plan 9 ABI），由于 Linux Kernel 使用 C 语言编写，其调用惯例遵循 C 编译器的规则，使用寄存器进行函数调用参数及返回值的传递。</p>
+</div>
+        </div>
+    </div>
+<p>使用 <code>PT_REGS_PARM1(ctx)</code> 便可以获取到函数的第一个入参，以此类推，我们可以使用其它相应的宏获取所有函数入参。</p>
+<p>在这里我们已经知道函数的签名，使用类型转换便可以获取到对应数据类型的函数入参，方便我们进行后续的处理。比如在上述 <code>zswap_free_entry</code> 中，使用 <code>entry = (struct zswap_entry *) PT_REGS_PAMR1(ctx)</code> 便可以获得第一个函数入参。</p>
+<blockquote>
+<p>在编写 eBPF 程序时引入 <code>vmlinux.h</code> 头可以一次性导入内核所有使用到的数据结构。</p>
+<p>使用 <code>bpftool btf dump file /sys/kernel/btf/vmlinux format c &gt; vmlinux.h</code> 命令可以导出 <code>vmlinux.h</code> 文件。</p>
+</blockquote>
+<p>到这里，我们就已经可以使用 BPF Map 向用户侧运行的程序提交内核发生的事件信息，从而监控系统内部的运行状态了。不过，除了被 Hook 函数的入参以外，我们还想要获取其它更多的信息，比如执行函数的上下文环境信息，bpf_helpers 也为我们提供了获取这些信息的途径，常用的函数有，</p>
+<ul>
+<li>bpf_get_current_cgroup_id</li>
+<li>bpf_get_current_ancestor_cgroup_id</li>
+<li>bpf_get_current_comm</li>
+<li>bpf_get_current_pid_tgid</li>
+<li>bpf_get_current_task</li>
+<li>bpf_get_current_task_btf</li>
+<li>bpf_get_current_uid_gid</li>
+<li>bpf_get_ns_current_pid_tgid</li>
+</ul>
+<p>这些函数的使用方式以及用途都可以在 bpf-helpers 中查看，例如 <code>bpf_get_current_task</code> 的文档，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">       u64 bpf_get_current_task(void)
+
+              Return A pointer to the current task struct.
+</code></pre></td></tr></table>
+</div>
+</div><p>在 eBPF 程序中，我们通常都需要从某一段内存空间中获取数据，这里的内存空间可能是位于用户态的也可能是位于内核态的，我们想要将这些数据从 eBPF 程序通过 BPF Maps 传递给用户态程序就需要拷贝这些内存空间中的数据，这时候就需要使用到 BPF 中的读系列函数。</p>
+<p>通用情况（一般来说我们都推荐使用目标更加明确的函数）：</p>
+<ul>
+<li>bpf_probe_read</li>
+</ul>
+<p>在用户态一侧：</p>
+<ul>
+<li>bpf_probe_read_user</li>
+<li>bpf_probe_read_user_str</li>
+</ul>
+<p>在内核态一侧：</p>
+<ul>
+<li>bpf_probe_read_kernel</li>
+<li>bpf_probe_read_kernel_str</li>
+</ul>
+<p>需要注意后缀带 <code>_str</code> 的函数，其用法示例为，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">bpf_probe_read_user_str</span><span class="p">(</span><span class="o">&amp;</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">args</span><span class="p">[</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">args_size</span><span class="p">],</span> <span class="n">ARGSIZE</span><span class="p">,</span> <span class="n">argp</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里并不会从 <code>argp</code> 指针指向的区域读取 <code>ARGSIZE</code> 字节数目的内容，而是读取从 <code>argp</code> 开始到字符串结束标识符 <code>\x00</code> 为止，也就是说 <code>\x00</code> 字符需要包含在最大读取字符长度 <code>ARGSIZE</code> 以内。</p>
+<p>到这里，我们已经可以编写一个功能十分完善的 eBPF kprobe 程序了，但如果需要实现更为复杂的逻辑，联动其它的 eBPF 程序那就需要 BPF Map 的支持，充分发挥程序员的想象力了。</p>
+<h4 id="wip-">WIP 🐱</h4>
+<h4 id="uprobe-a-iduprobea">uprobe <a id="uprobe"></a></h4>
+<h4 id="tracepoint">tracepoint</h4>
+<p>在 <code>/sys/kernel/tracing/event</code> 路径下能够找到所有可以追踪的内核事件</p>
+<h4 id="raw_tracepoint">raw_tracepoint</h4>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-07-24</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2022-07-25-ebpf-tracing/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2022-07-25-ebpf-tracing/" data-title="eBPF-tracing 使用 eBPF 编写监控类程序" data-via="p1nant0m" data-hashtags="eBPF,tracing,tutorial"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2022-07-25-ebpf-tracing/" data-hashtag="eBPF"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2022-07-25-ebpf-tracing/" data-title="eBPF-tracing 使用 eBPF 编写监控类程序"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2022-07-25-ebpf-tracing/" data-title="eBPF-tracing 使用 eBPF 编写监控类程序"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2022-07-25-ebpf-tracing/" data-title="eBPF-tracing 使用 eBPF 编写监控类程序"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/ebpf/">eBPF</a>,&nbsp;<a href="/tags/tracing/">tracing</a>,&nbsp;<a href="/tags/tutorial/">tutorial</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2022-07-18-xdp-tutorial/" class="prev" rel="prev" title="XDP-tutorial 学习如何编写 eBPF XDP 程序"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>XDP-tutorial 学习如何编写 eBPF XDP 程序</a>
+            <a href="/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/" class="next" rel="next" title="大白话讲 Golang Channel 实现">大白话讲 Golang Channel 实现<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/css/2f1ef0.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-2":"😷P1nant0m","id-3":"😷P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-2":["id-2"],"id-3":["id-3"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
