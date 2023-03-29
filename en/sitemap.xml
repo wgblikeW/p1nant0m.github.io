@@ -2,10 +2,10 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
-            <loc>https://p1nant0m.com/en/tags/aigc/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
-            <loc>https://p1nant0m.com/en/tags/best-practices/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
-            <loc>https://p1nant0m.com/en/tags/kubernetes/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
+            <loc>https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/en/tags/aigc/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/en/tags/best-practices/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/en/tags/kubernetes/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
                         href="https://p1nant0m.com/tags/kubernetes/"
@@ -14,7 +14,7 @@
                     hreflang="en"
                     href="https://p1nant0m.com/en/tags/kubernetes/"
                     /></url><url>
-            <loc>https://p1nant0m.com/en/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
+            <loc>https://p1nant0m.com/en/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
                         href="https://p1nant0m.com/"
@@ -23,7 +23,7 @@
                     hreflang="en"
                     href="https://p1nant0m.com/en/"
                     /></url><url>
-            <loc>https://p1nant0m.com/en/posts/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
+            <loc>https://p1nant0m.com/en/posts/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
                         href="https://p1nant0m.com/posts/"
@@ -32,7 +32,7 @@
                     hreflang="en"
                     href="https://p1nant0m.com/en/posts/"
                     /></url><url>
-            <loc>https://p1nant0m.com/en/tags/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
+            <loc>https://p1nant0m.com/en/tags/</loc><lastmod>2023-02-21T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
                         href="https://p1nant0m.com/tags/"
