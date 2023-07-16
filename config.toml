@@ -53,6 +53,14 @@ defaultContentLanguage = "zh-cn"
       name = "About"
       url = "/about/"
       title = ""
+    [[languages.en.menu.main]]
+      weight = 5
+      identifier = "friends"
+      pre = ""
+      post = ""
+      name = "Friends"
+      url = "/friends/"
+      title = ""
   [languages.zh-cn]
     weight = 2
     title = "p1nant0m"
@@ -89,7 +97,15 @@ defaultContentLanguage = "zh-cn"
       pre = ""
       post = ""
       name = "关于"
-      url = "/about"
+      url = "/about/"
+      title = ""
+      [[languages.zh-cn.menu.main]]
+      weight = 5
+      identifier = "friends"
+      pre = ""
+      post = ""
+      name = "友链"
+      url = "/friends/"
       title = ""
 
 # 默认每页列表显示的文章数目
