@@ -50,7 +50,7 @@
             <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
         </div>
         <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="/friends/"> 友链 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
                         <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
                         <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
                             <i class="fas fa-search fa-fw" aria-hidden="true"></i>
@@ -106,7 +106,7 @@
                     <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
                         取消
                     </a>
-                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="/friends/" title="">友链</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
                 <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
             </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
                     <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
@@ -128,6 +128,11 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><div class="home-subtitle"><div id="id-3" class="typeit"></div></div><div class="links"><a href="https://github.com/wgblikeW" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github fa-fw" aria-hidden="true"></i></a><a href="https://twitter.com/p1nant0m" title="Twitter" target="_blank" rel="noopener noreffer me"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="https://space.bilibili.com/18682022" title="bilibili" target="_blank" rel="noopener noreffer me"><i data-svg-src="/lib/simple-icons/icons/bilibili.min.svg" aria-hidden="true"></i></a><a href="mailto:wgblike@gmail.com" title="Email" rel="me"><i class="far fa-envelope fa-fw" aria-hidden="true"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw" aria-hidden="true"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/2023-07-16-hackthebox-busqueda/">HacktheBox 打靶之旅：busqueda</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2023-07-15">2023-07-15</time></span></div><div class="content">👾 网络拓扑 TargetIP: 10.10.11.208 PrivateIP: 10.10.14.31 🏞️ 渗透环境搭建 Kali Linux In VM 🧐 开始渗透！ 本期工具以及信息站点使用：nmap, chatGPT, Wappalyzer, hacktricks, docker Documentation, gtfobins 🔎 前期信息收集 我们当前的信息只有一个目标机器的IP地址，我们考虑使用Nmap对目标机器进行一个端口扫描以及服务探测以进行前期的信息收集过程。 1 nmap -p- --open -sS -n -Pn -oN nmap/busqueda 10.10.11.208 -p-: 这个选项指示Nmap扫描所有的端口号，而不仅仅是默认的一些常见端口。 --open: 这个选项告诉Nmap只显示开放的端口，即响应连接请求的端口。 -sS: 这个</div><div class="post-footer">
+        <a href="/2023-07-16-hackthebox-busqueda/">阅读全文</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/redteam/">RedTeam</a>,&nbsp;<a href="/tags/penetration-testing/">Penetration Testing</a>,&nbsp;<a href="/tags/hackthebox/">HacktheBox</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/2022-10-15-phantom-attack-zh.cn/">Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2022-10-14">2022-10-14</time></span></div><div class="content">背景知识 在第 29 届的 DEFCON 会议上，来自 Lacework 的 Rex Guo 与 LinkedIn 的 Junyuan Zeng 分享了以他们关于利用内核从用户态拷贝数据到内核态的过程中，由于某些 Runtime Security 产品选择了不合适的 Probes 插入位置，存在 TOCTOU 问题，进而能够欺骗探针，绕过 Runtime Security 产品的 Policy Enforcement，进而达成攻击者进行恶意活动的目的。 另外，分享者还介绍了 Semantic confusion，一种利用内核与跟踪程序对数据语义解释的歧义实现的攻击方式，这与在 Usenix Security'22 会议上获得最佳论文奖的 Identity Confusion in WebView-based Mobile App-in-app Ecosystems</div><div class="post-footer">
         <a href="/2022-10-15-phantom-attack-zh.cn/">阅读全文</a><div class="post-tags">
@@ -152,11 +157,6 @@
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2022-09-07">2022-09-07</time></span></div><div class="content">云原生安全——攻防实践与体系构建 1云原生安全 在本章节中我们首先介绍云原生的含义和特性，然后介绍云原生安全的含义、体系、关键问题和现状。 1.1云原生：云计算下半场 CNCF对云原生的见解是：“云原生技术有利于各组织在公有云、私有云和混合云等新型动态环境中，构建和运行可弹性扩展的应用。云原生的代表技术包括容器、服务网络、微服务、不可变基础设施和声明式API。这些技术能够构建容错性好、易于管理和便于观察的</div><div class="post-footer">
         <a href="/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/">阅读全文</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/cloud-native-security/">Cloud Native Security</a>,&nbsp;<a href="/tags/book-reading-notes/">Book Reading Notes</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/">Tracee 漫游指北</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2022-09-05">2022-09-05</time></span></div><div class="content">项目仓库地址：https://github.com/aquasecurity/tracee 前言 这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技</div><div class="post-footer">
-        <a href="/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/">阅读全文</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/ebpf/">eBPF</a>,&nbsp;<a href="/tags/opensource-project/">OpenSource Project</a>,&nbsp;<a href="/tags/security-issues/">Security Issues</a></div></div>
 </article><ul class="pagination"><li class="page-item active">
                     <span class="page-link">
                         <a href="/">1</a>

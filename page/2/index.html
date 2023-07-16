@@ -50,7 +50,7 @@
             <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
         </div>
         <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="/friends/"> 友链 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
                         <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
                         <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
                             <i class="fas fa-search fa-fw" aria-hidden="true"></i>
@@ -106,7 +106,7 @@
                     <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
                         取消
                     </a>
-                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="/friends/" title="">友链</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
                 <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
             </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
                     <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
@@ -128,6 +128,11 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><div class="home-subtitle"><div id="id-3" class="typeit"></div></div><div class="links"><a href="https://github.com/wgblikeW" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github fa-fw" aria-hidden="true"></i></a><a href="https://twitter.com/p1nant0m" title="Twitter" target="_blank" rel="noopener noreffer me"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="https://space.bilibili.com/18682022" title="bilibili" target="_blank" rel="noopener noreffer me"><i data-svg-src="/lib/simple-icons/icons/bilibili.min.svg" aria-hidden="true"></i></a><a href="mailto:wgblike@gmail.com" title="Email" rel="me"><i class="far fa-envelope fa-fw" aria-hidden="true"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw" aria-hidden="true"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/">Tracee 漫游指北</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2022-09-05">2022-09-05</time></span></div><div class="content">项目仓库地址：https://github.com/aquasecurity/tracee 前言 这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技</div><div class="post-footer">
+        <a href="/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/">阅读全文</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/ebpf/">eBPF</a>,&nbsp;<a href="/tags/opensource-project/">OpenSource Project</a>,&nbsp;<a href="/tags/security-issues/">Security Issues</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/">大白话讲 Golang Channel 实现</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2022-08-28">2022-08-28</time></span></div><div class="content">大白话讲 Golang Channel 实现 本文尝试以轻松的口吻介绍 Golang 中 Channel 的相关实现，我们会以源码不断迭代发展的视角去观察 Channel 实现的变化，具体的来说，通过 Go 主仓库 Commit 历史记录来查看每一次改动所对应的 Issues，一同来看下 Go 开发团队的具体考量。除此之外，我们也需要抓住一些不变的本质，这些本质的实现是整个 Channel 实现设计的基础，考察相关的数据结构以及方法对我们理解具体编码时 Channel 的行为颇有裨益。 本文是笔者在学习过程中写成的，参考了许多前人写</div><div class="post-footer">
         <a href="/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/">阅读全文</a><div class="post-tags">
@@ -151,11 +156,6 @@
         <a href="/2021-12-05-chapter3/">·密码学原理课程 —— Private-Key Cryptography Ⅰ</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-12-02">2021-12-02</time></span></div><div class="content">Private-Key (Symmetric) Cryptography 章节思维导图" 章节思维导图 在本章节中，我们开始介绍两大密码学方向中的私钥/对称密码学（Private-Key/Symmetric Cryptography）方向。 （1）我们将会从弱化完善保密理论安全性开始，得到一个在实践生产中能够被接受并且符合实际人们对安全性需求的安全定义（computational secrecy）。 （2）接着我们从 computational secrecy 出发，给出一种最为基本的安全性定义—— EAV-Secur</div><div class="post-footer">
         <a href="/2021-12-05-chapter3/">阅读全文</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/courseofcryptography/">CourseOfCryptography</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/2021-11-26-chapter2/">·密码学原理课程 —— Perfectly Secret Encryption</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2021-11-22">2021-11-22</time></span></div><div class="content">Perfectly Secret Encryption ​ 本章节的思维导图如下所示， 章节思维导图" 章节思维导图 ​ 在本章节中我们主要介绍完善保密理论（Perfectly Secret Encryption）并且给出一些在往下章节中经常使用的检验密码方案安全性的实验交互模型。在描述这些模型时，我们需要使用到一些基础的概率论知识，并且还需要讨论一些用于该模型中随机算法。 Generating randomness ​ 在密码学中，我们经常需要产生并使用一些随机数，这些随机数的概率分布影响着密码的安全性，一些随</div><div class="post-footer">
-        <a href="/2021-11-26-chapter2/">阅读全文</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/courseofcryptography/">CourseOfCryptography</a></div></div>
 </article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">

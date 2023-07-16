@@ -2,12 +2,9 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://p1nant0m.com/tags/clound-native-security/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/tags/conference-sharing/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/tags/defcon-29/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/tags/ebpf/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/tags/malicious-behaviour-monitoring/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://p1nant0m.com/tags/hackthebox/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/2023-07-16-hackthebox-busqueda/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/"
@@ -16,8 +13,8 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/"
                     /></url><url>
-            <loc>https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/posts/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://p1nant0m.com/tags/penetration-testing/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/posts/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/posts/"
@@ -26,7 +23,8 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/posts/"
                     /></url><url>
-            <loc>https://p1nant0m.com/tags/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://p1nant0m.com/tags/redteam/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.com/tags/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/tags/"
@@ -35,6 +33,12 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/tags/"
                     /></url><url>
+            <loc>https://p1nant0m.com/tags/clound-native-security/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/tags/conference-sharing/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/tags/defcon-29/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/tags/ebpf/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/tags/malicious-behaviour-monitoring/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/tags/toctou/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/tags/cli-application/</loc><lastmod>2022-10-07T07:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/tags/golang/</loc><lastmod>2022-10-07T07:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
@@ -99,6 +103,15 @@
                     rel="alternate"
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/about/"
+                    /></url><url>
+            <loc>https://p1nant0m.com/friends/</loc><priority>0</priority><xhtml:link
+                        rel="alternate"
+                        hreflang="en"
+                        href="https://p1nant0m.com/en/friends/"
+                        /><xhtml:link
+                    rel="alternate"
+                    hreflang="zh-cn"
+                    href="https://p1nant0m.com/friends/"
                     /></url><url>
             <loc>https://p1nant0m.com/categories/</loc><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"

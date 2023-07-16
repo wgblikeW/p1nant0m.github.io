@@ -4,9 +4,17 @@
         <link>https://p1nant0m.com/</link>
         <description>p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Fri, 14 Oct 2022 11:46:09 &#43;0000</lastBuildDate>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sat, 15 Jul 2023 11:46:09 &#43;0000</lastBuildDate>
             <atom:link href="https://p1nant0m.com/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>HacktheBox 打靶之旅：busqueda</title>
+    <link>https://p1nant0m.com/2023-07-16-hackthebox-busqueda/</link>
+    <pubDate>Sat, 15 Jul 2023 11:46:09 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2023-07-16-hackthebox-busqueda/</guid>
+    <description><![CDATA[👾 网络拓扑 TargetIP: 10.10.11.208 PrivateIP: 10.10.14.31 🏞️ 渗透环境搭建 Kali Linux In VM 🧐 开始渗透！ 本期工具以及信息站点使用：nmap, chatGPT, Wappalyzer, hacktricks, docker Documentation, gtfobins 🔎 前期信息收集 我们当前的信息只有一个目标机器的IP地址，我们考虑使用Nmap对目标机器进行一个端口扫描以及服务探测以进行前期的信息收集过程。 1 nmap -p- --open -sS -n -Pn -oN nmap/busqueda 10.10.11.208 -p-: 这个选项指示Nmap扫描所有的端口号，而不仅仅是默认的一些常见端口。 --open: 这个选项告诉Nmap只显示开放的端口，即响应连接请求的端口。 -sS: 这个]]></description>
+</item>
+<item>
     <title>Phantom Attack: Evading System Call Monitoring (TOCTOU Problem)</title>
     <link>https://p1nant0m.com/2022-10-15-phantom-attack-zh.cn/</link>
     <pubDate>Fri, 14 Oct 2022 11:46:09 &#43;0000</pubDate>
@@ -77,14 +85,6 @@
     <author>p1nant0m</author>
     <guid>https://p1nant0m.com/2022-07-25-ebpf-tracing/</guid>
     <description><![CDATA[eBPF 程序的跟踪能力 The ability to attach eBPF programs to trace points as well as kernel and user application probe points allows unprecedented visibility into the runtime behavior of applications and the system itself. By giving introspection abilities to both the application and system side, both views can be combined, allowing powerful and unique insights to troubleshoot system performance problems. Advanced statistical data structures allow to extract meaningful visibility data in an efficient manner, without requiring the export of vast amounts of sampling data as typically done by similar systems. 如何找到你所需要的追踪点？ 首先，我们需要明确自身的需求，考虑清楚我们需要获取哪一些数据信息，再从这些数据信息的类型出发找到其对应的追踪位置。在 eBPF 程序中有以下这几种常用的追踪点类型： kprobe 内核探针 uprobe 用户程序探针 tracepoint 内核]]></description>
-</item>
-<item>
-    <title>XDP-tutorial 学习如何编写 eBPF XDP 程序</title>
-    <link>https://p1nant0m.com/2022-07-18-xdp-tutorial/</link>
-    <pubDate>Mon, 18 Jul 2022 07:00:00 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.com/2022-07-18-xdp-tutorial/</guid>
-    <description><![CDATA[XDP-Tutorial ⭐ 本文章仍然在不断的更新中，因此文章结构以及内容可能会时常发生变化。同时本领域也是作者刚刚涉及的领域，难免在文本内容中出现错误，还望指正，大家一同学习共勉。 XDP-Tutorial 是一个 Github 上的 repo，皆在指导人们如何遵循最基本的步骤，高效地实现为内核中的 XDP 系统进行编程。我会随着这个课程的步伐与大家一同探寻 Linux 内核世界的奥秘以及如何使用高性能的 XDP 程序对网络数据报进行处理。随着学习的深入，我会列出理解每一节课程的编程实现]]></description>
 </item>
 </channel>
 </rss>

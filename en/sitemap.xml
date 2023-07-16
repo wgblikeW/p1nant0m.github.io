@@ -63,6 +63,15 @@
                     hreflang="en"
                     href="https://p1nant0m.com/en/about/"
                     /></url><url>
+            <loc>https://p1nant0m.com/en/friends/</loc><priority>0</priority><xhtml:link
+                        rel="alternate"
+                        hreflang="zh-cn"
+                        href="https://p1nant0m.com/friends/"
+                        /><xhtml:link
+                    rel="alternate"
+                    hreflang="en"
+                    href="https://p1nant0m.com/en/friends/"
+                    /></url><url>
             <loc>https://p1nant0m.com/en/categories/</loc><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="zh-cn"
