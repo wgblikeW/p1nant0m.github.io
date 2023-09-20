@@ -128,6 +128,11 @@
         alt="/images/avatar.jpg"
         title="/images/avatar.jpg" /></a></div><div class="home-subtitle"><div id="id-3" class="typeit"></div></div><div class="links"><a href="https://github.com/wgblikeW" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github fa-fw" aria-hidden="true"></i></a><a href="https://twitter.com/p1nant0m" title="Twitter" target="_blank" rel="noopener noreffer me"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="https://space.bilibili.com/18682022" title="bilibili" target="_blank" rel="noopener noreffer me"><i data-svg-src="/lib/simple-icons/icons/bilibili.min.svg" aria-hidden="true"></i></a><a href="mailto:wgblike@gmail.com" title="Email" rel="me"><i class="far fa-envelope fa-fw" aria-hidden="true"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw" aria-hidden="true"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/exploration-series-kubernetes-authenticationsa/">[✨Exploration Series] Kubernetes Authentications & Authorization Mechanismds</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2023-08-30">2023-08-30</time></span></div><div class="content">最近在学习云原生最佳安全实践，其中提到了 k8s 中的认证与授权模块，为了加深理解以及有对 k8s 源码阅读的计划，便诞生了这个[✨探索系列]。我们将从需求出发看看为什么这个系统需要设计成这个样子，这个模块以及在源码层面是何如实现的，这样的实现有什么亮点以及工程考量，不仅如此，在这个过程中我们还会着重关注其中与安全相关的细节，关注系统的全貌，重现思考安全系统的构建。 🌠 我是谁？我能做什么？—— 认证与授权 认证和授权是</div><div class="post-footer">
+        <a href="/exploration-series-kubernetes-authenticationsa/">阅读全文</a><div class="post-tags">
+                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/kubernetes/">kubernetes</a>,&nbsp;<a href="/tags/auth-authz/">Auth &amp; Authz</a></div></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/2023-07-16-hackthebox-busqueda/">HacktheBox 打靶之旅：busqueda</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2023-07-15">2023-07-15</time></span></div><div class="content">👾 网络拓扑 TargetIP: 10.10.11.208 PrivateIP: 10.10.14.31 🏞️ 渗透环境搭建 Kali Linux In VM 🧐 开始渗透！ 本期工具以及信息站点使用：nmap, chatGPT, Wappalyzer, hacktricks, docker Documentation, gtfobins 🔎 前期信息收集 我们当前的信息只有一个目标机器的IP地址，我们考虑使用Nmap对目标机器进行一个端口扫描以及服务探测以进行前期的信息收集过程。 1 nmap -p- --open -sS -n -Pn -oN nmap/busqueda 10.10.11.208 -p-: 这个选项指示Nmap扫描所有的端口号，而不仅仅是默认的一些常见端口。 --open: 这个选项告诉Nmap只显示开放的端口，即响应连接请求的端口。 -sS: 这个</div><div class="post-footer">
         <a href="/2023-07-16-hackthebox-busqueda/">阅读全文</a><div class="post-tags">
@@ -152,11 +157,6 @@
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2022-09-10">2022-09-10</time></span></div><div class="content">文章概要 本文准备以一种轻快、对话式的口吻来描述笔者在计算机相关领域学习过程中感悟体会，其中包括一些回顾、一些建议、一些反思以及对未来的一些思考。这些内容并不是对某一领域的具体讨论，因此不会涉及相关的技术细节，读者可以抱着一种来看看故事、吹吹牛的心态阅读本篇文章，因而你不需要有任何认知上的压力。如果你在阅读完本篇文章后，能够有所收获与思考，笔者将感到由衷的高兴。 🤔 优秀程序员的特质：黑客与画家 OR 哲学家</div><div class="post-footer">
         <a href="/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/">阅读全文</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E7%9F%A5%E8%AF%86%E5%AD%A6%E4%B9%A0%E5%88%86%E4%BA%AB/">知识学习分享</a>,&nbsp;<a href="/tags/%E9%9A%8F%E8%B0%88/">随谈</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
-        <a href="/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/">云原生安全：攻防实践与体系构建阅读笔记</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span>&nbsp;<span class="post-publish">发布于 <time datetime="2022-09-07">2022-09-07</time></span></div><div class="content">云原生安全——攻防实践与体系构建 1云原生安全 在本章节中我们首先介绍云原生的含义和特性，然后介绍云原生安全的含义、体系、关键问题和现状。 1.1云原生：云计算下半场 CNCF对云原生的见解是：“云原生技术有利于各组织在公有云、私有云和混合云等新型动态环境中，构建和运行可弹性扩展的应用。云原生的代表技术包括容器、服务网络、微服务、不可变基础设施和声明式API。这些技术能够构建容错性好、易于管理和便于观察的</div><div class="post-footer">
-        <a href="/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/">阅读全文</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/cloud-native-security/">Cloud Native Security</a>,&nbsp;<a href="/tags/book-reading-notes/">Book Reading Notes</a></div></div>
 </article><ul class="pagination"><li class="page-item active">
                     <span class="page-link">
                         <a href="/">1</a>
@@ -168,6 +168,10 @@
                 </li><li class="page-item ">
                     <span class="page-link">
                         <a href="/page/3/">3</a>
+                    </span>
+                </li><li class="page-item ">
+                    <span class="page-link">
+                        <a href="/page/4/">4</a>
                     </span>
                 </li></ul></div></div>
             </main><footer class="footer">

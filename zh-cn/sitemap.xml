@@ -2,9 +2,18 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://p1nant0m.com/tags/hackthebox/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/2023-07-16-hackthebox-busqueda/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://p1nant0m.com/exploration-series-kubernetes-authenticationsa/</loc><lastmod>2023-08-30T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
+            <loc>https://p1nant0m.com/tags/auth-authz/</loc><lastmod>2023-08-30T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
+            <loc>https://p1nant0m.com/tags/kubernetes/</loc><lastmod>2023-08-30T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority><xhtml:link
+                        rel="alternate"
+                        hreflang="en"
+                        href="https://p1nant0m.com/en/tags/kubernetes/"
+                        /><xhtml:link
+                    rel="alternate"
+                    hreflang="zh-cn"
+                    href="https://p1nant0m.com/tags/kubernetes/"
+                    /></url><url>
+            <loc>https://p1nant0m.com/</loc><lastmod>2023-08-30T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/"
@@ -13,8 +22,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/"
                     /></url><url>
-            <loc>https://p1nant0m.com/tags/penetration-testing/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/posts/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://p1nant0m.com/posts/</loc><lastmod>2023-08-30T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/posts/"
@@ -23,8 +31,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/posts/"
                     /></url><url>
-            <loc>https://p1nant0m.com/tags/redteam/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/tags/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://p1nant0m.com/tags/</loc><lastmod>2023-08-30T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/tags/"
@@ -33,6 +40,10 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/tags/"
                     /></url><url>
+            <loc>https://p1nant0m.com/tags/hackthebox/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/2023-07-16-hackthebox-busqueda/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/tags/penetration-testing/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.com/tags/redteam/</loc><lastmod>2023-07-15T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/tags/clound-native-security/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/tags/conference-sharing/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/tags/defcon-29/</loc><lastmod>2022-10-14T11:46:09&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
@@ -44,15 +55,6 @@
             <loc>https://p1nant0m.com/tags/golang/</loc><lastmod>2022-10-07T07:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/2022-10-08-%E4%BC%98%E9%9B%85%E7%9A%84%E5%88%9B%E5%BB%BA-cli-%E7%A8%8B%E5%BA%8F.zh-ch/</loc><lastmod>2022-10-07T07:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/tags/cilium/</loc><lastmod>2022-09-27T14:57:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.com/tags/kubernetes/</loc><lastmod>2022-09-27T14:57:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
-                        rel="alternate"
-                        hreflang="en"
-                        href="https://p1nant0m.com/en/tags/kubernetes/"
-                        /><xhtml:link
-                    rel="alternate"
-                    hreflang="zh-cn"
-                    href="https://p1nant0m.com/tags/kubernetes/"
-                    /></url><url>
             <loc>https://p1nant0m.com/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/</loc><lastmod>2022-09-27T14:57:27&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/</loc><lastmod>2022-09-25T10:16:38&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.com/tags/%E7%9F%A5%E8%AF%86%E5%AD%A6%E4%B9%A0%E5%88%86%E4%BA%AB/</loc><lastmod>2022-09-10T18:36:36&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
