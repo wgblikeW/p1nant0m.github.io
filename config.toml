@@ -439,7 +439,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
       Mix = false
     #  评论系统设置
     [params.page.comment]
-      enable = false
+      enable = true
       # Disqus 评论系统设置
       [params.page.comment.disqus]
         # 
