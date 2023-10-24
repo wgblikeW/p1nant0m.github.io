@@ -456,9 +456,9 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
         clientSecret = ""
       # Valine 评论系统设置
       [params.page.comment.valine]
-        enable = false
-        appId = ""
-        appKey = ""
+        enable = true
+        appId = "UnWumtTxnhlvaMmfKV6lZwUy-gzGzoHsz"
+        appKey = "egg4vgYXZCZTW8f4QbS5bDpL"
         placeholder = ""
         avatar = "mp"
         meta= ""
