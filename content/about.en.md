@@ -9,3 +9,7 @@ Greetings From p1nant0m 🖖 !! I am a Junior student majoring in Information Se
 📨 wgblike@outlook.com; wgblike@gmail.com
 
 Github: [P1nant0m](https://github.com/wgblikeW)
+
+### Badges
+
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="ee332453-8b4d-4f0b-bc04-63ac08cac474" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
