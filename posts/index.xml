@@ -4,7 +4,15 @@
         <link>https://p1nant0m.com/posts/</link>
         <description>所有文章 | p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Wed, 30 Aug 2023 12:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.com/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Thu, 04 Jul 2024 12:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.com/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>[✨Exploration Series] gVisor: 以 GoogleCTF2023 赛题为契机，深入了解 gVisor - 其 1</title>
+    <link>https://p1nant0m.com/2024-07-21-gvisor/</link>
+    <pubDate>Thu, 04 Jul 2024 12:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.com/2024-07-21-gvisor/</guid>
+    <description><![CDATA[胡言乱语 计算机科学领域的任何问题都可以通过增加一个间接的中间层来解决。 Isolation Level from High To Low Virtual Machine → Kata Container → gVisor → Container → JVM (Java Virtual Machine) Hardware Simulation → Hypervisor (KVM) → Kernel In Userspace → Namespcae + Cgroups + Chroot → Apps Sandbox Overview 沙盒(Sandbox)技术是一种通过创建隔离的执行环境来运行程序或代码的方式，用于实现资源隔离以创造安全的运行时环境，使得可以在信任域内的机器执行不受信的用户代码或程序。沙箱能够限制程序的行为，有效防止程序运行过程中对主机系统造成的潜在损害。 机器级虚拟]]></description>
+</item>
+<item>
     <title>[✨Exploration Series] Kubernetes Authentications &amp; Authorization Mechanismds</title>
     <link>https://p1nant0m.com/exploration-series-kubernetes-authenticationsa/</link>
     <pubDate>Wed, 30 Aug 2023 12:00:00 &#43;0000</pubDate>
@@ -75,14 +83,6 @@
     <author>p1nant0m</author>
     <guid>https://p1nant0m.com/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/</guid>
     <description><![CDATA[项目仓库地址：https://github.com/aquasecurity/tracee 前言 这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技]]></description>
-</item>
-<item>
-    <title>大白话讲 Golang Channel 实现</title>
-    <link>https://p1nant0m.com/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/</link>
-    <pubDate>Sun, 28 Aug 2022 07:00:00 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.com/2022-07-18-%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AE%B2gochannel%E5%AE%9E%E7%8E%B0/</guid>
-    <description><![CDATA[大白话讲 Golang Channel 实现 本文尝试以轻松的口吻介绍 Golang 中 Channel 的相关实现，我们会以源码不断迭代发展的视角去观察 Channel 实现的变化，具体的来说，通过 Go 主仓库 Commit 历史记录来查看每一次改动所对应的 Issues，一同来看下 Go 开发团队的具体考量。除此之外，我们也需要抓住一些不变的本质，这些本质的实现是整个 Channel 实现设计的基础，考察相关的数据结构以及方法对我们理解具体编码时 Channel 的行为颇有裨益。 本文是笔者在学习过程中写成的，参考了许多前人写]]></description>
 </item>
 </channel>
 </rss>
