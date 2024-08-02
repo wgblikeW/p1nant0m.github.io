@@ -2,9 +2,9 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://p1nant0m.com/2024-07-21-gvisor/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
-            <loc>https://p1nant0m.com/tags/googlectf20231/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
-            <loc>https://p1nant0m.com/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority><xhtml:link
+            <loc>https://p1nant0m.com/2024-07-21-gvisor/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
+            <loc>https://p1nant0m.com/tags/googlectf20231/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
+            <loc>https://p1nant0m.com/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/"
@@ -13,7 +13,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/"
                     /></url><url>
-            <loc>https://p1nant0m.com/posts/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority><xhtml:link
+            <loc>https://p1nant0m.com/posts/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/posts/"
@@ -22,9 +22,9 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.com/posts/"
                     /></url><url>
-            <loc>https://p1nant0m.com/tags/sandbox/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
-            <loc>https://p1nant0m.com/tags/security/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url><url>
-            <loc>https://p1nant0m.com/tags/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.7</priority><xhtml:link
+            <loc>https://p1nant0m.com/tags/sandbox/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
+            <loc>https://p1nant0m.com/tags/security/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url><url>
+            <loc>https://p1nant0m.com/tags/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.6</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.com/en/tags/"
