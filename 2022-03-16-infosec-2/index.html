@@ -7,19 +7,19 @@
         <title>InfoSec-Lab2-apollo - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="InfoSec-Lab2-apollo" />
 <meta property="og:description" content="Architecture Design 模拟实现128位信息的加密通信过程。 实验设计包含三方：A，B，C。A与B之间进行128位信息的加密交换。C负责为A和B各生成一对公私钥对，并分别把对应的私钥传给A和B，并把他们的公钥公开。实现本实验需求的架构设计如下图所示， 项目数据流图&#34; 项目数据流图 Protocol Design 在该实验需求中，ServerA与ServerB之间使用Asymmetric Encryption Scheme进行加密通信，ServerC充当密钥签发中心，负责为S" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://p1nant0m.com/2022-03-16-infosec-2/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://p1nant0m.xyz/2022-03-16-infosec-2/" /><meta property="og:image" content="https://p1nant0m.xyz/logo.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-03-16T20:00:00+00:00" />
 <meta property="article:modified_time" content="2022-03-16T20:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+<meta name="twitter:image" content="https://p1nant0m.xyz/logo.png"/>
 
 <meta name="twitter:title" content="InfoSec-Lab2-apollo"/>
 <meta name="twitter:description" content="Architecture Design 模拟实现128位信息的加密通信过程。 实验设计包含三方：A，B，C。A与B之间进行128位信息的加密交换。C负责为A和B各生成一对公私钥对，并分别把对应的私钥传给A和B，并把他们的公钥公开。实现本实验需求的架构设计如下图所示， 项目数据流图&#34; 项目数据流图 Protocol Design 在该实验需求中，ServerA与ServerB之间使用Asymmetric Encryption Scheme进行加密通信，ServerC充当密钥签发中心，负责为S"/>
 <meta name="application-name" content="我的网站">
 <meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/2022-03-16-infosec-2/" /><link rel="prev" href="https://p1nant0m.com/2021-12-05-chapter3/" /><link rel="next" href="https://p1nant0m.com/2022-07-18-xdp-tutorial/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.xyz/2022-03-16-infosec-2/" /><link rel="prev" href="https://p1nant0m.xyz/2021-12-05-chapter3/" /><link rel="next" href="https://p1nant0m.xyz/2022-07-18-xdp-tutorial/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
     {
@@ -29,9 +29,9 @@
         "inLanguage": "zh-CN",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https:\/\/p1nant0m.com\/2022-03-16-infosec-2\/"
+            "@id": "https:\/\/p1nant0m.xyz\/2022-03-16-infosec-2\/"
         },"genre": "posts","keywords": "project","wordcount":  3974 ,
-        "url": "https:\/\/p1nant0m.com\/2022-03-16-infosec-2\/","datePublished": "2022-03-16T20:00:00+00:00","dateModified": "2022-03-16T20:00:00+00:00","publisher": {
+        "url": "https:\/\/p1nant0m.xyz\/2022-03-16-infosec-2\/","datePublished": "2022-03-16T20:00:00+00:00","dateModified": "2022-03-16T20:00:00+00:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
                 "@type": "Person",
@@ -458,7 +458,7 @@ openssl req -new -x509 -key server.key -out server.pem -days <span class="m">365
                             <a class="link-to-markdown" href="/2022-03-16-infosec-2/index.md" target="_blank">阅读原始文档</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo" data-via="p1nant0m" data-hashtags="project"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/2022-03-16-infosec-2/" data-hashtag="project"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.com/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.com/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.xyz/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo" data-via="p1nant0m" data-hashtags="project"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.xyz/2022-03-16-infosec-2/" data-hashtag="project"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.xyz/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.xyz/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.xyz/2022-03-16-infosec-2/" data-title="InfoSec-Lab2-apollo"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
             </div>
         </div>
     </div>

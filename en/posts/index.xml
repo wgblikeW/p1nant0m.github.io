@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>All Posts - p1nant0m</title>
-        <link>https://p1nant0m.com/en/posts/</link>
+        <link>https://p1nant0m.xyz/en/posts/</link>
         <description>All Posts | p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Tue, 21 Feb 2023 12:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.com/en/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Tue, 21 Feb 2023 12:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.xyz/en/posts/" rel="self" type="application/rss+xml" /><item>
     <title>15 Best Practices for Working with Kubernetes</title>
-    <link>https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</link>
+    <link>https://p1nant0m.xyz/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</link>
     <pubDate>Tue, 21 Feb 2023 12:00:00 &#43;0000</pubDate>
     <author>ChatGPT</author>
-    <guid>https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</guid>
+    <guid>https://p1nant0m.xyz/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</guid>
     <description><![CDATA[Introduction to Kubernetes Kubernetes is a popular and powerful container orchestration system that has become the de facto standard for managing containerized workloads. However, managing Kubernetes clusters can be complex and challenging, especially if you are new to the technology. In this post, we&rsquo;ll cover 15 best practices for working with Kubernetes that can help you optimize your clusters and improve the performance and reliability of your applications.
 15 Best Practices   Keep Your Clusters Up-to-Date
 Kubernetes is a rapidly evolving technology, with new features and bug fixes released regularly. It&rsquo;s important to keep your clusters up-to-date with the latest stable release to ensure you have access to the latest features, security patches, and bug fixes.
@@ -20,10 +20,10 @@ To ensure that your applications have the necessary resources to run properly an
 </item>
 <item>
     <title>6.824-RaftLab-Part2D-Development Quicknotes</title>
-    <link>https://p1nant0m.com/en/2022-03-18-raft-part2d/</link>
+    <link>https://p1nant0m.xyz/en/2022-03-18-raft-part2d/</link>
     <pubDate>Fri, 18 Mar 2022 09:00:00 &#43;0000</pubDate>
     <author>p1nant0m</author>
-    <guid>https://p1nant0m.com/en/2022-03-18-raft-part2d/</guid>
+    <guid>https://p1nant0m.xyz/en/2022-03-18-raft-part2d/</guid>
     <description><![CDATA[Overview  This topic can be found under Lab2 instruction.
  Modifying Raft to cooperate with services that persistently store a &ldquo;snapshot&rdquo; of their state from time to time, at which point Raft discards log entries that precede the snapshot.
 It&rsquo;s now possible for a follower to fall so far behind that the leader has discarded the log entries it needs to catch up; the leader must then send a snapshot plus the log starting at the time of the snapshot.
@@ -35,10 +35,10 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
 </item>
 <item>
     <title>Forbbiden Fruit</title>
-    <link>https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/</link>
+    <link>https://p1nant0m.xyz/en/2021-10-20-forbbiden-fruit/</link>
     <pubDate>Wed, 20 Oct 2021 12:00:00 &#43;0000</pubDate>
     <author>P1nant0m</author>
-    <guid>https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/</guid>
+    <guid>https://p1nant0m.xyz/en/2021-10-20-forbbiden-fruit/</guid>
     <description><![CDATA[Origin: http://aes.cryptohack.org/forbidden_fruit/
 0x1 DESCRIPTION Galois Counter Mode (GCM) is the most widely used block cipher mode in TLS today. It&rsquo;s an &ldquo;authenticated encryption with associated data&rdquo; cipher mode (AEAD), yet not resistant to misuse.
 See here for a great resource on the inner workings of GCM, as well as this attack.

@@ -14,12 +14,12 @@ Snapshot(index int, snapshot []byte)
 The index argument indicates the highest log entry that&rsquo;s reflected in the snapshot. Raft should discard its log entries before that point. You&rsquo;ll need to revise your Raft code to operate while storing only the tail of the log.
 You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper that allows a Raft leader to tell a lagging Raft peer to replace its state with a snapshot. You will likely need to think through how InstallSnapshot should interact with the state and rules in Figure 2." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://p1nant0m.com/en/2022-03-18-raft-part2d/" /><meta property="og:image" content="https://p1nant0m.com/logo.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://p1nant0m.xyz/en/2022-03-18-raft-part2d/" /><meta property="og:image" content="https://p1nant0m.xyz/logo.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-03-18T09:00:00+00:00" />
 <meta property="article:modified_time" content="2022-03-18T09:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://p1nant0m.com/logo.png"/>
+<meta name="twitter:image" content="https://p1nant0m.xyz/logo.png"/>
 
 <meta name="twitter:title" content="6.824-RaftLab-Part2D-Development Quicknotes"/>
 <meta name="twitter:description" content="Overview  This topic can be found under Lab2 instruction.
@@ -33,7 +33,7 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
 <meta name="application-name" content="我的网站">
 <meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.com/en/2022-03-18-raft-part2d/" /><link rel="prev" href="https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/" /><link rel="next" href="https://p1nant0m.com/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.xyz/en/2022-03-18-raft-part2d/" /><link rel="prev" href="https://p1nant0m.xyz/en/2021-10-20-forbbiden-fruit/" /><link rel="next" href="https://p1nant0m.xyz/en/2023-02-22-15%E4%B8%AA%E5%85%B3%E4%BA%8Ekubernetes%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
     {
@@ -43,9 +43,9 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
         "inLanguage": "en",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https:\/\/p1nant0m.com\/en\/2022-03-18-raft-part2d\/"
+            "@id": "https:\/\/p1nant0m.xyz\/en\/2022-03-18-raft-part2d\/"
         },"genre": "posts","keywords": "Developing Notes","wordcount":  1115 ,
-        "url": "https:\/\/p1nant0m.com\/en\/2022-03-18-raft-part2d\/","datePublished": "2022-03-18T09:00:00+00:00","dateModified": "2022-03-18T09:00:00+00:00","publisher": {
+        "url": "https:\/\/p1nant0m.xyz\/en\/2022-03-18-raft-part2d\/","datePublished": "2022-03-18T09:00:00+00:00","dateModified": "2022-03-18T09:00:00+00:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
                 "@type": "Person",
@@ -287,7 +287,7 @@ ok      6.824/raft      14.324s
                             <a class="link-to-markdown" href="/en/2022-03-18-raft-part2d/index.md" target="_blank">Read Markdown</a>
                         </span></div>
             <div class="post-info-share">
-                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://p1nant0m.com/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes" data-via="p1nant0m" data-hashtags="Developing Notes"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://p1nant0m.com/en/2022-03-18-raft-part2d/" data-hashtag="Developing Notes"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.com/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://p1nant0m.com/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://p1nant0m.com/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://p1nant0m.xyz/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes" data-via="p1nant0m" data-hashtags="Developing Notes"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://p1nant0m.xyz/en/2022-03-18-raft-part2d/" data-hashtag="Developing Notes"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.xyz/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://p1nant0m.xyz/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://p1nant0m.xyz/en/2022-03-18-raft-part2d/" data-title="6.824-RaftLab-Part2D-Development Quicknotes"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
             </div>
         </div>
     </div>

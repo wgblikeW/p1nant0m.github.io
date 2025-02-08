@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Crypto - Tag - p1nant0m</title>
-        <link>https://p1nant0m.com/en/tags/crypto/</link>
+        <link>https://p1nant0m.xyz/en/tags/crypto/</link>
         <description>Crypto - Tag - p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Wed, 20 Oct 2021 12:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.com/en/tags/crypto/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Wed, 20 Oct 2021 12:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.xyz/en/tags/crypto/" rel="self" type="application/rss+xml" /><item>
     <title>Forbbiden Fruit</title>
-    <link>https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/</link>
+    <link>https://p1nant0m.xyz/en/2021-10-20-forbbiden-fruit/</link>
     <pubDate>Wed, 20 Oct 2021 12:00:00 &#43;0000</pubDate>
     <author>P1nant0m</author>
-    <guid>https://p1nant0m.com/en/2021-10-20-forbbiden-fruit/</guid>
+    <guid>https://p1nant0m.xyz/en/2021-10-20-forbbiden-fruit/</guid>
     <description><![CDATA[Origin: http://aes.cryptohack.org/forbidden_fruit/
 0x1 DESCRIPTION Galois Counter Mode (GCM) is the most widely used block cipher mode in TLS today. It&rsquo;s an &ldquo;authenticated encryption with associated data&rdquo; cipher mode (AEAD), yet not resistant to misuse.
 See here for a great resource on the inner workings of GCM, as well as this attack.

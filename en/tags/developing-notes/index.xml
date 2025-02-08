@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>Developing Notes - Tag - p1nant0m</title>
-        <link>https://p1nant0m.com/en/tags/developing-notes/</link>
+        <link>https://p1nant0m.xyz/en/tags/developing-notes/</link>
         <description>Developing Notes - Tag - p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Fri, 18 Mar 2022 09:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.com/en/tags/developing-notes/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Fri, 18 Mar 2022 09:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.xyz/en/tags/developing-notes/" rel="self" type="application/rss+xml" /><item>
     <title>6.824-RaftLab-Part2D-Development Quicknotes</title>
-    <link>https://p1nant0m.com/en/2022-03-18-raft-part2d/</link>
+    <link>https://p1nant0m.xyz/en/2022-03-18-raft-part2d/</link>
     <pubDate>Fri, 18 Mar 2022 09:00:00 &#43;0000</pubDate>
     <author>p1nant0m</author>
-    <guid>https://p1nant0m.com/en/2022-03-18-raft-part2d/</guid>
+    <guid>https://p1nant0m.xyz/en/2022-03-18-raft-part2d/</guid>
     <description><![CDATA[Overview  This topic can be found under Lab2 instruction.
  Modifying Raft to cooperate with services that persistently store a &ldquo;snapshot&rdquo; of their state from time to time, at which point Raft discards log entries that precede the snapshot.
 It&rsquo;s now possible for a follower to fall so far behind that the leader has discarded the log entries it needs to catch up; the leader must then send a snapshot plus the log starting at the time of the snapshot.
