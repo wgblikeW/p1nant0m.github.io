@@ -77,7 +77,7 @@ def hash_collid(tar_hash, proof_back):
 
 ​	在pycryptodome库中，AES_MODE_CFB的实现依照[NIST SP 800-38A, section 6.3](http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf)，其大致的加解密流程如下图所示，
 
-{{< image src="https://image.p1nant0m.com/image-20211020093632010.png" caption="AES CFB MODE 加解密流程" src_s="https://image.p1nant0m.com/image-20211020093632010.png" src_l="https://image.p1nant0m.com/image-20211020093632010.png" >}}
+{{< image src="https://image.p1nant0m.xyz/image-20211020093632010.png" caption="AES CFB MODE 加解密流程" src_s="https://image.p1nant0m.xyz/image-20211020093632010.png" src_l="https://image.p1nant0m.xyz/image-20211020093632010.png" >}}
 
 ​	数学表述为：
 
