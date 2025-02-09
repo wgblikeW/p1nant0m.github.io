@@ -169,36 +169,36 @@
 </div>
 </div><h4 id="业务逻辑分析与代码审查">业务逻辑分析与代码审查</h4>
 <p>​	代理配置完后我们直接来看题目，直接进入到<code>http://localhost:8080/</code>；页面布局很简单，简要的看上去是一个支持<code>markdown</code>格式的在编辑器，支持在线预览（Preview）与后端保存（Save）功能。</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927142057006.png" title="https://image.p1nant0m.com/image-20210927142057006.png" data-thumbnail="https://image.p1nant0m.com/image-20210927142057006.png" data-sub-html="<h2>题目页面展示</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20210927142057006.png" title="https://image.p1nant0m.xyz/image-20210927142057006.png" data-thumbnail="https://image.p1nant0m.xyz/image-20210927142057006.png" data-sub-html="<h2>题目页面展示</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20210927142057006.png"
-            data-srcset="https://image.p1nant0m.com/image-20210927142057006.png, https://image.p1nant0m.com/image-20210927142057006.png 1.5x, https://image.p1nant0m.com/image-20210927142057006.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20210927142057006.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20210927142057006.png, https://image.p1nant0m.xyz/image-20210927142057006.png 1.5x, https://image.p1nant0m.xyz/image-20210927142057006.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20210927142057006.png" />
+            alt="https://image.p1nant0m.xyz/image-20210927142057006.png" />
     </a><figcaption class="image-caption">题目页面展示</figcaption>
     </figure>
 <p>​	我们随便的在编辑框中输入一点内容看看效果，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927142309716.png" title="https://image.p1nant0m.com/image-20210927142309716.png" data-thumbnail="https://image.p1nant0m.com/image-20210927142309716.png" data-sub-html="<h2>尝试输入特殊字符</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20210927142309716.png" title="https://image.p1nant0m.xyz/image-20210927142309716.png" data-thumbnail="https://image.p1nant0m.xyz/image-20210927142309716.png" data-sub-html="<h2>尝试输入特殊字符</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20210927142309716.png"
-            data-srcset="https://image.p1nant0m.com/image-20210927142309716.png, https://image.p1nant0m.com/image-20210927142309716.png 1.5x, https://image.p1nant0m.com/image-20210927142309716.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20210927142309716.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20210927142309716.png, https://image.p1nant0m.xyz/image-20210927142309716.png 1.5x, https://image.p1nant0m.xyz/image-20210927142309716.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20210927142309716.png" />
+            alt="https://image.p1nant0m.xyz/image-20210927142309716.png" />
     </a><figcaption class="image-caption">尝试输入特殊字符</figcaption>
     </figure>
 <p>​	可以看到我们输入的内容被进行了过滤编码，<code>&lt;</code>标签开闭合符号显然就在其中，我们考虑是否有某种方式绕过过滤实现<code>XSS</code>,单击保存后我们可以看到下列提示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927142537265.png" title="https://image.p1nant0m.com/image-20210927142537265.png" data-thumbnail="https://image.p1nant0m.com/image-20210927142537265.png" data-sub-html="<h2>保存后提示</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20210927142537265.png" title="https://image.p1nant0m.xyz/image-20210927142537265.png" data-thumbnail="https://image.p1nant0m.xyz/image-20210927142537265.png" data-sub-html="<h2>保存后提示</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20210927142537265.png"
-            data-srcset="https://image.p1nant0m.com/image-20210927142537265.png, https://image.p1nant0m.com/image-20210927142537265.png 1.5x, https://image.p1nant0m.com/image-20210927142537265.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20210927142537265.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20210927142537265.png, https://image.p1nant0m.xyz/image-20210927142537265.png 1.5x, https://image.p1nant0m.xyz/image-20210927142537265.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20210927142537265.png" />
+            alt="https://image.p1nant0m.xyz/image-20210927142537265.png" />
     </a><figcaption class="image-caption">保存后提示</figcaption>
     </figure>
 <p>​	进入提示的路径我们可以看到我们输入的经过过滤后的信息。</p>
@@ -419,14 +419,14 @@ listener
 </code></pre></td></tr></table>
 </div>
 </div><p>​	我们能够在前端Console中查看后端返回的Data，使用<code>data</code>，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927160743166.png" title="https://image.p1nant0m.com/image-20210927160743166.png" data-thumbnail="https://image.p1nant0m.com/image-20210927160743166.png" data-sub-html="<h2>后端返回的 Data</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20210927160743166.png" title="https://image.p1nant0m.xyz/image-20210927160743166.png" data-thumbnail="https://image.p1nant0m.xyz/image-20210927160743166.png" data-sub-html="<h2>后端返回的 Data</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20210927160743166.png"
-            data-srcset="https://image.p1nant0m.com/image-20210927160743166.png, https://image.p1nant0m.com/image-20210927160743166.png 1.5x, https://image.p1nant0m.com/image-20210927160743166.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20210927160743166.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20210927160743166.png, https://image.p1nant0m.xyz/image-20210927160743166.png 1.5x, https://image.p1nant0m.xyz/image-20210927160743166.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20210927160743166.png" />
+            alt="https://image.p1nant0m.xyz/image-20210927160743166.png" />
     </a><figcaption class="image-caption">后端返回的 Data</figcaption>
     </figure>
 <p>​	注意到这里的Cookie被设置了为<code>HttpOnly</code>，这导致我们无法使用脚本去获取Cookie的值，</p>
@@ -808,36 +808,36 @@ listener
 </code></pre></td></tr></table>
 </div>
 </div><p>​	当Admin访问我们的页面时（<code>/REDACTED/0</code>），我们的恶意Script将会被执行，形成 Stored XSS。</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927190809809.png" title="https://image.p1nant0m.com/image-20210927190809809.png" data-thumbnail="https://image.p1nant0m.com/image-20210927190809809.png" data-sub-html="<h2>访问恶意页面触发脚本执行</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20210927190809809.png" title="https://image.p1nant0m.xyz/image-20210927190809809.png" data-thumbnail="https://image.p1nant0m.xyz/image-20210927190809809.png" data-sub-html="<h2>访问恶意页面触发脚本执行</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20210927190809809.png"
-            data-srcset="https://image.p1nant0m.com/image-20210927190809809.png, https://image.p1nant0m.com/image-20210927190809809.png 1.5x, https://image.p1nant0m.com/image-20210927190809809.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20210927190809809.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20210927190809809.png, https://image.p1nant0m.xyz/image-20210927190809809.png 1.5x, https://image.p1nant0m.xyz/image-20210927190809809.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20210927190809809.png" />
+            alt="https://image.p1nant0m.xyz/image-20210927190809809.png" />
     </a><figcaption class="image-caption">访问恶意页面触发脚本执行</figcaption>
     </figure>
 <p>​	我们注入的恶意脚本就从数据库中导出并且构成HTML文档的一部分，被浏览器解释执行，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927191107611.png" title="https://image.p1nant0m.com/image-20210927191107611.png" data-thumbnail="https://image.p1nant0m.com/image-20210927191107611.png" data-sub-html="<h2>恶意代码拼接进入 HTML 文档</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20210927191107611.png" title="https://image.p1nant0m.xyz/image-20210927191107611.png" data-thumbnail="https://image.p1nant0m.xyz/image-20210927191107611.png" data-sub-html="<h2>恶意代码拼接进入 HTML 文档</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20210927191107611.png"
-            data-srcset="https://image.p1nant0m.com/image-20210927191107611.png, https://image.p1nant0m.com/image-20210927191107611.png 1.5x, https://image.p1nant0m.com/image-20210927191107611.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20210927191107611.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20210927191107611.png, https://image.p1nant0m.xyz/image-20210927191107611.png 1.5x, https://image.p1nant0m.xyz/image-20210927191107611.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20210927191107611.png" />
+            alt="https://image.p1nant0m.xyz/image-20210927191107611.png" />
     </a><figcaption class="image-caption">恶意代码拼接进入 HTML 文档</figcaption>
     </figure>
 <p>​	最终我们可以在受我们控制的服务器中获得我们的FLAG，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20210927191308837.png" title="https://image.p1nant0m.com/image-20210927191308837.png" data-thumbnail="https://image.p1nant0m.com/image-20210927191308837.png" data-sub-html="<h2>flag 获取</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20210927191308837.png" title="https://image.p1nant0m.xyz/image-20210927191308837.png" data-thumbnail="https://image.p1nant0m.xyz/image-20210927191308837.png" data-sub-html="<h2>flag 获取</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20210927191308837.png"
-            data-srcset="https://image.p1nant0m.com/image-20210927191308837.png, https://image.p1nant0m.com/image-20210927191308837.png 1.5x, https://image.p1nant0m.com/image-20210927191308837.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20210927191308837.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20210927191308837.png, https://image.p1nant0m.xyz/image-20210927191308837.png 1.5x, https://image.p1nant0m.xyz/image-20210927191308837.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20210927191308837.png" />
+            alt="https://image.p1nant0m.xyz/image-20210927191308837.png" />
     </a><figcaption class="image-caption">flag 获取</figcaption>
     </figure>
 <h4 id="总结">总结</h4>

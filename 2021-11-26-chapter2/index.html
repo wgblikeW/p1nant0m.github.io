@@ -162,14 +162,14 @@
 </nav></div>
             </div><div class="content" id="content"><h3 id="perfectly-secret-encryption">Perfectly Secret Encryption</h3>
 <p>​	本章节的思维导图如下所示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/Perfectly%20%20Secret%20Encryption.svg" title="https://image.p1nant0m.com/Perfectly%20%20Secret%20Encryption.svg" data-thumbnail="https://image.p1nant0m.com/Perfectly%20%20Secret%20Encryption.svg" data-sub-html="<h2>章节思维导图</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/Perfectly%20%20Secret%20Encryption.svg" title="https://image.p1nant0m.xyz/Perfectly%20%20Secret%20Encryption.svg" data-thumbnail="https://image.p1nant0m.xyz/Perfectly%20%20Secret%20Encryption.svg" data-sub-html="<h2>章节思维导图</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/Perfectly%20%20Secret%20Encryption.svg"
-            data-srcset="https://image.p1nant0m.com/Perfectly%20%20Secret%20Encryption.svg, https://image.p1nant0m.com/Perfectly%20%20Secret%20Encryption.svg 1.5x, https://image.p1nant0m.com/Perfectly%20%20Secret%20Encryption.svg 2x"
+            data-src="https://image.p1nant0m.xyz/Perfectly%20%20Secret%20Encryption.svg"
+            data-srcset="https://image.p1nant0m.xyz/Perfectly%20%20Secret%20Encryption.svg, https://image.p1nant0m.xyz/Perfectly%20%20Secret%20Encryption.svg 1.5x, https://image.p1nant0m.xyz/Perfectly%20%20Secret%20Encryption.svg 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/Perfectly%20%20Secret%20Encryption.svg" />
+            alt="https://image.p1nant0m.xyz/Perfectly%20%20Secret%20Encryption.svg" />
     </a><figcaption class="image-caption">章节思维导图</figcaption>
     </figure>
 <p>​	在本章节中我们主要介绍完善保密理论（Perfectly Secret Encryption）并且给出一些在往下章节中经常使用的检验密码方案安全性的实验交互模型。在描述这些模型时，我们需要使用到一些基础的概率论知识，并且还需要讨论一些用于该模型中随机算法。</p>
@@ -190,14 +190,14 @@
 <h3 id="definitions">Definitions</h3>
 <p>​	在本节中，我们将会介绍完善保密的三种等价定义方式，并且给出基于实验交互证明密码方案安全性的模型，该模型在往后的学习过程中将会不断地出现，并且作为密码学证明中一种固定的范式，我们需要熟悉并且掌握这种证明密码方案安全性的思路与方式。为了章节的篇幅考虑，一些在证明中出现的notation我会在后续的举例中说明。</p>
 <h4 id="perfect-secrecy">Perfect secrecy</h4>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211122211955795.png" title="https://image.p1nant0m.com/image-20211122211955795.png" data-thumbnail="https://image.p1nant0m.com/image-20211122211955795.png" data-sub-html="<h2>完善保密定义</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211122211955795.png" title="https://image.p1nant0m.xyz/image-20211122211955795.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211122211955795.png" data-sub-html="<h2>完善保密定义</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211122211955795.png"
-            data-srcset="https://image.p1nant0m.com/image-20211122211955795.png, https://image.p1nant0m.com/image-20211122211955795.png 1.5x, https://image.p1nant0m.com/image-20211122211955795.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211122211955795.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211122211955795.png, https://image.p1nant0m.xyz/image-20211122211955795.png 1.5x, https://image.p1nant0m.xyz/image-20211122211955795.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211122211955795.png" />
+            alt="https://image.p1nant0m.xyz/image-20211122211955795.png" />
     </a><figcaption class="image-caption">完善保密定义</figcaption>
     </figure>
 <p>用平常的语言来概括一下上述定义就是：当我们观察到密文 $c$ 时，我们无法从中获得任何有关于明文 $m$ 的任何信息，这句话对于任何 $c\in C,\space m\in M$ 都成立。注意到 $Pr[M=m|C=c]=Pr[M=m]$，在我们观察到 $c$ 的条件下明文 $m$ 的概率分布与其原有的概率分布相同，这也就是说当我们对明文做的加密操作并没有改变明文的概率分布，攻击者无法从这个加密中获得任何有助于其重新恢复明文的有用信息。</p>
@@ -210,14 +210,14 @@
 <p>$$
 Pr[Enc_k(m)=c]=Pr[Enc_k(m')=c]\space (2.1)
 $$</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211123093633595.png" title="https://image.p1nant0m.com/image-20211123093633595.png" data-thumbnail="https://image.p1nant0m.com/image-20211123093633595.png" data-sub-html="<h2>完善保密第二种等价定义</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211123093633595.png" title="https://image.p1nant0m.xyz/image-20211123093633595.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211123093633595.png" data-sub-html="<h2>完善保密第二种等价定义</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211123093633595.png"
-            data-srcset="https://image.p1nant0m.com/image-20211123093633595.png, https://image.p1nant0m.com/image-20211123093633595.png 1.5x, https://image.p1nant0m.com/image-20211123093633595.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211123093633595.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211123093633595.png, https://image.p1nant0m.xyz/image-20211123093633595.png 1.5x, https://image.p1nant0m.xyz/image-20211123093633595.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211123093633595.png" />
+            alt="https://image.p1nant0m.xyz/image-20211123093633595.png" />
     </a><figcaption class="image-caption">完善保密第二种等价定义</figcaption>
     </figure>
 <p>该等式说明一个密码方案它要是完善保密的，其密文的概率分布就不应该依赖于明文。换句话说，假设任意两条消息 $m,m'\in M$，$m$加密后得到的密文的概率分布应该与$m'$加密后得到的密文的概率分布相互独立。那么我们现在可以考虑一个问题：既然密文的概率分布和明文的概率分布相互独立，那么通过加密函数 $Enc$ 后，密文的概率分布应该与哪一个随机变量相关呢？</p>
@@ -244,25 +244,25 @@ $$</p>
 </blockquote>
 <p>解释一下上述notations的含义，$PrivK$ 代表该Experiment是在Private-Key Encryption中的，$eav$ 描述了攻击者 $A$ 的能力为仅能够窃听信道，$A$ 指定了一个攻击者，$\pi$ 代表了具体所使用的Private-Key Encryption的scheme，亦即指定了 $Enc_k(m_b)$ 的具体形式以及相关的预操作。</p>
 <p>实验交互框图如下所示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211126095252994.png" title="https://image.p1nant0m.com/image-20211126095252994.png" data-thumbnail="https://image.p1nant0m.com/image-20211126095252994.png" data-sub-html="<h2>交互实验框图</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211126095252994.png" title="https://image.p1nant0m.xyz/image-20211126095252994.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211126095252994.png" data-sub-html="<h2>交互实验框图</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211126095252994.png"
-            data-srcset="https://image.p1nant0m.com/image-20211126095252994.png, https://image.p1nant0m.com/image-20211126095252994.png 1.5x, https://image.p1nant0m.com/image-20211126095252994.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211126095252994.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211126095252994.png, https://image.p1nant0m.xyz/image-20211126095252994.png 1.5x, https://image.p1nant0m.xyz/image-20211126095252994.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211126095252994.png" />
+            alt="https://image.p1nant0m.xyz/image-20211126095252994.png" />
     </a><figcaption class="image-caption">交互实验框图</figcaption>
     </figure>
 <p>经过上面的铺垫之后，我们能够给出完善保密的第三种等价定义，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211126095434643.png" title="https://image.p1nant0m.com/image-20211126095434643.png" data-thumbnail="https://image.p1nant0m.com/image-20211126095434643.png" data-sub-html="<h2>完善保密第三种等价定义</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211126095434643.png" title="https://image.p1nant0m.xyz/image-20211126095434643.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211126095434643.png" data-sub-html="<h2>完善保密第三种等价定义</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211126095434643.png"
-            data-srcset="https://image.p1nant0m.com/image-20211126095434643.png, https://image.p1nant0m.com/image-20211126095434643.png 1.5x, https://image.p1nant0m.com/image-20211126095434643.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211126095434643.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211126095434643.png, https://image.p1nant0m.xyz/image-20211126095434643.png 1.5x, https://image.p1nant0m.xyz/image-20211126095434643.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211126095434643.png" />
+            alt="https://image.p1nant0m.xyz/image-20211126095434643.png" />
     </a><figcaption class="image-caption">完善保密第三种等价定义</figcaption>
     </figure>
 <p>教材（<u>PG.30</u>）中展示了使用第三种定义方式判断Vigenère cipher在某些参数设置下不是完美不可区分的相关证明，有兴趣的读者可以自行参考。</p>
@@ -274,14 +274,14 @@ $$</p>
 <p><strong>THEOREM 2.10</strong>  The one-time pad encryption scheme is perfectly secret.</p>
 </blockquote>
 <p>下面我们来看一下 One-Time Pad Encryption Scheme 的具体构造，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211126103110581.png" title="https://image.p1nant0m.com/image-20211126103110581.png" data-thumbnail="https://image.p1nant0m.com/image-20211126103110581.png" data-sub-html="<h2>一次一密方案</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211126103110581.png" title="https://image.p1nant0m.xyz/image-20211126103110581.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211126103110581.png" data-sub-html="<h2>一次一密方案</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211126103110581.png"
-            data-srcset="https://image.p1nant0m.com/image-20211126103110581.png, https://image.p1nant0m.com/image-20211126103110581.png 1.5x, https://image.p1nant0m.com/image-20211126103110581.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211126103110581.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211126103110581.png, https://image.p1nant0m.xyz/image-20211126103110581.png 1.5x, https://image.p1nant0m.xyz/image-20211126103110581.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211126103110581.png" />
+            alt="https://image.p1nant0m.xyz/image-20211126103110581.png" />
     </a><figcaption class="image-caption">一次一密方案</figcaption>
     </figure>
 <p>有关该方案是完善保密的证明在教材的（<u>PG.32</u>）中有详细说明，关键证明为我们所提到的完善保密的第一种等价定义 $Pr[M=m|C=m]=Pr[M=m]$，通过全概率公式以及贝叶斯公式的转化我们可以很容易的将问题解决，关键是要注意到  $Pr[C=c|M=m]=2^{-l}$ ，这里的 $l$ 指的是密钥长度。在此强调在观察到一个确切的明文时我们对其经过加密后得到的特定密文的概率取决于加密方案本身。</p>
@@ -298,14 +298,14 @@ $$</p>
 <h3 id="limitations-of-perfect-secrecy">Limitations of Perfect Secrecy</h3>
 <p>既然完善保密理论告诉我们满足完善保密定义的加密方案在不考虑敌手计算能力的情况下都是十分安全的，那么我们是不是就可以万事大吉，在应用实践中全面使用完善保密加密方案就行了呢？答案肯定是否定的，为了达到如此的安全性，其所付出的代价也是十分明显的，以至于无法在实践中大面积应用。在这节中，我们将阐述完善保密理论内在的缺陷，注意这缺陷并不是针对特定的加密方案，而是在完善保密其内有的特性。</p>
 <p>具体来说，我们可以证明任何完善保密加密方案的密钥空间至少要与其明文空间一样大 $|K| = |M|$ ，如果所有的密钥都是相同的长度并且明文空间中的明文长度也固定的话，这意味着密钥至少要与明文一样长，在 One-Time pad 中达到了这种情况的最优值（明文长度等于密钥长度）。</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211126110350616.png" title="https://image.p1nant0m.com/image-20211126110350616.png" data-thumbnail="https://image.p1nant0m.com/image-20211126110350616.png" data-sub-html="<h2>THEOREM 2.11</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211126110350616.png" title="https://image.p1nant0m.xyz/image-20211126110350616.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211126110350616.png" data-sub-html="<h2>THEOREM 2.11</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211126110350616.png"
-            data-srcset="https://image.p1nant0m.com/image-20211126110350616.png, https://image.p1nant0m.com/image-20211126110350616.png 1.5x, https://image.p1nant0m.com/image-20211126110350616.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211126110350616.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211126110350616.png, https://image.p1nant0m.xyz/image-20211126110350616.png 1.5x, https://image.p1nant0m.xyz/image-20211126110350616.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211126110350616.png" />
+            alt="https://image.p1nant0m.xyz/image-20211126110350616.png" />
     </a><figcaption class="image-caption">THEOREM 2.11</figcaption>
     </figure>
 <p>该定理相关的证明可以在教材中（<u>PG.34</u>）中找到，有兴趣的读者可以自行参考。</p>
@@ -318,14 +318,14 @@ $$</p>
 <p>使用完善保密加密方案去加密长消息在存储开销上显然是不经济的（我们需要一个与原文件至少一样大的密钥！！！），这种开销在网络带宽受限并且昂贵的情况下更是无法接受。比起绝对的安全，人们更想经济地实现安全（使用短密钥加密长消息并能够达到令人满意的安全性需求）</p>
 <h3 id="shannons-theorem">*Shannon&rsquo;s Theorem</h3>
 <p>Shannon&rsquo;s Theorem 提供了另一种判定该方案是否是完善保密的另一种表述，该表述的粗略描述如下：在特定的条件下，密钥生成算法 $Gen$ 必须随机均匀的从所有可能的密钥集合中（在密钥空间中）选取一个集合元素作为 $Key$ 。更进一步对于所有明文空间中的任意消息 $m$ 和所有密文空间中的密文 $c$ 都存在着一个由 $m$ 到 $c$ 独一无二的映射（由特定的密钥 $k$ 决定）在这里该定理的陈述基于 $|M|=|K|=|C|$ 的假设，满足这种假设的完善保密方案可以说是一种最优的方案，因为我们上述讨论过要是得方案满足完善保密必须有 $|K|\geq|M|$ 且 $|C|\geq|M|$</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211126202358468.png" title="https://image.p1nant0m.com/image-20211126202358468.png" data-thumbnail="https://image.p1nant0m.com/image-20211126202358468.png" data-sub-html="<h2>THEOREM 2.12</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211126202358468.png" title="https://image.p1nant0m.xyz/image-20211126202358468.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211126202358468.png" data-sub-html="<h2>THEOREM 2.12</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211126202358468.png"
-            data-srcset="https://image.p1nant0m.com/image-20211126202358468.png, https://image.p1nant0m.com/image-20211126202358468.png 1.5x, https://image.p1nant0m.com/image-20211126202358468.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211126202358468.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211126202358468.png, https://image.p1nant0m.xyz/image-20211126202358468.png 1.5x, https://image.p1nant0m.xyz/image-20211126202358468.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211126202358468.png" />
+            alt="https://image.p1nant0m.xyz/image-20211126202358468.png" />
     </a><figcaption class="image-caption">THEOREM 2.12</figcaption>
     </figure>
 <p>详细证明可参考教材（<u>PG.35</u>）</p>

@@ -11,7 +11,7 @@ It's now possible for a follower to fall so far behind that the leader has disca
 
 diagram of Raft interactions
 
-{{< image src="https://image.p1nant0m.com/raft.png" caption="KeyValue-Store Server Architecture" src_s="https://image.p1nant0m.com/raft.png" src_l="https://image.p1nant0m.com/raft.png" >}}
+{{< image src="https://image.p1nant0m.xyz/raft.png" caption="KeyValue-Store Server Architecture" src_s="https://image.p1nant0m.xyz/raft.png" src_l="https://image.p1nant0m.xyz/raft.png" >}}
 
 Raft must provide the following function that the service can call with a serialized snapshot of its state. In this way, Raft can discard the log entries safely preceding this `Snapshot()`
 
@@ -43,7 +43,7 @@ Previously, this lab recommended that you implement a function called CondInsta
 - Figure13 shows the parameters that you may be used in implementing InstallSnapshotRPCs
 
 
-{{< image src="https://image.p1nant0m.com/figure13.png" caption="Figure 13" src_s="https://image.p1nant0m.com/figure13.png" src_l="https://image.p1nant0m.com/figure13.png">}}
+{{< image src="https://image.p1nant0m.xyz/figure13.png" caption="Figure 13" src_s="https://image.p1nant0m.xyz/figure13.png" src_l="https://image.p1nant0m.xyz/figure13.png">}}
 
 ### Implementation
 

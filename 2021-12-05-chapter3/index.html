@@ -163,14 +163,14 @@
   </ul>
 </nav></div>
             </div><div class="content" id="content"><h2 id="private-key-symmetric-cryptography">Private-Key (Symmetric) Cryptography</h2>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/Private-Key%20%28Symmetric%29%20Cryptography.png" title="https://image.p1nant0m.com/Private-Key%20(Symmetric)%20Cryptography.png" data-thumbnail="https://image.p1nant0m.com/Private-Key%20(Symmetric)%20Cryptography.png" data-sub-html="<h2>章节思维导图</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/Private-Key%20%28Symmetric%29%20Cryptography.png" title="https://image.p1nant0m.xyz/Private-Key%20(Symmetric)%20Cryptography.png" data-thumbnail="https://image.p1nant0m.xyz/Private-Key%20(Symmetric)%20Cryptography.png" data-sub-html="<h2>章节思维导图</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/Private-Key%20%28Symmetric%29%20Cryptography.png"
-            data-srcset="https://image.p1nant0m.com/Private-Key%20%28Symmetric%29%20Cryptography.png, https://image.p1nant0m.com/Private-Key%20%28Symmetric%29%20Cryptography.png 1.5x, https://image.p1nant0m.com/Private-Key%20%28Symmetric%29%20Cryptography.png 2x"
+            data-src="https://image.p1nant0m.xyz/Private-Key%20%28Symmetric%29%20Cryptography.png"
+            data-srcset="https://image.p1nant0m.xyz/Private-Key%20%28Symmetric%29%20Cryptography.png, https://image.p1nant0m.xyz/Private-Key%20%28Symmetric%29%20Cryptography.png 1.5x, https://image.p1nant0m.xyz/Private-Key%20%28Symmetric%29%20Cryptography.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/Private-Key%20(Symmetric)%20Cryptography.png" />
+            alt="https://image.p1nant0m.xyz/Private-Key%20(Symmetric)%20Cryptography.png" />
     </a><figcaption class="image-caption">章节思维导图</figcaption>
     </figure>
 <p>在本章节中，我们开始介绍两大密码学方向中的私钥/对称密码学（<em>Private-Key/Symmetric Cryptography</em>）方向。</p>
@@ -206,26 +206,26 @@
 <p>由上述定义可以发现，这种渐进表述减少了对精确定量描述的使用。比如，在对攻击者能力进行限定时，该定义将攻击者能力抽象表述为具有<strong>概率多项式时间</strong>（<em>PPT</em> 攻击者在多项式时间内运行其攻击算法，其最多为 $p(n)$，取决于具体安全参数的大小）的攻击者，而不同于在 Concrete Approach 中 $(t,\epsilon)-secure$ 精确定义了攻击者能够使用的算力/时间资源。类似的，在表述攻击者在限制下成功攻破方案的概率时也使用了类似的抽象描述（<em><strong>negligible probability</strong></em>）而不是一个确切的概率值。这种不使用确切的量对 Computational Security 进行定义简化了抽象表述一个密码方案时步骤（我们在实践应用中仍然需要考虑 Concrete Approach），不过这也带来了一些需要解决的问题，我们需要准确地定义这些提到的抽象概念，使得在这种表述下的定义满足 Computational Security.</p>
 <p>这种 Asymptotic Approach 根植于计算复杂度理论（回忆一下大 $O$ 记号），并且引入了安全参数 $n$ 用以观察在 $n$ 不断增长的情况下，参与到密码方案的主体（受信主体与攻击者）在计算上所花费时间的增长趋势。我们也可以认为这引入的安全参数 $n$ 与密钥的长度呈正相关、看作与攻击者攻击密码方案成功所需的运行时长相关、与攻击者成功攻击密码方案的概率相关等……事实上我们可以看到，随着安全参数 $n$ 的增加，密码方案是更加“安全的”（这种安全并不是由替换具体的密码方案带来的，而是通过增加密钥空间的大小来去降低攻击者进行 Brute-force Attack 成功的概率）。我们也会看到任意选取安全参数 $n$ 可能会给密码方案带来不一样的安全性，较小的 $n$ 可能毫无安全性可言，随着 $n$ 的增加不同的加密方案接近我们理想的安全需求的速率也不一样，这也是该方法称为 Asymptotic 的一个理由之一。值得注意的是，一个密码方案在实践中可用意味着合法可信的主体在使用该密码方案进行加密时其也运行着一个多项式时间的算法，并且该算法的时间复杂度要明确小于攻击者在缺少密钥信息的情况下所使用的攻击算法。这样以后即使在算力不断提升的情况下，我们仅需选用更大的安全参数 $n$ 来保障密码方案的安全性而不需要替换掉原有的密码方案，并且这对攻击者而言更加不利（在计算上的投入会比原先的更加大哪怕算力已经得到增长，这是由于其攻击算法的计算复杂度高于合法可信主体所带来的）。具体的例子可以参考教材（<u>PG.46</u>）</p>
 <p>下面我们更进一步的讨论何为 <strong>negligible probability</strong></p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211204144257582.png" title="https://image.p1nant0m.com/image-20211204144257582.png" data-thumbnail="https://image.p1nant0m.com/image-20211204144257582.png" data-sub-html="<h2>&ldquo;可忽略的量&quot;准确定义</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211204144257582.png" title="https://image.p1nant0m.xyz/image-20211204144257582.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211204144257582.png" data-sub-html="<h2>&ldquo;可忽略的量&quot;准确定义</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211204144257582.png"
-            data-srcset="https://image.p1nant0m.com/image-20211204144257582.png, https://image.p1nant0m.com/image-20211204144257582.png 1.5x, https://image.p1nant0m.com/image-20211204144257582.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211204144257582.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211204144257582.png, https://image.p1nant0m.xyz/image-20211204144257582.png 1.5x, https://image.p1nant0m.xyz/image-20211204144257582.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211204144257582.png" />
+            alt="https://image.p1nant0m.xyz/image-20211204144257582.png" />
     </a><figcaption class="image-caption">&ldquo;可忽略的量&quot;准确定义</figcaption>
     </figure>
 <p>上述定义换一个表述有，对于所有的常数 $c$ ，存在一个整数 $N$ 使得对于所有的 $n&gt;N$ 都有该式成立 $f(n)&lt;n^{-c}$，熟悉高等数学的同学可以想象一下在高数中对于极限的定义。 不严谨的来说 $n^{c}$ 遍历所有的 $c$ 即得到了上述定义中所提到的 every positive polynomial p，并且注意到上述定义是对所有满足 $n&gt;N$ 的整数，都有 $f(n)&lt;\frac{1}{p(n)}$，替换一下就可以得到 $f(n)&lt;n^{-c}$ . 具体例子可以在教材（<u>PG.48</u>）中得到。</p>
 <p><strong>negligible function</strong> 有一些很好的性质，下面我们就来看看它的这些性质以及这些性质的具体运用，!</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211204150743544.png" title="https://image.p1nant0m.com/image-20211204150743544.png" data-thumbnail="https://image.p1nant0m.com/image-20211204150743544.png" data-sub-html="<h2>&ldquo;可忽略的量&quot;的运算特性</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211204150743544.png" title="https://image.p1nant0m.xyz/image-20211204150743544.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211204150743544.png" data-sub-html="<h2>&ldquo;可忽略的量&quot;的运算特性</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211204150743544.png"
-            data-srcset="https://image.p1nant0m.com/image-20211204150743544.png, https://image.p1nant0m.com/image-20211204150743544.png 1.5x, https://image.p1nant0m.com/image-20211204150743544.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211204150743544.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211204150743544.png, https://image.p1nant0m.xyz/image-20211204150743544.png 1.5x, https://image.p1nant0m.xyz/image-20211204150743544.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211204150743544.png" />
+            alt="https://image.p1nant0m.xyz/image-20211204150743544.png" />
     </a><figcaption class="image-caption">&ldquo;可忽略的量&quot;的运算特性</figcaption>
     </figure>
 <p>特别的关于推论（2）其暗含了下列事实，如果在一个实验中，某一确定的事件以一个可忽略的概率发生，那么这个实验任意重复多项式时间次，该事件发生的概率仍为一个可忽略的量。</p>
@@ -233,14 +233,14 @@
 <p>举一个例子，我们来考虑投掷一个公平的硬币（每次实验基本事件发生的概率都相等，为 $\frac{1}{2}$ ）这个实验，假设我们投掷这个硬币 $n$ 次，并且每一次投掷的结果都为正面朝上，那么该事件发生的概率为 $2^{-n}$ 是一个可忽略的量，这意味着当我们重复这个实验任意多项式时间次，在这些实验中出现 $n$ 枚硬币同时正面朝上的概率仍然是一个可忽略的量。</p>
 </blockquote>
 <p>总结一下，使用 Asymptotic Approach 对密码方案安全性进行定义规避了在 Concrete Approach 中面临的困难，使得我们能够将具体的密码方案安全性抽象出来用以进行理论分析，现在我们可以提供一个完整的定义，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211204153118011.png" title="https://image.p1nant0m.com/image-20211204153118011.png" data-thumbnail="https://image.p1nant0m.com/image-20211204153118011.png" data-sub-html="<h2>使用渐近的方法定义密码方案的计算安全性</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211204153118011.png" title="https://image.p1nant0m.xyz/image-20211204153118011.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211204153118011.png" data-sub-html="<h2>使用渐近的方法定义密码方案的计算安全性</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211204153118011.png"
-            data-srcset="https://image.p1nant0m.com/image-20211204153118011.png, https://image.p1nant0m.com/image-20211204153118011.png 1.5x, https://image.p1nant0m.com/image-20211204153118011.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211204153118011.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211204153118011.png, https://image.p1nant0m.xyz/image-20211204153118011.png 1.5x, https://image.p1nant0m.xyz/image-20211204153118011.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211204153118011.png" />
+            alt="https://image.p1nant0m.xyz/image-20211204153118011.png" />
     </a><figcaption class="image-caption">使用渐近的方法定义密码方案的计算安全性</figcaption>
     </figure>
 <p>可以看到我们对攻击者的能力（算力/时间资源）进行了约束，并且通过引入安全参数 $n$ 我们可以控制密码方案的安全性，能够从理论上观察随着安全参数 $n$ 的增加，攻击者所使用的算法在解决它自己的问题上所花费时间的增长趋势，以更好使用这种渐进的方式研究密码方案安全性。可以看到在对于攻击者使用的任意 PPT 算法都有一个确保密码方案安全的阈值 $N$，若安全参数 $n$ 的设置是小于 $N$ 的，这时候攻击者成功的概率就变得不可接受，这时我们可能会说该密码方案是不安全的。值得注意的是，我们在定义一个密码方案的安全性时定义了一个密码方案何时能够被称为“已经被攻破”，并且指定了攻击者所拥有的能力，这些约束使得我们后续讨论攻击者成功的概率具有了意义。</p>
@@ -265,14 +265,14 @@
 </blockquote>
 <h3 id="defining-computationally-secure-encryption">Defining Computationally Secure Encryption</h3>
 <p>经过上述铺垫，我们可以给出一个符合计算安全性的非对称加密方案的定义了，这个定义类似于我们在 Perfect Secrecy 中提到的，不过有一点稍微不同的是我们在这引入了安全参数 $n$ 用以参数化我们的密码方案，使其能够运用渐进的方式分析其安全性，在教材中我们可以得到如下定义：</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211204193702132.png" title="https://image.p1nant0m.com/image-20211204193702132.png" data-thumbnail="https://image.p1nant0m.com/image-20211204193702132.png" data-sub-html="<h2>通用地定义对称加密方案</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211204193702132.png" title="https://image.p1nant0m.xyz/image-20211204193702132.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211204193702132.png" data-sub-html="<h2>通用地定义对称加密方案</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211204193702132.png"
-            data-srcset="https://image.p1nant0m.com/image-20211204193702132.png, https://image.p1nant0m.com/image-20211204193702132.png 1.5x, https://image.p1nant0m.com/image-20211204193702132.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211204193702132.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211204193702132.png, https://image.p1nant0m.xyz/image-20211204193702132.png 1.5x, https://image.p1nant0m.xyz/image-20211204193702132.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211204193702132.png" />
+            alt="https://image.p1nant0m.xyz/image-20211204193702132.png" />
     </a><figcaption class="image-caption">通用地定义对称加密方案</figcaption>
     </figure>
 <blockquote>
@@ -294,61 +294,61 @@
 <li>在 EAV-Security 中我们要求敌手 $A$ 输出的明文消息 $m_0,m_1$ 具有相同的长度 $l(n)$ 。我们在 Perfect Secrecy 的不可区分性实验中的定义暗含了明文空间包含了一些固定长度的消息，这意味着我们默认一个安全的加密方案不需要去隐藏明文的长度。</li>
 </ol>
 <p>下面我们给出对于一个 private-key encryption scheme $\Pi = (Gen,Enc,Dec)$ ，一个具备 EAV 能力的敌手 $A$ ，和一个安全参数 $n$ 的敌手不可区分性实验 $PrivK^{eav}_{A,\Pi}(n)$ 的定义，</p>
-<p><figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211204223939359.png" title="https://image.p1nant0m.com/image-20211204223939359.png" data-thumbnail="https://image.p1nant0m.com/image-20211204223939359.png" data-sub-html="<h2>定义敌手不可区分性实验</h2>">
+<p><figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211204223939359.png" title="https://image.p1nant0m.xyz/image-20211204223939359.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211204223939359.png" data-sub-html="<h2>定义敌手不可区分性实验</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211204223939359.png"
-            data-srcset="https://image.p1nant0m.com/image-20211204223939359.png, https://image.p1nant0m.com/image-20211204223939359.png 1.5x, https://image.p1nant0m.com/image-20211204223939359.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211204223939359.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211204223939359.png, https://image.p1nant0m.xyz/image-20211204223939359.png 1.5x, https://image.p1nant0m.xyz/image-20211204223939359.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211204223939359.png" />
+            alt="https://image.p1nant0m.xyz/image-20211204223939359.png" />
     </a><figcaption class="image-caption">定义敌手不可区分性实验</figcaption>
     </figure>
 该实验进行交互的框图如下所示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211204224348561.png" title="https://image.p1nant0m.com/image-20211204224348561.png" data-thumbnail="https://image.p1nant0m.com/image-20211204224348561.png" data-sub-html="<h2>交互实验框图</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211204224348561.png" title="https://image.p1nant0m.xyz/image-20211204224348561.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211204224348561.png" data-sub-html="<h2>交互实验框图</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211204224348561.png"
-            data-srcset="https://image.p1nant0m.com/image-20211204224348561.png, https://image.p1nant0m.com/image-20211204224348561.png 1.5x, https://image.p1nant0m.com/image-20211204224348561.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211204224348561.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211204224348561.png, https://image.p1nant0m.xyz/image-20211204224348561.png 1.5x, https://image.p1nant0m.xyz/image-20211204224348561.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211204224348561.png" />
+            alt="https://image.p1nant0m.xyz/image-20211204224348561.png" />
     </a><figcaption class="image-caption">交互实验框图</figcaption>
     </figure>
 <p>下面我们给出满足 EAV-Security 的加密方案其 adversarial indistinguishability experiment 应该满足下式，</p>
-<p><figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211204224136017.png" title="https://image.p1nant0m.com/image-20211204224136017.png" data-thumbnail="https://image.p1nant0m.com/image-20211204224136017.png" data-sub-html="<h2>充要条件</h2>">
+<p><figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211204224136017.png" title="https://image.p1nant0m.xyz/image-20211204224136017.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211204224136017.png" data-sub-html="<h2>充要条件</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211204224136017.png"
-            data-srcset="https://image.p1nant0m.com/image-20211204224136017.png, https://image.p1nant0m.com/image-20211204224136017.png 1.5x, https://image.p1nant0m.com/image-20211204224136017.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211204224136017.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211204224136017.png, https://image.p1nant0m.xyz/image-20211204224136017.png 1.5x, https://image.p1nant0m.xyz/image-20211204224136017.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211204224136017.png" />
+            alt="https://image.p1nant0m.xyz/image-20211204224136017.png" />
     </a><figcaption class="image-caption">充要条件</figcaption>
     </figure>
 我们还有一种与上述定义等价的定义形式，如下所示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211204224508993.png" title="https://image.p1nant0m.com/image-20211204224508993.png" data-thumbnail="https://image.p1nant0m.com/image-20211204224508993.png" data-sub-html="<h2>等价定义形式</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211204224508993.png" title="https://image.p1nant0m.xyz/image-20211204224508993.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211204224508993.png" data-sub-html="<h2>等价定义形式</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211204224508993.png"
-            data-srcset="https://image.p1nant0m.com/image-20211204224508993.png, https://image.p1nant0m.com/image-20211204224508993.png 1.5x, https://image.p1nant0m.com/image-20211204224508993.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211204224508993.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211204224508993.png, https://image.p1nant0m.xyz/image-20211204224508993.png 1.5x, https://image.p1nant0m.xyz/image-20211204224508993.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211204224508993.png" />
+            alt="https://image.p1nant0m.xyz/image-20211204224508993.png" />
     </a><figcaption class="image-caption">等价定义形式</figcaption>
     </figure>
 <p>上述定义从攻击者的视角出发，对于每一个 PPT 攻击者，不管它们看到的挑战密文是由 $m_1$ 还是由 $m_2$ 加密而来，它们最终决定输出的 $b'$ 都具有相同行为表现。换句话说，当攻击者接收到挑战密文时它们选择输出 $0$ 还是选择输出 $1$ 与它们看到的密文无关（攻击者根本无法从挑战密文中区分出其到底是由哪一个明文加密而来），因此这些攻击者相当于在 $0,1$ 之间均匀随机的选取 $b'\gets{0,1}$  （也就是乱猜）。</p>
 <p>在教材中有提到披露明文长度对加密安全性可能带来的风险，在此便不再赘述，有兴趣的同学可以参考（<u>PG.56</u>）</p>
 <h4 id="semantic-security">*Semantic Security</h4>
 <p>在本章节中，我们将介绍语义安全，语义安全是 Indistinguishability 的另外一种等价表述，它将我们对加密的安全性定义精确地公式化，我们可以看到在这种方式下的定义更加精细能够加深我们对于组成安全性定义各部件的理解。在给出 Semantic Security 的定义之前，我们先来看看两种较弱的表述，并且我们将说明它们暗含了 EAV-Security 的内涵。</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211205094002014.png" title="https://image.p1nant0m.com/image-20211205094002014.png" data-thumbnail="https://image.p1nant0m.com/image-20211205094002014.png" data-sub-html="<h2>THEOREM 3.10</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211205094002014.png" title="https://image.p1nant0m.xyz/image-20211205094002014.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211205094002014.png" data-sub-html="<h2>THEOREM 3.10</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211205094002014.png"
-            data-srcset="https://image.p1nant0m.com/image-20211205094002014.png, https://image.p1nant0m.com/image-20211205094002014.png 1.5x, https://image.p1nant0m.com/image-20211205094002014.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211205094002014.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211205094002014.png, https://image.p1nant0m.xyz/image-20211205094002014.png 1.5x, https://image.p1nant0m.xyz/image-20211205094002014.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211205094002014.png" />
+            alt="https://image.p1nant0m.xyz/image-20211205094002014.png" />
     </a><figcaption class="image-caption">THEOREM 3.10</figcaption>
     </figure>
 <blockquote>
@@ -365,38 +365,38 @@
 <p>我们成功的利用了 $A$ 的能力去解决 $A'$ 的问题并且由于 $\Pi$ 满足 EAV-Security，$A$ 在实验中表现不佳这也导致了 $A'$ 的能力“不足”，我们也可以使用反证法对此进行证明，用 $A$ “强大”的能力去帮助 $A'$ 完成它的任务使其违反 EAV-Security 的定义，从而推出矛盾。</p>
 </blockquote>
 <p>下面我们来看另外一种 EAV-Security 所蕴含的表述，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211205105335894.png" title="https://image.p1nant0m.com/image-20211205105335894.png" data-thumbnail="https://image.p1nant0m.com/image-20211205105335894.png" data-sub-html="<h2>THEOREM 3.11</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211205105335894.png" title="https://image.p1nant0m.xyz/image-20211205105335894.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211205105335894.png" data-sub-html="<h2>THEOREM 3.11</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211205105335894.png"
-            data-srcset="https://image.p1nant0m.com/image-20211205105335894.png, https://image.p1nant0m.com/image-20211205105335894.png 1.5x, https://image.p1nant0m.com/image-20211205105335894.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211205105335894.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211205105335894.png, https://image.p1nant0m.xyz/image-20211205105335894.png 1.5x, https://image.p1nant0m.xyz/image-20211205105335894.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211205105335894.png" />
+            alt="https://image.p1nant0m.xyz/image-20211205105335894.png" />
     </a><figcaption class="image-caption">THEOREM 3.11</figcaption>
     </figure>
 <p>这里比较晦涩的是这个 $f(m)$ 的出现，我们暂且可以把他看作是将明文进行分类的区分器（比较它将所有明文映射到 ${0,1}$ 上，这么看也是挺自然的），简单理解就是攻击者 $A$ 在获得密文的情况下与没有获得密文的情况下对 $f$ 的构造都是等价的，也就是说运用这个区分器 $f$ 到 adversarial indistinguishability experiment 上帮助 $A'$ 解决它的区分问题不会破坏 EAV-Security 的定义，这个定义是我们上述提到的第二种等价定义。这里又回到了我们最初的目标，攻击者无法从密文中获得有关明文的部分信息。</p>
 <p>我们现在能够给出 Semantic Security 的定义了，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211205105510386.png" title="https://image.p1nant0m.com/image-20211205105510386.png" data-thumbnail="https://image.p1nant0m.com/image-20211205105510386.png" data-sub-html="<h2>语义安全定义</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211205105510386.png" title="https://image.p1nant0m.xyz/image-20211205105510386.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211205105510386.png" data-sub-html="<h2>语义安全定义</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211205105510386.png"
-            data-srcset="https://image.p1nant0m.com/image-20211205105510386.png, https://image.p1nant0m.com/image-20211205105510386.png 1.5x, https://image.p1nant0m.com/image-20211205105510386.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211205105510386.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211205105510386.png, https://image.p1nant0m.xyz/image-20211205105510386.png 1.5x, https://image.p1nant0m.xyz/image-20211205105510386.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211205105510386.png" />
+            alt="https://image.p1nant0m.xyz/image-20211205105510386.png" />
     </a><figcaption class="image-caption">语义安全定义</figcaption>
     </figure>
 <p>直观上理解该定义，密文 $Enc_k(m)$ 没有泄漏任何有关如何高效构造 $f(m)$（没有从密文中泄露有关明文的部分信息） 的信息除了明文的长度 $|m|$ 。$h(m)$ 是有关 $m$ 的一些外部信息，攻击者可以从其它途径（非观察密文）得到。注意 $A'$ 运行着一个 $Samp$ 算法，该算法从任意的明文概率分布空间中选取明文。对 $A$ 来说其拥有密文 $Enc_k(m)$ 与任意外部信息 $h(m)$，其构造区分器的能力与在具有任意概率分布的明文空间上构造区分器的行为不可区分，这也就说明了即使将密文和外部信息为 $A$ 所知，其对如何能构造能够胜任 adversarial Indistinguishability experiment 的区分器仍然无能为力（相当于胡乱构造）。再次强调我们的目标，在 Computational Security 定义下，观察到密文不会泄露有关明文的部分信息。</p>
 <p>下列定理说明了 EAV-Secure 的加密方案 $\Pi$，其在 Indistinguiability 与 Semantic Security 上的定义是等价的。</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20211205110017829.png" title="https://image.p1nant0m.com/image-20211205110017829.png" data-thumbnail="https://image.p1nant0m.com/image-20211205110017829.png" data-sub-html="<h2>THEOREM 3.13</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20211205110017829.png" title="https://image.p1nant0m.xyz/image-20211205110017829.png" data-thumbnail="https://image.p1nant0m.xyz/image-20211205110017829.png" data-sub-html="<h2>THEOREM 3.13</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20211205110017829.png"
-            data-srcset="https://image.p1nant0m.com/image-20211205110017829.png, https://image.p1nant0m.com/image-20211205110017829.png 1.5x, https://image.p1nant0m.com/image-20211205110017829.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20211205110017829.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20211205110017829.png, https://image.p1nant0m.xyz/image-20211205110017829.png 1.5x, https://image.p1nant0m.xyz/image-20211205110017829.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20211205110017829.png" />
+            alt="https://image.p1nant0m.xyz/image-20211205110017829.png" />
     </a><figcaption class="image-caption">THEOREM 3.13</figcaption>
     </figure>
 </div><div class="post-footer" id="post-footer">

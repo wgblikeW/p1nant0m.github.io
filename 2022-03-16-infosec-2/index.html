@@ -162,14 +162,14 @@
             </div><div class="content" id="content"><h2 id="architecture-design">Architecture Design</h2>
 <p>模拟实现128位信息的加密通信过程。</p>
 <p>实验设计包含三方：A，B，C。A与B之间进行128位信息的加密交换。C负责为A和B各生成一对公私钥对，并分别把对应的私钥传给A和B，并把他们的公钥公开。实现本实验需求的架构设计如下图所示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" title="https://image.p1nant0m.com/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" data-thumbnail="https://image.p1nant0m.com/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" data-sub-html="<h2>项目数据流图</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" title="https://image.p1nant0m.xyz/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" data-thumbnail="https://image.p1nant0m.xyz/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" data-sub-html="<h2>项目数据流图</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg"
-            data-srcset="https://image.p1nant0m.com/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg, https://image.p1nant0m.com/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg 1.5x, https://image.p1nant0m.com/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg 2x"
+            data-src="https://image.p1nant0m.xyz/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg"
+            data-srcset="https://image.p1nant0m.xyz/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg, https://image.p1nant0m.xyz/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg 1.5x, https://image.p1nant0m.xyz/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" />
+            alt="https://image.p1nant0m.xyz/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%BB%98%E5%9B%BE.jpg" />
     </a><figcaption class="image-caption">项目数据流图</figcaption>
     </figure>
 <h2 id="protocol-design">Protocol Design</h2>
@@ -278,92 +278,92 @@
 <p>本实验基于Golang Cobra框架实现了一个CLI应用，具体的代码可参考仓库。这里仅给出使用本CLI应用进行ServerA与ServerB加密通信，以及KDC密钥签发的过程。</p>
 <p>首先我们需要启动KDC的守护进程，该进程在443端口监听来自Client的请求，为客户端提供密钥签发注册以及远程服务器发现的服务。</p>
 <p>使用命令：<code>sudo ./kdc</code> 启动KDC服务，监听443端口。</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image-20220315221341126.png" title="https://image.p1nant0m.com/image-20220315221341126.png" data-thumbnail="https://image.p1nant0m.com/image-20220315221341126.png" data-sub-html="<h2>启动 KDC 服务</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image-20220315221341126.png" title="https://image.p1nant0m.xyz/image-20220315221341126.png" data-thumbnail="https://image.p1nant0m.xyz/image-20220315221341126.png" data-sub-html="<h2>启动 KDC 服务</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image-20220315221341126.png"
-            data-srcset="https://image.p1nant0m.com/image-20220315221341126.png, https://image.p1nant0m.com/image-20220315221341126.png 1.5x, https://image.p1nant0m.com/image-20220315221341126.png 2x"
+            data-src="https://image.p1nant0m.xyz/image-20220315221341126.png"
+            data-srcset="https://image.p1nant0m.xyz/image-20220315221341126.png, https://image.p1nant0m.xyz/image-20220315221341126.png 1.5x, https://image.p1nant0m.xyz/image-20220315221341126.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image-20220315221341126.png" />
+            alt="https://image.p1nant0m.xyz/image-20220315221341126.png" />
     </a><figcaption class="image-caption">启动 KDC 服务</figcaption>
     </figure>
 <p>使用命令：<code>./apollo regist -k localhost -l 443 -t localhost -p 7070 -n serverA -f privateK_A.key </code> 向KDC发起注册请求，其中<code>-k</code> 表示KDC的<code>Hostname</code> ；<code>-l</code> 表示KDC服务的监听端口；<code>-t</code> 表示ServerA Receiver的<code>Hostname</code> ；<code>-p</code> 表示ServerA Receiver服务的监听端口；<code>-n</code> 表述ServerA在集群中的标识符；<code>-f</code> 表述存储KDC签发私钥的文件路径。</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image_1_1.png" title="https://image.p1nant0m.com/image_1_1.png" data-thumbnail="https://image.p1nant0m.com/image_1_1.png" data-sub-html="<h2>向KDC发起注册请求</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image_1_1.png" title="https://image.p1nant0m.xyz/image_1_1.png" data-thumbnail="https://image.p1nant0m.xyz/image_1_1.png" data-sub-html="<h2>向KDC发起注册请求</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image_1_1.png"
-            data-srcset="https://image.p1nant0m.com/image_1_1.png, https://image.p1nant0m.com/image_1_1.png 1.5x, https://image.p1nant0m.com/image_1_1.png 2x"
+            data-src="https://image.p1nant0m.xyz/image_1_1.png"
+            data-srcset="https://image.p1nant0m.xyz/image_1_1.png, https://image.p1nant0m.xyz/image_1_1.png 1.5x, https://image.p1nant0m.xyz/image_1_1.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image_1_1.png" />
+            alt="https://image.p1nant0m.xyz/image_1_1.png" />
     </a><figcaption class="image-caption">向KDC发起注册请求</figcaption>
     </figure>
 <p>同理，使用命令：<code>./apollo regist -k localhost -l 443 -t localhost -p 7071 -n serverB -f privateK_B.key</code> 向KDC注册ServerB。</p>
 <p>我们可以在KDC输出的日志中看到相关的注册信息，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image_22.png" title="https://image.p1nant0m.com/image_22.png" data-thumbnail="https://image.p1nant0m.com/image_22.png" data-sub-html="<h2>在KDC输出的日志中查看相关的注册信息</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image_22.png" title="https://image.p1nant0m.xyz/image_22.png" data-thumbnail="https://image.p1nant0m.xyz/image_22.png" data-sub-html="<h2>在KDC输出的日志中查看相关的注册信息</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image_22.png"
-            data-srcset="https://image.p1nant0m.com/image_22.png, https://image.p1nant0m.com/image_22.png 1.5x, https://image.p1nant0m.com/image_22.png 2x"
+            data-src="https://image.p1nant0m.xyz/image_22.png"
+            data-srcset="https://image.p1nant0m.xyz/image_22.png, https://image.p1nant0m.xyz/image_22.png 1.5x, https://image.p1nant0m.xyz/image_22.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image_22.png" />
+            alt="https://image.p1nant0m.xyz/image_22.png" />
     </a><figcaption class="image-caption">在KDC输出的日志中查看相关的注册信息</figcaption>
     </figure>
 <p>紧接着我们令ServerA向KDC获取ServerB的网络地址信息以及公钥，使用命令：<code>./apollo getremote --cn serverA -r serverB -f remote_B -p ./privateK_A.key</code> 。其中，<code>--cn</code> 表示当前Client在集群中的标识符，<code>-r</code> 标识ServerA想要请求的ServerB在集群中的标识符，<code>-f</code> 表示若KDC成功验证ServerA的合法性返回的ServerB网络地址以及公钥信息保存的文件路径，<code>-p</code> 表示ServerA对应的私钥文件，该文件用于对于唯一标识进行签名，表明ServerA的合法性。该命令的执行结果如下，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image_33.png" title="https://image.p1nant0m.com/image_33.png" data-thumbnail="https://image.p1nant0m.com/image_33.png" data-sub-html="<h2>ServerA向KDC获取ServerB的网络地址信息以及公钥</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image_33.png" title="https://image.p1nant0m.xyz/image_33.png" data-thumbnail="https://image.p1nant0m.xyz/image_33.png" data-sub-html="<h2>ServerA向KDC获取ServerB的网络地址信息以及公钥</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image_33.png"
-            data-srcset="https://image.p1nant0m.com/image_33.png, https://image.p1nant0m.com/image_33.png 1.5x, https://image.p1nant0m.com/image_33.png 2x"
+            data-src="https://image.p1nant0m.xyz/image_33.png"
+            data-srcset="https://image.p1nant0m.xyz/image_33.png, https://image.p1nant0m.xyz/image_33.png 1.5x, https://image.p1nant0m.xyz/image_33.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image_33.png" />
+            alt="https://image.p1nant0m.xyz/image_33.png" />
     </a><figcaption class="image-caption">ServerA向KDC获取ServerB的网络地址信息以及公钥</figcaption>
     </figure>
 <p>利用上述过程获取到的信息，ServerA与ServerB已经能够进行通信了，首先我们创建一个文件<code>helloB</code> 并在其中写入如下内容，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image_44.png" title="https://image.p1nant0m.com/image_44.png" data-thumbnail="https://image.p1nant0m.com/image_44.png" data-sub-html="<h2>向待发送文件写入内容</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image_44.png" title="https://image.p1nant0m.xyz/image_44.png" data-thumbnail="https://image.p1nant0m.xyz/image_44.png" data-sub-html="<h2>向待发送文件写入内容</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image_44.png"
-            data-srcset="https://image.p1nant0m.com/image_44.png, https://image.p1nant0m.com/image_44.png 1.5x, https://image.p1nant0m.com/image_44.png 2x"
+            data-src="https://image.p1nant0m.xyz/image_44.png"
+            data-srcset="https://image.p1nant0m.xyz/image_44.png, https://image.p1nant0m.xyz/image_44.png 1.5x, https://image.p1nant0m.xyz/image_44.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image_44.png" />
+            alt="https://image.p1nant0m.xyz/image_44.png" />
     </a><figcaption class="image-caption">向待发送文件写入内容</figcaption>
     </figure>
 <p>使用命令：<code>./apollo setupreceiver --privk-file=privateK_B.key --listen-port=7071</code> 开启ServerB Receiver服务，如下所示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image_55.png" title="https://image.p1nant0m.com/image_55.png" data-thumbnail="https://image.p1nant0m.com/image_55.png" data-sub-html="<h2>开启ServerB Receiver服务</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image_55.png" title="https://image.p1nant0m.xyz/image_55.png" data-thumbnail="https://image.p1nant0m.xyz/image_55.png" data-sub-html="<h2>开启ServerB Receiver服务</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image_55.png"
-            data-srcset="https://image.p1nant0m.com/image_55.png, https://image.p1nant0m.com/image_55.png 1.5x, https://image.p1nant0m.com/image_55.png 2x"
+            data-src="https://image.p1nant0m.xyz/image_55.png"
+            data-srcset="https://image.p1nant0m.xyz/image_55.png, https://image.p1nant0m.xyz/image_55.png 1.5x, https://image.p1nant0m.xyz/image_55.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image_55.png" />
+            alt="https://image.p1nant0m.xyz/image_55.png" />
     </a><figcaption class="image-caption">开启ServerB Receiver服务</figcaption>
     </figure>
 <p>使用命令：<code>./apollo send --remote-info=./remote_B --sending-file=./helloB</code> 向ServerB Receiver发送加密数据，如下所示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image_66.png" title="https://image.p1nant0m.com/image_66.png" data-thumbnail="https://image.p1nant0m.com/image_66.png" data-sub-html="<h2>向ServerB Receiver发送加密数据</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image_66.png" title="https://image.p1nant0m.xyz/image_66.png" data-thumbnail="https://image.p1nant0m.xyz/image_66.png" data-sub-html="<h2>向ServerB Receiver发送加密数据</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image_66.png"
-            data-srcset="https://image.p1nant0m.com/image_66.png, https://image.p1nant0m.com/image_66.png 1.5x, https://image.p1nant0m.com/image_66.png 2x"
+            data-src="https://image.p1nant0m.xyz/image_66.png"
+            data-srcset="https://image.p1nant0m.xyz/image_66.png, https://image.p1nant0m.xyz/image_66.png 1.5x, https://image.p1nant0m.xyz/image_66.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image_66.png" />
+            alt="https://image.p1nant0m.xyz/image_66.png" />
     </a><figcaption class="image-caption">向ServerB Receiver发送加密数据</figcaption>
     </figure>
 <p>在 ServerB Receiver 端我们可以看见解密后的内容如下所示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/image_77.png" title="https://image.p1nant0m.com/image_77.png" data-thumbnail="https://image.p1nant0m.com/image_77.png" data-sub-html="<h2>在 ServerB Receiver 端 查看解密后的内容</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/image_77.png" title="https://image.p1nant0m.xyz/image_77.png" data-thumbnail="https://image.p1nant0m.xyz/image_77.png" data-sub-html="<h2>在 ServerB Receiver 端 查看解密后的内容</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/image_77.png"
-            data-srcset="https://image.p1nant0m.com/image_77.png, https://image.p1nant0m.com/image_77.png 1.5x, https://image.p1nant0m.com/image_77.png 2x"
+            data-src="https://image.p1nant0m.xyz/image_77.png"
+            data-srcset="https://image.p1nant0m.xyz/image_77.png, https://image.p1nant0m.xyz/image_77.png 1.5x, https://image.p1nant0m.xyz/image_77.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/image_77.png" />
+            alt="https://image.p1nant0m.xyz/image_77.png" />
     </a><figcaption class="image-caption">在 ServerB Receiver 端 查看解密后的内容</figcaption>
     </figure>
 <p>至此我们便完成了ServerA与ServerB依靠KDC的密钥分发与服务发现实现利用Asymmetric Encryption Scheme进行加密通信的需求。</p>

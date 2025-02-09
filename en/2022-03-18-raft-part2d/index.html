@@ -172,14 +172,14 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
 <p>Modifying Raft to cooperate with services that persistently store a &ldquo;snapshot&rdquo; of their state from time to time, at which point Raft discards log entries that precede the snapshot.</p>
 <p>It&rsquo;s now possible for a follower to fall so far behind that the leader has discarded the log entries it needs to catch up; the <strong>leader must then send a snapshot plus the log starting at the time</strong> of the snapshot.</p>
 <p>diagram of Raft interactions</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/raft.png" title="https://image.p1nant0m.com/raft.png" data-thumbnail="https://image.p1nant0m.com/raft.png" data-sub-html="<h2>KeyValue-Store Server Architecture</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/raft.png" title="https://image.p1nant0m.xyz/raft.png" data-thumbnail="https://image.p1nant0m.xyz/raft.png" data-sub-html="<h2>KeyValue-Store Server Architecture</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/raft.png"
-            data-srcset="https://image.p1nant0m.com/raft.png, https://image.p1nant0m.com/raft.png 1.5x, https://image.p1nant0m.com/raft.png 2x"
+            data-src="https://image.p1nant0m.xyz/raft.png"
+            data-srcset="https://image.p1nant0m.xyz/raft.png, https://image.p1nant0m.xyz/raft.png 1.5x, https://image.p1nant0m.xyz/raft.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/raft.png" />
+            alt="https://image.p1nant0m.xyz/raft.png" />
     </a><figcaption class="image-caption">KeyValue-Store Server Architecture</figcaption>
     </figure>
 <p>Raft must provide the following function that the service can call with a serialized snapshot of its state. In this way, Raft can discard the log entries safely preceding this <code>Snapshot()</code></p>
@@ -204,14 +204,14 @@ You&rsquo;ll need to implement the InstallSnapshot RPC discussed in the paper t
 <li>A reasonable amount of time to consume for the full set of Lab 2 tests (2A+2B+2C+2D) without -race is 6 minutes of real-time and one minute of CPU time. When running with -race, it is about 10 minutes of real-time and two minutes of CPU time.</li>
 <li>Figure13 shows the parameters that you may be used in implementing InstallSnapshotRPCs</li>
 </ul>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/figure13.png" title="https://image.p1nant0m.com/figure13.png" data-thumbnail="https://image.p1nant0m.com/figure13.png" data-sub-html="<h2>Figure 13</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/figure13.png" title="https://image.p1nant0m.xyz/figure13.png" data-thumbnail="https://image.p1nant0m.xyz/figure13.png" data-sub-html="<h2>Figure 13</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/figure13.png"
-            data-srcset="https://image.p1nant0m.com/figure13.png, https://image.p1nant0m.com/figure13.png 1.5x, https://image.p1nant0m.com/figure13.png 2x"
+            data-src="https://image.p1nant0m.xyz/figure13.png"
+            data-srcset="https://image.p1nant0m.xyz/figure13.png, https://image.p1nant0m.xyz/figure13.png 1.5x, https://image.p1nant0m.xyz/figure13.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/figure13.png" />
+            alt="https://image.p1nant0m.xyz/figure13.png" />
     </a><figcaption class="image-caption">Figure 13</figcaption>
     </figure>
 <h3 id="implementation">Implementation</h3>

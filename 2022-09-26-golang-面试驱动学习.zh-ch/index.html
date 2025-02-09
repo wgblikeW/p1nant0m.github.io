@@ -159,10 +159,10 @@
             </div><div class="content" id="content"><p><img
         class="lazyload"
         src="/svg/loading.min.svg"
-        data-src="https://image.p1nant0m.com/header_opensource.png"
-        data-srcset="https://image.p1nant0m.com/header_opensource.png, https://image.p1nant0m.com/header_opensource.png 1.5x, https://image.p1nant0m.com/header_opensource.png 2x"
+        data-src="https://image.p1nant0m.xyz/header_opensource.png"
+        data-srcset="https://image.p1nant0m.xyz/header_opensource.png, https://image.p1nant0m.xyz/header_opensource.png 1.5x, https://image.p1nant0m.xyz/header_opensource.png 2x"
         data-sizes="auto"
-        alt="https://image.p1nant0m.com/header_opensource.png"
+        alt="https://image.p1nant0m.xyz/header_opensource.png"
         title="header_" /></p>
 <h2 id="说在前面">说在前面</h2>
 <p>🐹 <strong>WIP</strong></p>
@@ -198,14 +198,14 @@
 <p>由 <code>mallocgc</code> 触发：在 <code>runtime.mallocgc()</code> 代码的结尾会以 <code>gcTriggerHeap</code> 充当谓词构建 <code>gcTrigger</code> 结构体，调用 <code>(gcTrigger).test()</code> 方法检测当前是否需要触发一次GC。若当前堆的大小大于通过<strong>步调算法</strong>计算得出的下一次 GC 触发大小，则会触发一次 GC，在代码中为 <code>gcController.heapLive &gt;= gcController.trigger</code> 时 <code>(gcTrigger).test()</code> 方法返回 <strong>True</strong>。步调算法核心思想是控制内存增长的比例，可以通过 <code>GOGC</code> 和 <code>debug.SetGCPercent</code> 进行控制。其通过计算得出的下一次 GC 时堆大小的阈值 <code>gcController.trigger</code>，来控制 GC 触发的时间点，进而保证最后 GC 结束时堆大小应该小于算法得出的目标堆大小。下图展示的是这个过程，</p>
 </li>
 </ul>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209261110433.png" title="https://image.p1nant0m.com/202209261110433.png" data-thumbnail="https://image.p1nant0m.com/202209261110433.png" data-sub-html="<h2>步调 (Pacing) 算法实现目标</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202209261110433.png" title="https://image.p1nant0m.xyz/202209261110433.png" data-thumbnail="https://image.p1nant0m.xyz/202209261110433.png" data-sub-html="<h2>步调 (Pacing) 算法实现目标</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/202209261110433.png"
-            data-srcset="https://image.p1nant0m.com/202209261110433.png, https://image.p1nant0m.com/202209261110433.png 1.5x, https://image.p1nant0m.com/202209261110433.png 2x"
+            data-src="https://image.p1nant0m.xyz/202209261110433.png"
+            data-srcset="https://image.p1nant0m.xyz/202209261110433.png, https://image.p1nant0m.xyz/202209261110433.png 1.5x, https://image.p1nant0m.xyz/202209261110433.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/202209261110433.png" />
+            alt="https://image.p1nant0m.xyz/202209261110433.png" />
     </a><figcaption class="image-caption">步调 (Pacing) 算法实现目标</figcaption>
     </figure>
 </div>

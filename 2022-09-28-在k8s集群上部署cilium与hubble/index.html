@@ -229,25 +229,25 @@ kind create cluster --config<span class="o">=</span>kind-config.yaml
 </div><p>你可以根据需要和机器性能增添或删减工作节点的数量，笔者在这里便使用官方给出的定义。在我们执行第二条命令后 kind 会使用 docker 拉取对应的镜像，但 kind 中并不会显示拉取的进度，你可以自行使用 <code>docker pull</code> 拉取对应版本的 kind 镜像并确认你的网络环境是否能够访问对应的仓库。</p>
 <p>值得一提的是，在我们创建的 k8s 集群中，默认的 CNI 插件已经被 <strong>disable</strong>，我们在下一步中安装的 Cilium 会提供相应的 CNI 实现。</p>
 <p>若一切的顺利执行，你的 K8s 集群便会被顺利创建，你可以使用 <code>kubectl cluster-info</code> 查看你的集群是否已成功部署，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281510675.png" title="https://image.p1nant0m.com/202209281510675.png" data-thumbnail="https://image.p1nant0m.com/202209281510675.png" data-sub-html="<h2>kubectl cluster-info 命令执行情况</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202209281510675.png" title="https://image.p1nant0m.xyz/202209281510675.png" data-thumbnail="https://image.p1nant0m.xyz/202209281510675.png" data-sub-html="<h2>kubectl cluster-info 命令执行情况</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/202209281510675.png"
-            data-srcset="https://image.p1nant0m.com/202209281510675.png, https://image.p1nant0m.com/202209281510675.png 1.5x, https://image.p1nant0m.com/202209281510675.png 2x"
+            data-src="https://image.p1nant0m.xyz/202209281510675.png"
+            data-srcset="https://image.p1nant0m.xyz/202209281510675.png, https://image.p1nant0m.xyz/202209281510675.png 1.5x, https://image.p1nant0m.xyz/202209281510675.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/202209281510675.png" />
+            alt="https://image.p1nant0m.xyz/202209281510675.png" />
     </a><figcaption class="image-caption">kubectl cluster-info 命令执行情况</figcaption>
     </figure>
 <p>使用 <code>docker ps</code> 命令查看在本地机器上已经启动了的工作节点以及控制平面，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281510146.png" title="https://image.p1nant0m.com/202209281510146.png" data-thumbnail="https://image.p1nant0m.com/202209281510146.png" data-sub-html="<h2>docker ps 命令查看运行的“节点”</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202209281510146.png" title="https://image.p1nant0m.xyz/202209281510146.png" data-thumbnail="https://image.p1nant0m.xyz/202209281510146.png" data-sub-html="<h2>docker ps 命令查看运行的“节点”</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/202209281510146.png"
-            data-srcset="https://image.p1nant0m.com/202209281510146.png, https://image.p1nant0m.com/202209281510146.png 1.5x, https://image.p1nant0m.com/202209281510146.png 2x"
+            data-src="https://image.p1nant0m.xyz/202209281510146.png"
+            data-srcset="https://image.p1nant0m.xyz/202209281510146.png, https://image.p1nant0m.xyz/202209281510146.png 1.5x, https://image.p1nant0m.xyz/202209281510146.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/202209281510146.png" />
+            alt="https://image.p1nant0m.xyz/202209281510146.png" />
     </a><figcaption class="image-caption">docker ps 命令查看运行的“节点”</figcaption>
     </figure>
 <p><strong>容器中代理服务的配置</strong></p>
@@ -275,27 +275,27 @@ kind create cluster --config<span class="o">=</span>kind-config.yaml
         </div>
     </div>
 <p>一切都正常执行完毕后，你可以使用 <code>cilium status</code> 命令来查看集群中 Cilium 的状态，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281537611.png" title="https://image.p1nant0m.com/202209281537611.png" data-thumbnail="https://image.p1nant0m.com/202209281537611.png" data-sub-html="<h2>cilium status 命令执行</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202209281537611.png" title="https://image.p1nant0m.xyz/202209281537611.png" data-thumbnail="https://image.p1nant0m.xyz/202209281537611.png" data-sub-html="<h2>cilium status 命令执行</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/202209281537611.png"
-            data-srcset="https://image.p1nant0m.com/202209281537611.png, https://image.p1nant0m.com/202209281537611.png 1.5x, https://image.p1nant0m.com/202209281537611.png 2x"
+            data-src="https://image.p1nant0m.xyz/202209281537611.png"
+            data-srcset="https://image.p1nant0m.xyz/202209281537611.png, https://image.p1nant0m.xyz/202209281537611.png 1.5x, https://image.p1nant0m.xyz/202209281537611.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/202209281537611.png" />
+            alt="https://image.p1nant0m.xyz/202209281537611.png" />
     </a><figcaption class="image-caption">cilium status 命令执行</figcaption>
     </figure>
 <h4 id="启用-hubble-ui">启用 Hubble UI</h4>
 <p>Hubble 是 Cilium 项目的可观测层，它可以用来获取集群范围内在网络以及安全层面的可观测性，从而为运维人员提供进行排障工作的信息依据。</p>
 <p>执行 <code>cilium hubble enable --ui</code> 启用 <strong>hubble UI</strong> 特性，Cilium 将会通过 Patch cilium-confg、重启 Cilium Pods 、部署 Hubble UI 相关组件的方式来启用相关服务，最终部署执行完成后执行 <code>cilium hubble ui</code> 命令将相关服务映射到我们本地的端口上，访问相关页面，可以看到 hubble-ui 与服务健康检测探针之间通信的数据流。</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281620041.png" title="https://image.p1nant0m.com/202209281620041.png" data-thumbnail="https://image.p1nant0m.com/202209281620041.png" data-sub-html="<h2>Hubble UI 前端页面</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202209281620041.png" title="https://image.p1nant0m.xyz/202209281620041.png" data-thumbnail="https://image.p1nant0m.xyz/202209281620041.png" data-sub-html="<h2>Hubble UI 前端页面</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/202209281620041.png"
-            data-srcset="https://image.p1nant0m.com/202209281620041.png, https://image.p1nant0m.com/202209281620041.png 1.5x, https://image.p1nant0m.com/202209281620041.png 2x"
+            data-src="https://image.p1nant0m.xyz/202209281620041.png"
+            data-srcset="https://image.p1nant0m.xyz/202209281620041.png, https://image.p1nant0m.xyz/202209281620041.png 1.5x, https://image.p1nant0m.xyz/202209281620041.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/202209281620041.png" />
+            alt="https://image.p1nant0m.xyz/202209281620041.png" />
     </a><figcaption class="image-caption">Hubble UI 前端页面</figcaption>
     </figure>
 <h4 id="部署一些简单的-workload-star-wars-demo并在-hubble-ui-中观察网络流">部署一些简单的 Workload （Star Wars Demo）并在 Hubble UI 中观察网络流</h4>
@@ -312,14 +312,14 @@ kind create cluster --config<span class="o">=</span>kind-config.yaml
     </figure>
 <p>我们可以通过调用这几个服务的 REST API 接口来产生相应的网络流量，比如在 xwing Pod 中调用 <code>kubectl exec xwing -- curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing</code> 向 <code>deathstar</code> 服务的 <code>/v1/request-landing</code> 接口发出降落请求，该服务会将该请求转发给相应的后端 Pod 处理。</p>
 <p>同样，我们也可以在 tierfighter 中执行相似的命令，<code>kubectl exec tiefighter -- curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing</code>，其效果与上一个例子相似。我们能够在 hubble-ui 的 default 命名空间下看到相关 Pod 的网络流量，如下所示，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281648078.png" title="https://image.p1nant0m.com/202209281648078.png" data-thumbnail="https://image.p1nant0m.com/202209281648078.png" data-sub-html="<h2>default 命名空间下 Pods 间的网络流量</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202209281648078.png" title="https://image.p1nant0m.xyz/202209281648078.png" data-thumbnail="https://image.p1nant0m.xyz/202209281648078.png" data-sub-html="<h2>default 命名空间下 Pods 间的网络流量</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/202209281648078.png"
-            data-srcset="https://image.p1nant0m.com/202209281648078.png, https://image.p1nant0m.com/202209281648078.png 1.5x, https://image.p1nant0m.com/202209281648078.png 2x"
+            data-src="https://image.p1nant0m.xyz/202209281648078.png"
+            data-srcset="https://image.p1nant0m.xyz/202209281648078.png, https://image.p1nant0m.xyz/202209281648078.png 1.5x, https://image.p1nant0m.xyz/202209281648078.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/202209281648078.png" />
+            alt="https://image.p1nant0m.xyz/202209281648078.png" />
     </a><figcaption class="image-caption">default 命名空间下 Pods 间的网络流量</figcaption>
     </figure>
 <p>不过，这里有一个奇怪的地方，盟军的 xwing 战机竟然能够落到帝国的 deathstar 上！这里我们便引出本文后续的内容，使用 Cilium 对网络流量进行 Policy Enforement。</p>
@@ -587,14 +587,14 @@ ENDPOINT   POLICY <span class="o">(</span>ingress<span class="o">)</span>   POLI
 </div>
 </div><p>上述规则是一个白名单规则，其仅允许标签为 <code>org:empire</code> 的 Pod 通过 TCP 协议访问具有标签 <code>org:empire class:deathstar</code> Endpoint 的 80 端口，其它不符合规则的入向流量都会被丢弃。这样我们便实现了 L3/L4 的 Policy Enforcement.</p>
 <p>在 Hubble UI 中，我们可以看到由 Pod xwing 发出的流量被 Pod deathstar 丢弃，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.com/202209281930575.png" title="https://image.p1nant0m.com/202209281930575.png" data-thumbnail="https://image.p1nant0m.com/202209281930575.png" data-sub-html="<h2>Policy Enforement 丢弃相关数据包</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202209281930575.png" title="https://image.p1nant0m.xyz/202209281930575.png" data-thumbnail="https://image.p1nant0m.xyz/202209281930575.png" data-sub-html="<h2>Policy Enforement 丢弃相关数据包</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.com/202209281930575.png"
-            data-srcset="https://image.p1nant0m.com/202209281930575.png, https://image.p1nant0m.com/202209281930575.png 1.5x, https://image.p1nant0m.com/202209281930575.png 2x"
+            data-src="https://image.p1nant0m.xyz/202209281930575.png"
+            data-srcset="https://image.p1nant0m.xyz/202209281930575.png, https://image.p1nant0m.xyz/202209281930575.png 1.5x, https://image.p1nant0m.xyz/202209281930575.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.com/202209281930575.png" />
+            alt="https://image.p1nant0m.xyz/202209281930575.png" />
     </a><figcaption class="image-caption">Policy Enforement 丢弃相关数据包</figcaption>
     </figure>
 <p>我们可以在此执行上面提到的查看 Cilium Endpoint 的命令，这时候我们发现 deathstar Pod 中 Ingress Policy Enforcement 被激活。我们也可以通过执行 <code>kubectl describe cnp</code> 来查看相关的 CiliumNetworkPolicy 规则。</p>
