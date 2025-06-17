@@ -28,7 +28,7 @@ jobs:
               
             - name: Custom Domain
               run: |
-                echo "p1nant0m.com" >> ./public/CNAME
+                echo "p1nant0m.xyz" >> ./public/CNAME
 
             - name: Deploy Web
               uses: peaceiris/actions-gh-pages@v3
