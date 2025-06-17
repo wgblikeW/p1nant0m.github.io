@@ -287,40 +287,40 @@ Nmap <span class="k">done</span>: <span class="m">1</span> IP address <span clas
 </blockquote>
 <h4 id="-一探究竟访问目标站点">🎋 一探究竟：访问目标站点</h4>
 <p>访问目标站点(<a href="http://searcher.htb%29%e7%9c%8b%e7%9c%8b%e5%ae%83%e7%9a%84%e8%91%ab%e8%8a%a6%e9%87%8c%e5%8d%96%e7%9a%84%e6%98%af%e4%bb%80%e4%b9%88%e8%8d%af%f0%9f%99%82%ef%bc%8c" target="_blank" rel="noopener noreffer ">http://searcher.htb)看看它的葫芦里卖的是什么药🙂，</a></p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161729266.png" title="https://image.p1nant0m.xyz/202307161729266.png" data-thumbnail="https://image.p1nant0m.xyz/202307161729266.png" data-sub-html="<h2>Target Website</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224039347.png" title="https://image.p1nant0m.xyz/20250617224039347.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224039347.png" data-sub-html="<h2>Target Website</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161729266.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161729266.png, https://image.p1nant0m.xyz/202307161729266.png 1.5x, https://image.p1nant0m.xyz/202307161729266.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224039347.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224039347.png, https://image.p1nant0m.xyz/20250617224039347.png 1.5x, https://image.p1nant0m.xyz/20250617224039347.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161729266.png" />
+            alt="https://image.p1nant0m.xyz/20250617224039347.png" />
     </a><figcaption class="image-caption">Target Website</figcaption>
     </figure>
 <p>简单体验了下这个站点的功能，其实现了一个类似于聚合搜索引擎，用户可以选择他们偏好的主流搜索引擎进行信息检索。</p>
 <p>我们可以通过Wappalyzer简单了解一下该站点使用了什么Web框架进行构建，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161729019.png" title="https://image.p1nant0m.xyz/202307161729019.png" data-thumbnail="https://image.p1nant0m.xyz/202307161729019.png" data-sub-html="<h2>WebTech Information</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224046187.png" title="https://image.p1nant0m.xyz/20250617224046187.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224046187.png" data-sub-html="<h2>WebTech Information</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161729019.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161729019.png, https://image.p1nant0m.xyz/202307161729019.png 1.5x, https://image.p1nant0m.xyz/202307161729019.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224046187.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224046187.png, https://image.p1nant0m.xyz/20250617224046187.png 1.5x, https://image.p1nant0m.xyz/20250617224046187.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161729019.png" width="2" height="2" />
+            alt="https://image.p1nant0m.xyz/20250617224046187.png" width="2" height="2" />
     </a><figcaption class="image-caption">WebTech Information</figcaption>
     </figure>
 <p>在页面最后的站点版权信息中我们可以看到该站点所使用到的技术包括Flask框架以及Searchor 2.4.0</p>
 <h4 id="-攻击开始">🔫 攻击开始！</h4>
 <p><strong>第一阶段：获得普通用户权限</strong></p>
 <p>Google Hacking时间，看看相关框架有没有已知的nday以及PoC可供我们利用。经过一番搜索后发现Searchor 2.40存在<a href="https://github.com/jonnyzar/POC-Searchor-2.4.2" title="RCE漏洞" target="_blank" rel="noopener noreffer ">RCE漏洞</a>！</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161729597.png" title="https://image.p1nant0m.xyz/202307161729597.png" data-thumbnail="https://image.p1nant0m.xyz/202307161729597.png" data-sub-html="<h2>Searchor Exploit PoC</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224053728.png" title="https://image.p1nant0m.xyz/20250617224053728.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224053728.png" data-sub-html="<h2>Searchor Exploit PoC</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161729597.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161729597.png, https://image.p1nant0m.xyz/202307161729597.png 1.5x, https://image.p1nant0m.xyz/202307161729597.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224053728.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224053728.png, https://image.p1nant0m.xyz/20250617224053728.png 1.5x, https://image.p1nant0m.xyz/20250617224053728.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161729597.png" />
+            alt="https://image.p1nant0m.xyz/20250617224053728.png" />
     </a><figcaption class="image-caption">Searchor Exploit PoC</figcaption>
     </figure>
 <p>其中的payload如下所示，</p>
@@ -374,25 +374,25 @@ Nmap <span class="k">done</span>: <span class="m">1</span> IP address <span clas
 </code></pre></td></tr></table>
 </div>
 </div><p>继续跟踪相关的目录，在 <code>/var/www/app</code> 目录下我们发现了 <code>.git</code> 目录，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161729220.png" title="https://image.p1nant0m.xyz/202307161729220.png" data-thumbnail="https://image.p1nant0m.xyz/202307161729220.png" data-sub-html="<h2>.git directory</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224101097.png" title="https://image.p1nant0m.xyz/20250617224101097.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224101097.png" data-sub-html="<h2>.git directory</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161729220.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161729220.png, https://image.p1nant0m.xyz/202307161729220.png 1.5x, https://image.p1nant0m.xyz/202307161729220.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224101097.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224101097.png, https://image.p1nant0m.xyz/20250617224101097.png 1.5x, https://image.p1nant0m.xyz/20250617224101097.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161729220.png" />
+            alt="https://image.p1nant0m.xyz/20250617224101097.png" />
     </a><figcaption class="image-caption">.git directory</figcaption>
     </figure>
 <p>其中存在config文件，内容如下，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161729821.png" title="https://image.p1nant0m.xyz/202307161729821.png" data-thumbnail="https://image.p1nant0m.xyz/202307161729821.png" data-sub-html="<h2>git config</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224105670.png" title="https://image.p1nant0m.xyz/20250617224105670.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224105670.png" data-sub-html="<h2>git config</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161729821.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161729821.png, https://image.p1nant0m.xyz/202307161729821.png 1.5x, https://image.p1nant0m.xyz/202307161729821.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224105670.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224105670.png, https://image.p1nant0m.xyz/20250617224105670.png 1.5x, https://image.p1nant0m.xyz/20250617224105670.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161729821.png" />
+            alt="https://image.p1nant0m.xyz/20250617224105670.png" />
     </a><figcaption class="image-caption">git config</figcaption>
     </figure>
 <p>这其中包含了以下信息：</p>
@@ -423,73 +423,73 @@ Nmap <span class="k">done</span>: <span class="m">1</span> IP address <span clas
 <ul>
 <li><i class="far fa-check-square fa-fw" aria-hidden="true"></i> Can you execute <strong>any command with sudo</strong>? Can you use it to READ, WRITE or EXECUTE anything as root? (<a href="https://gtfobins.github.io" title="GTFOBins" target="_blank" rel="noopener noreffer "><strong>GTFOBins</strong></a>)</li>
 </ul>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161729777.png" title="https://image.p1nant0m.xyz/202307161729777.png" data-thumbnail="https://image.p1nant0m.xyz/202307161729777.png" data-sub-html="<h2>Commands that can be executed by sudo</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224111441.png" title="https://image.p1nant0m.xyz/20250617224111441.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224111441.png" data-sub-html="<h2>Commands that can be executed by sudo</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161729777.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161729777.png, https://image.p1nant0m.xyz/202307161729777.png 1.5x, https://image.p1nant0m.xyz/202307161729777.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224111441.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224111441.png, https://image.p1nant0m.xyz/20250617224111441.png 1.5x, https://image.p1nant0m.xyz/20250617224111441.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161729777.png" />
+            alt="https://image.p1nant0m.xyz/20250617224111441.png" />
     </a><figcaption class="image-caption">Commands that can be executed by sudo</figcaption>
     </figure>
 <p>最终我们将目标锁定在 <code>/usr/bin/python3 /opt/scripts/system-checkup.py</code> 上，</p>
 <p>进入 <code>/opt/scripts</code> 目录中，其中的文件属主都是root，我们能进行的操作不多，运行 <code>/usr/bin/python3 /opt/scripts/system-checkup.py *</code> ，在终端中有如下输出，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161728483.png" title="https://image.p1nant0m.xyz/202307161728483.png" data-thumbnail="https://image.p1nant0m.xyz/202307161728483.png" data-sub-html="<h2>execute the provided scripts</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224115551.png" title="https://image.p1nant0m.xyz/20250617224115551.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224115551.png" data-sub-html="<h2>execute the provided scripts</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161728483.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161728483.png, https://image.p1nant0m.xyz/202307161728483.png 1.5x, https://image.p1nant0m.xyz/202307161728483.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224115551.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224115551.png, https://image.p1nant0m.xyz/20250617224115551.png 1.5x, https://image.p1nant0m.xyz/20250617224115551.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161728483.png" />
+            alt="https://image.p1nant0m.xyz/20250617224115551.png" />
     </a><figcaption class="image-caption">execute the provided scripts</figcaption>
     </figure>
 <p>Ohh，原来gitea服务是通过容器的形式进行部署并暴露对外提供服务的。在这里还提供了docker-inspect命令，可以让我们看到容器启动时的相关配置信息，包括容器中的环境变量信息等。</p>
 <p><a href="https://docs.docker.com/engine/reference/commandline/inspect/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/engine/reference/commandline/inspect/</a></p>
 <p>执行命令 <code>/usr/bin/python3 /opt/scripts/system-checkup.py docker-inspect {{.Config}} 960873171e2e</code> ，查看gitea容器启动配置参数，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161728969.png" title="https://image.p1nant0m.xyz/202307161728969.png" data-thumbnail="https://image.p1nant0m.xyz/202307161728969.png" data-sub-html="<h2>Inspect docker container started variables</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224120621.png" title="https://image.p1nant0m.xyz/20250617224120621.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224120621.png" data-sub-html="<h2>Inspect docker container started variables</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161728969.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161728969.png, https://image.p1nant0m.xyz/202307161728969.png 1.5x, https://image.p1nant0m.xyz/202307161728969.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224120621.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224120621.png, https://image.p1nant0m.xyz/20250617224120621.png 1.5x, https://image.p1nant0m.xyz/20250617224120621.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161728969.png" />
+            alt="https://image.p1nant0m.xyz/20250617224120621.png" />
     </a><figcaption class="image-caption">Inspect docker container started variables</figcaption>
     </figure>
 <p>在这里我们发现了一些敏感信息，<strong>GITEA_base_PASSWD=yuiu1hoiu4i5ho1uh</strong>,尝试使用这个密码登录root无果。突然想到我们还有一个gitea服务还没去看看上面有什么呢？我们可以使用cody的账户登入系统看看有没有什么值得利用的信息。</p>
 <p>使用cody的账户在gitea中闲逛时我们发现与cody同属一个组织的还有administrator，正好试试我们拿到的密码，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161728051.png" title="https://image.p1nant0m.xyz/202307161728051.png" data-thumbnail="https://image.p1nant0m.xyz/202307161728051.png" data-sub-html="<h2>Administrator is in the org with cody user</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224124837.png" title="https://image.p1nant0m.xyz/20250617224124837.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224124837.png" data-sub-html="<h2>Administrator is in the org with cody user</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161728051.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161728051.png, https://image.p1nant0m.xyz/202307161728051.png 1.5x, https://image.p1nant0m.xyz/202307161728051.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224124837.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224124837.png, https://image.p1nant0m.xyz/20250617224124837.png 1.5x, https://image.p1nant0m.xyz/20250617224124837.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161728051.png" />
+            alt="https://image.p1nant0m.xyz/20250617224124837.png" />
     </a><figcaption class="image-caption">Administrator is in the org with cody user</figcaption>
     </figure>
 <p>Boom！我们可以使用上面获得到的密码(<strong>yuiu1hoiu4i5ho1uh</strong>)登入administrator的账户，在管理员账户下我们发现了在 <code>/opt/scripts</code> 的文件，在gitea上我们便可以查看代码的主要逻辑。</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161728008.png" title="https://image.p1nant0m.xyz/202307161728008.png" data-thumbnail="https://image.p1nant0m.xyz/202307161728008.png" data-sub-html="<h2>scripts that owned by Administrator</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224129178.png" title="https://image.p1nant0m.xyz/20250617224129178.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224129178.png" data-sub-html="<h2>scripts that owned by Administrator</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161728008.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161728008.png, https://image.p1nant0m.xyz/202307161728008.png 1.5x, https://image.p1nant0m.xyz/202307161728008.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224129178.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224129178.png, https://image.p1nant0m.xyz/20250617224129178.png 1.5x, https://image.p1nant0m.xyz/20250617224129178.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161728008.png" />
+            alt="https://image.p1nant0m.xyz/20250617224129178.png" />
     </a><figcaption class="image-caption">scripts that owned by Administrator</figcaption>
     </figure>
 <p>在对代码进行审计后，我们发现full-chekcup Action中没有对传入的脚本文件路径进行限制，进而可以进行任意代码执行，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161728704.png" title="https://image.p1nant0m.xyz/202307161728704.png" data-thumbnail="https://image.p1nant0m.xyz/202307161728704.png" data-sub-html="<h2>fragile point of the script execute logic</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224136074.png" title="https://image.p1nant0m.xyz/20250617224136074.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224136074.png" data-sub-html="<h2>fragile point of the script execute logic</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161728704.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161728704.png, https://image.p1nant0m.xyz/202307161728704.png 1.5x, https://image.p1nant0m.xyz/202307161728704.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224136074.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224136074.png, https://image.p1nant0m.xyz/20250617224136074.png 1.5x, https://image.p1nant0m.xyz/20250617224136074.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161728704.png" />
+            alt="https://image.p1nant0m.xyz/20250617224136074.png" />
     </a><figcaption class="image-caption">fragile point of the script execute logic</figcaption>
     </figure>
 <p>找到一个可以写的目录（/home/svc）并在其中创建一个名为full-checkup.sh的文件，其中的内容如下（我们可以从<a href="https://gtfobins.github.io/" title="https://gtfobins.github.io/" target="_blank" rel="noopener noreffer ">https://gtfobins.github.io/</a>中获得相关的payload），最后其中的文件内容如下,</p>
@@ -512,25 +512,25 @@ pty.spawn<span class="o">(</span><span class="s2">&#34;/bin/sh&#34;</span><span 
 </code></pre></td></tr></table>
 </div>
 </div><p>故技重施，我们在控制服务器上使用netcat监听8080端口接收回弹的Shell，最终获得以root用户运行的终端，</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161730297.png" title="https://image.p1nant0m.xyz/202307161730297.png" data-thumbnail="https://image.p1nant0m.xyz/202307161730297.png" data-sub-html="<h2>Get shell under the root user</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224142488.png" title="https://image.p1nant0m.xyz/20250617224142488.png" data-thumbnail="https://image.p1nant0m.xyz/20250617224142488.png" data-sub-html="<h2>Get shell under the root user</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161730297.png"
-            data-srcset="https://image.p1nant0m.xyz/202307161730297.png, https://image.p1nant0m.xyz/202307161730297.png 1.5x, https://image.p1nant0m.xyz/202307161730297.png 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224142488.png"
+            data-srcset="https://image.p1nant0m.xyz/20250617224142488.png, https://image.p1nant0m.xyz/20250617224142488.png 1.5x, https://image.p1nant0m.xyz/20250617224142488.png 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161730297.png" />
+            alt="https://image.p1nant0m.xyz/20250617224142488.png" />
     </a><figcaption class="image-caption">Get shell under the root user</figcaption>
     </figure>
 <p>最终也是读取了root.txt中存储的FLAG！</p>
-<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/202307161732018.gif" title="https://image.p1nant0m.xyz/202307161732018.gif" data-thumbnail="https://image.p1nant0m.xyz/202307161732018.gif" data-sub-html="<h2>Target Website</h2>">
+<figure><a class="lightgallery" href="https://image.p1nant0m.xyz/20250617224813765.gif" title="https://image.p1nant0m.xyz/20250617224813765.gif" data-thumbnail="https://image.p1nant0m.xyz/20250617224813765.gif" data-sub-html="<h2>Target Website</h2>">
         <img
             class="lazyload"
             src="/svg/loading.min.svg"
-            data-src="https://image.p1nant0m.xyz/202307161732018.gif"
-            data-srcset="https://image.p1nant0m.xyz/202307161732018.gif, https://image.p1nant0m.xyz/202307161732018.gif 1.5x, https://image.p1nant0m.xyz/202307161732018.gif 2x"
+            data-src="https://image.p1nant0m.xyz/20250617224813765.gif"
+            data-srcset="https://image.p1nant0m.xyz/20250617224813765.gif, https://image.p1nant0m.xyz/20250617224813765.gif 1.5x, https://image.p1nant0m.xyz/20250617224813765.gif 2x"
             data-sizes="auto"
-            alt="https://image.p1nant0m.xyz/202307161732018.gif" />
+            alt="https://image.p1nant0m.xyz/20250617224813765.gif" />
     </a><figcaption class="image-caption">Target Website</figcaption>
     </figure>
 <h3 id="-总结复盘">📖 总结复盘</h3>
