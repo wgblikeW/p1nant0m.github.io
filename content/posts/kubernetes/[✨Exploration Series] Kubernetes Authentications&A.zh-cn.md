@@ -238,7 +238,7 @@ kubectl create token cilium
 >
 > &#x20; 4.Building mTLS communication to the apiserver with the certificate&#x20;
 
-{{< image src="https://image.p1nant0m.xyz/202309202126336.png" caption="Relationship Between kubernetes Componets related to RBAC" src_s="https://image.p1nant0m.xyz/202309202126336.png" src_l="https://image.p1nant0m.xyz/202309202126336.png" >}} 
+{{< image src="https://image.p1nant0m.xyz/20250617223917418.png" caption="Relationship Between kubernetes Componets related to RBAC" src_s="https://image.p1nant0m.xyz/20250617223917418.png" src_l="https://image.p1nant0m.xyz/20250617223917418.png" >}} 
 
 通过上述操作，位于 \[default] 命名空间下的 \[cilium] **ServiceAccount** 便可以对集群环境中的所有 **Secrets** 进行 get、watch、list 操作了。
 

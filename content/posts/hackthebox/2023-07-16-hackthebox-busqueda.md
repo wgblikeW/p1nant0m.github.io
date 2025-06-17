@@ -104,13 +104,13 @@ Nmap done: 1 IP address (1 host up) scanned in 13.28 seconds
 访问目标站点(<http://searcher.htb)看看它的葫芦里卖的是什么药🙂，>
 
 
-{{< image src="https://image.p1nant0m.xyz/202307161729266.png" caption="Target Website" src_s="https://image.p1nant0m.xyz/202307161729266.png" src_l="https://image.p1nant0m.xyz/202307161729266.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224039347.png" caption="Target Website" src_s="https://image.p1nant0m.xyz/20250617224039347.png" src_l="https://image.p1nant0m.xyz/20250617224039347.png" >}}
 
 简单体验了下这个站点的功能，其实现了一个类似于聚合搜索引擎，用户可以选择他们偏好的主流搜索引擎进行信息检索。
 
 我们可以通过Wappalyzer简单了解一下该站点使用了什么Web框架进行构建，
 
-{{< image width=2 height=2 src="https://image.p1nant0m.xyz/202307161729019.png" caption="WebTech Information" src_s="https://image.p1nant0m.xyz/202307161729019.png" src_l="https://image.p1nant0m.xyz/202307161729019.png" >}}
+{{< image width=2 height=2 src="https://image.p1nant0m.xyz/20250617224046187.png" caption="WebTech Information" src_s="https://image.p1nant0m.xyz/20250617224046187.png" src_l="https://image.p1nant0m.xyz/20250617224046187.png" >}}
 
 在页面最后的站点版权信息中我们可以看到该站点所使用到的技术包括Flask框架以及Searchor 2.4.0
 
@@ -120,7 +120,7 @@ Nmap done: 1 IP address (1 host up) scanned in 13.28 seconds
 
 Google Hacking时间，看看相关框架有没有已知的nday以及PoC可供我们利用。经过一番搜索后发现Searchor 2.40存在[RCE漏洞](https://github.com/jonnyzar/POC-Searchor-2.4.2 "RCE漏洞")！
 
-{{< image src="https://image.p1nant0m.xyz/202307161729597.png" caption="Searchor Exploit PoC" src_s="https://image.p1nant0m.xyz/202307161729597.png" src_l="https://image.p1nant0m.xyz/202307161729597.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224053728.png" caption="Searchor Exploit PoC" src_s="https://image.p1nant0m.xyz/20250617224053728.png" src_l="https://image.p1nant0m.xyz/20250617224053728.png" >}}
 
 其中的payload如下所示，
 
@@ -160,11 +160,11 @@ nc -lnvp 8080
 
 继续跟踪相关的目录，在 `/var/www/app` 目录下我们发现了 `.git` 目录，
 
-{{< image src="https://image.p1nant0m.xyz/202307161729220.png" caption=".git directory" src_s="https://image.p1nant0m.xyz/202307161729220.png" src_l="https://image.p1nant0m.xyz/202307161729220.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224101097.png" caption=".git directory" src_s="https://image.p1nant0m.xyz/20250617224101097.png" src_l="https://image.p1nant0m.xyz/20250617224101097.png" >}}
 
 其中存在config文件，内容如下，
 
-{{< image src="https://image.p1nant0m.xyz/202307161729821.png" caption="git config" src_s="https://image.p1nant0m.xyz/202307161729821.png" src_l="https://image.p1nant0m.xyz/202307161729821.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224105670.png" caption="git config" src_s="https://image.p1nant0m.xyz/20250617224105670.png" src_l="https://image.p1nant0m.xyz/20250617224105670.png" >}}
 
 这其中包含了以下信息：
 
@@ -189,13 +189,13 @@ ssh cody@searcher.htb
 
 -   [x] Can you execute **any command with sudo**? Can you use it to READ, WRITE or EXECUTE anything as root? ([**GTFOBins**](https://gtfobins.github.io "GTFOBins"))
 
-{{< image src="https://image.p1nant0m.xyz/202307161729777.png" caption="Commands that can be executed by sudo" src_s="https://image.p1nant0m.xyz/202307161729777.png" src_l="https://image.p1nant0m.xyz/202307161729777.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224111441.png" caption="Commands that can be executed by sudo" src_s="https://image.p1nant0m.xyz/20250617224111441.png" src_l="https://image.p1nant0m.xyz/20250617224111441.png" >}}
 
 最终我们将目标锁定在 `/usr/bin/python3 /opt/scripts/system-checkup.py` 上，
 
 进入 `/opt/scripts` 目录中，其中的文件属主都是root，我们能进行的操作不多，运行 `/usr/bin/python3 /opt/scripts/system-checkup.py *` ，在终端中有如下输出，
 
-{{< image src="https://image.p1nant0m.xyz/202307161728483.png" caption="execute the provided scripts" src_s="https://image.p1nant0m.xyz/202307161728483.png" src_l="https://image.p1nant0m.xyz/202307161728483.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224115551.png" caption="execute the provided scripts" src_s="https://image.p1nant0m.xyz/20250617224115551.png" src_l="https://image.p1nant0m.xyz/20250617224115551.png" >}}
 
 Ohh，原来gitea服务是通过容器的形式进行部署并暴露对外提供服务的。在这里还提供了docker-inspect命令，可以让我们看到容器启动时的相关配置信息，包括容器中的环境变量信息等。
 
@@ -203,24 +203,24 @@ Ohh，原来gitea服务是通过容器的形式进行部署并暴露对外提供
 
 执行命令 `/usr/bin/python3 /opt/scripts/system-checkup.py docker-inspect {{.Config}} 960873171e2e` ，查看gitea容器启动配置参数，
 
-{{< image src="https://image.p1nant0m.xyz/202307161728969.png" caption="Inspect docker container started variables" src_s="https://image.p1nant0m.xyz/202307161728969.png" src_l="https://image.p1nant0m.xyz/202307161728969.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224120621.png" caption="Inspect docker container started variables" src_s="https://image.p1nant0m.xyz/20250617224120621.png" src_l="https://image.p1nant0m.xyz/20250617224120621.png" >}}
 
 在这里我们发现了一些敏感信息，**GITEA\_base\_PASSWD=yuiu1hoiu4i5ho1uh**,尝试使用这个密码登录root无果。突然想到我们还有一个gitea服务还没去看看上面有什么呢？我们可以使用cody的账户登入系统看看有没有什么值得利用的信息。
 
 使用cody的账户在gitea中闲逛时我们发现与cody同属一个组织的还有administrator，正好试试我们拿到的密码，
 
 
-{{< image src="https://image.p1nant0m.xyz/202307161728051.png" caption="Administrator is in the org with cody user" src_s="https://image.p1nant0m.xyz/202307161728051.png" src_l="https://image.p1nant0m.xyz/202307161728051.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224124837.png" caption="Administrator is in the org with cody user" src_s="https://image.p1nant0m.xyz/20250617224124837.png" src_l="https://image.p1nant0m.xyz/20250617224124837.png" >}}
 
 Boom！我们可以使用上面获得到的密码(**yuiu1hoiu4i5ho1uh**)登入administrator的账户，在管理员账户下我们发现了在 `/opt/scripts` 的文件，在gitea上我们便可以查看代码的主要逻辑。
 
 
-{{< image src="https://image.p1nant0m.xyz/202307161728008.png" caption="scripts that owned by Administrator" src_s="https://image.p1nant0m.xyz/202307161728008.png" src_l="https://image.p1nant0m.xyz/202307161728008.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224129178.png" caption="scripts that owned by Administrator" src_s="https://image.p1nant0m.xyz/20250617224129178.png" src_l="https://image.p1nant0m.xyz/20250617224129178.png" >}}
 
 在对代码进行审计后，我们发现full-chekcup Action中没有对传入的脚本文件路径进行限制，进而可以进行任意代码执行，
 
 
-{{< image src="https://image.p1nant0m.xyz/202307161728704.png" caption="fragile point of the script execute logic" src_s="https://image.p1nant0m.xyz/202307161728704.png" src_l="https://image.p1nant0m.xyz/202307161728704.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224136074.png" caption="fragile point of the script execute logic" src_s="https://image.p1nant0m.xyz/20250617224136074.png" src_l="https://image.p1nant0m.xyz/20250617224136074.png" >}}
 
 找到一个可以写的目录（/home/svc）并在其中创建一个名为full-checkup.sh的文件，其中的内容如下（我们可以从[https://gtfobins.github.io/](https://gtfobins.github.io/ "https://gtfobins.github.io/")中获得相关的payload），最后其中的文件内容如下,
 
@@ -235,11 +235,11 @@ pty.spawn("/bin/sh")
 
 故技重施，我们在控制服务器上使用netcat监听8080端口接收回弹的Shell，最终获得以root用户运行的终端，
 
-{{< image src="https://image.p1nant0m.xyz/202307161730297.png" caption="Get shell under the root user" src_s="https://image.p1nant0m.xyz/202307161730297.png" src_l="https://image.p1nant0m.xyz/202307161730297.png" >}}
+{{< image src="https://image.p1nant0m.xyz/20250617224142488.png" caption="Get shell under the root user" src_s="https://image.p1nant0m.xyz/20250617224142488.png" src_l="https://image.p1nant0m.xyz/20250617224142488.png" >}}
 
 最终也是读取了root.txt中存储的FLAG！
 
-{{< image src="https://image.p1nant0m.xyz/202307161732018.gif" caption="Target Website" src_s="https://image.p1nant0m.xyz/202307161732018.gif" src_l="https://image.p1nant0m.xyz/202307161732018.gif" >}} 
+{{< image src="https://image.p1nant0m.xyz/20250617224813765.gif" caption="Target Website" src_s="https://image.p1nant0m.xyz/20250617224813765.gif" src_l="https://image.p1nant0m.xyz/20250617224813765.gif" >}} 
 
 ### 📖 总结复盘
 
