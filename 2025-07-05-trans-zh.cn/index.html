@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>（译）在 Go 解析器中因误用引发的意料之外的安全问题 - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="（译）在 Go 解析器中因误用引发的意料之外的安全问题" />
+<meta property="og:description" content="（译）Unexpected security footguns in Go&rsquo;s parsers - 在 Go 解析器中因误用引发的意料之外的安全问题 目录 （译）Unexpected security footguns in Go&rsquo;s parsers - 在 Go 解析器中因误用引发的意料之外的安全问题 目录 在Go中进行解析 攻击场景1：(反)序列化意料之外数据 没有标签的字段 错误地使用 - 标签 错误地使用omitempty 攻击场景 2：解析器差异 重复字段 不区分大小写的键匹配 攻击场景 3：数据格式混淆 Unknown keys 前置垃圾数据 后置垃圾数据 构建多语言文件 缓解措" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.xyz/2025-07-05-trans-zh.cn/" /><meta property="og:image" content="https://p1nant0m.xyz/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-07-05T12:00:00+00:00" />
+<meta property="article:modified_time" content="2025-07-05T12:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.xyz/logo.png"/>
+
+<meta name="twitter:title" content="（译）在 Go 解析器中因误用引发的意料之外的安全问题"/>
+<meta name="twitter:description" content="（译）Unexpected security footguns in Go&rsquo;s parsers - 在 Go 解析器中因误用引发的意料之外的安全问题 目录 （译）Unexpected security footguns in Go&rsquo;s parsers - 在 Go 解析器中因误用引发的意料之外的安全问题 目录 在Go中进行解析 攻击场景1：(反)序列化意料之外数据 没有标签的字段 错误地使用 - 标签 错误地使用omitempty 攻击场景 2：解析器差异 重复字段 不区分大小写的键匹配 攻击场景 3：数据格式混淆 Unknown keys 前置垃圾数据 后置垃圾数据 构建多语言文件 缓解措"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.xyz/2025-07-05-trans-zh.cn/" /><link rel="prev" href="https://p1nant0m.xyz/2024-07-21-gvisor/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "（译）在 Go 解析器中因误用引发的意料之外的安全问题",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.xyz\/2025-07-05-trans-zh.cn\/"
+        },"genre": "posts","keywords": "Go, Application Security","wordcount":  8745 ,
+        "url": "https:\/\/p1nant0m.xyz\/2025-07-05-trans-zh.cn\/","datePublished": "2025-07-05T12:00:00+00:00","dateModified": "2025-07-05T12:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "p1nant0m"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="/friends/"> 友链 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2025-07-05-trans-zh.cn/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="/friends/" title="">友链</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2025-07-05-trans-zh.cn/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">（译）在 Go 解析器中因误用引发的意料之外的安全问题</h1><h2 class="single-subtitle">Unexpected security footguns in Go&#39;s parsers</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-07-05">2025-07-05</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 8745 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 18 分钟&nbsp;<span id="/2025-07-05-trans-zh.cn/" class="leancloud_visitors" data-flag-title="（译）在 Go 解析器中因误用引发的意料之外的安全问题">
+                        <i class="far fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#目录">目录</a></li>
+    <li><a href="#在go中进行解析">在Go中进行解析</a></li>
+    <li><a href="#攻击场景1反序列化意料之外数据">攻击场景1：(反)序列化意料之外数据</a>
+      <ul>
+        <li><a href="#没有标签的字段">没有标签的字段</a></li>
+        <li><a href="#错误地使用---标签">错误地使用 <code>-</code> 标签</a></li>
+        <li><a href="#错误地使用omitempty">错误地使用<code>omitempty</code></a></li>
+      </ul>
+    </li>
+    <li><a href="#攻击场景-2解析器差异">攻击场景 2：解析器差异</a>
+      <ul>
+        <li><a href="#重复字段">重复字段</a></li>
+        <li><a href="#不区分大小写的键匹配">不区分大小写的键匹配</a></li>
+      </ul>
+    </li>
+    <li><a href="#攻击场景-3数据格式混淆">攻击场景 3：数据格式混淆</a>
+      <ul>
+        <li><a href="#unknown-keys">Unknown keys</a></li>
+        <li><a href="#前置垃圾数据">前置垃圾数据</a></li>
+        <li><a href="#后置垃圾数据">后置垃圾数据</a></li>
+        <li><a href="#构建多语言文件">构建多语言文件</a></li>
+      </ul>
+    </li>
+    <li><a href="#缓解措施">缓解措施</a>
+      <ul>
+        <li><a href="#json-v2">JSON v2</a></li>
+      </ul>
+    </li>
+    <li><a href="#go-开发者需要关注的关键要点">Go 开发者需要关注的关键要点</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h1 id="译unexpected-security-footguns-in-gos-parsers---在-go-解析器中因误用引发的意料之外的安全问题">（译）Unexpected security footguns in Go&rsquo;s parsers - 在 Go 解析器中因误用引发的意料之外的安全问题</h1>
+<h2 id="目录">目录</h2>
+<ul>
+<li><a href="#%e8%af%91unexpected-security-footguns-in-gos-parsers---%e5%9c%a8-go-%e8%a7%a3%e6%9e%90%e5%99%a8%e4%b8%ad%e5%9b%a0%e8%af%af%e7%94%a8%e5%bc%95%e5%8f%91%e7%9a%84%e6%84%8f%e6%96%99%e4%b9%8b%e5%a4%96%e7%9a%84%e5%ae%89%e5%85%a8%e9%97%ae%e9%a2%98" rel="">（译）Unexpected security footguns in Go&rsquo;s parsers - 在 Go 解析器中因误用引发的意料之外的安全问题</a>
+<ul>
+<li><a href="#%e7%9b%ae%e5%bd%95" rel="">目录</a></li>
+<li><a href="#%e5%9c%a8go%e4%b8%ad%e8%bf%9b%e8%a1%8c%e8%a7%a3%e6%9e%90" rel="">在Go中进行解析</a></li>
+<li><a href="#%e6%94%bb%e5%87%bb%e5%9c%ba%e6%99%af1%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%84%8f%e6%96%99%e4%b9%8b%e5%a4%96%e6%95%b0%e6%8d%ae" rel="">攻击场景1：(反)序列化意料之外数据</a>
+<ul>
+<li><a href="#%e6%b2%a1%e6%9c%89%e6%a0%87%e7%ad%be%e7%9a%84%e5%ad%97%e6%ae%b5" rel="">没有标签的字段</a></li>
+<li><a href="#%e9%94%99%e8%af%af%e5%9c%b0%e4%bd%bf%e7%94%a8---%e6%a0%87%e7%ad%be" rel="">错误地使用 <code>-</code> 标签</a></li>
+<li><a href="#%e9%94%99%e8%af%af%e5%9c%b0%e4%bd%bf%e7%94%a8omitempty" rel="">错误地使用<code>omitempty</code></a></li>
+</ul>
+</li>
+<li><a href="#%e6%94%bb%e5%87%bb%e5%9c%ba%e6%99%af-2%e8%a7%a3%e6%9e%90%e5%99%a8%e5%b7%ae%e5%bc%82" rel="">攻击场景 2：解析器差异</a>
+<ul>
+<li><a href="#%e9%87%8d%e5%a4%8d%e5%ad%97%e6%ae%b5" rel="">重复字段</a></li>
+<li><a href="#%e4%b8%8d%e5%8c%ba%e5%88%86%e5%a4%a7%e5%b0%8f%e5%86%99%e7%9a%84%e9%94%ae%e5%8c%b9%e9%85%8d" rel="">不区分大小写的键匹配</a></li>
+</ul>
+</li>
+<li><a href="#%e6%94%bb%e5%87%bb%e5%9c%ba%e6%99%af-3%e6%95%b0%e6%8d%ae%e6%a0%bc%e5%bc%8f%e6%b7%b7%e6%b7%86" rel="">攻击场景 3：数据格式混淆</a>
+<ul>
+<li><a href="#unknown-keys" rel="">Unknown keys</a></li>
+<li><a href="#%e5%89%8d%e7%bd%ae%e5%9e%83%e5%9c%be%e6%95%b0%e6%8d%ae" rel="">前置垃圾数据</a></li>
+<li><a href="#%e5%90%8e%e7%bd%ae%e5%9e%83%e5%9c%be%e6%95%b0%e6%8d%ae" rel="">后置垃圾数据</a></li>
+<li><a href="#%e6%9e%84%e5%bb%ba%e5%a4%9a%e8%af%ad%e8%a8%80%e6%96%87%e4%bb%b6" rel="">构建多语言文件</a></li>
+</ul>
+</li>
+<li><a href="#%e7%bc%93%e8%a7%a3%e6%8e%aa%e6%96%bd" rel="">缓解措施</a>
+<ul>
+<li><a href="#json-v2" rel="">JSON v2</a></li>
+</ul>
+</li>
+<li><a href="#go-%e5%bc%80%e5%8f%91%e8%80%85%e9%9c%80%e8%a6%81%e5%85%b3%e6%b3%a8%e7%9a%84%e5%85%b3%e9%94%ae%e8%a6%81%e7%82%b9" rel="">Go 开发者需要关注的关键要点</a></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>本文翻译自 Vasco Franco 的 Unexpected security footguns in Go&rsquo;s parser, 原文链接：<a href="https://blog.trailofbits.com/2025/06/17/unexpected-security-footguns-in-gos-parsers/" title="https://blog.trailofbits.com/2025/06/17/unexpected-security-footguns-in-gos-parsers/" target="_blank" rel="noopener noreffer ">https://blog.trailofbits.com/2025/06/17/unexpected-security-footguns-in-gos-parsers/</a></p>
+</blockquote>
+<p>在Go应用程序中，解析不可信数据会敞开一个相当危险的攻击面，这在现实环境中经常被利用。在我们的安全评估中，我们反复利用Go的JSON、XML和YAML解析器中的意外行为来绕过身份验证、规避授权控制，并从生产系统中窃取敏感数据。</p>
+<p>这些不仅仅是停留在纸面上的问题——它们已经导致了记录在CVE数据库中的漏洞，如 <a href="https://nvd.nist.gov/vuln/detail/cve-2020-16250" title="CVE-2020-16250" target="_blank" rel="noopener noreffer ">CVE-2020-16250</a>（<a href="https://googleprojectzero.blogspot.com/2020/10/enter-the-vault-auth-issues-hashicorp-vault.html" title="由Google的Project Zero发现的Hashicorp Vault身份验证绕过" target="_blank" rel="noopener noreffer ">由Google的Project Zero发现的Hashicorp Vault身份验证绕过</a>）以及我们在客户与客户交流的过程中发现的大量高危问题。</p>
+<p>本文通过三个攻击场景来阐述这些工程师预期之外的解析器行为，每个安全工程师和Go开发者都应该了解：</p>
+<ol>
+<li><strong>(反)序列化意料之外的数据</strong>：Go解析器如何暴露开发者本打算保持私密的数据</li>
+<li><strong>解析器差异</strong>：当多个服务解析相同输入时，解析器之间的差异如何使攻击者能够绕过安全控制</li>
+<li><strong>数据格式混淆</strong>：解析器如何处理跨格式的有效载荷，产生令人惊讶且可利用的结果</li>
+</ol>
+<p>我们将通过真实案例演示每个攻击场景，并以更安全地配置这些解析器的具体建议作为结束，包括缓解Go标准库中安全漏洞的策略。</p>
+<p>以下是我们将要进行审查的可能会出现预期之外行为的列表，表中带有表示其安全状态的指示器：</p>
+<p>🟢 <strong>绿色</strong>：默认安全  
+🟠 <strong>橙色</strong>：默认不安全但可配置  
+🔴 <strong>红色</strong>：默认不安全且无安全配置选项</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>JSON</strong>​</th>
+<th><strong>JSON v2</strong>​</th>
+<th><strong>XML</strong>​</th>
+<th><strong>YAML</strong>​</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>json:&quot;-,…&quot;</strong> ​</td>
+<td>YES (bad design)</td>
+<td>YES (bad design)</td>
+<td>YES (bad design)</td>
+<td>YES (bad design)</td>
+</tr>
+<tr>
+<td><strong>json:“omitempty”</strong> ​</td>
+<td>YES (expected)</td>
+<td>YES (expected)</td>
+<td>YES (expected)</td>
+<td>YES (expected)</td>
+</tr>
+<tr>
+<td><strong>Duplicate keys</strong>​</td>
+<td>YES (last)</td>
+<td>NO</td>
+<td>YES (last)</td>
+<td>NO</td>
+</tr>
+<tr>
+<td><strong>Case insensitivity</strong>​</td>
+<td>YES</td>
+<td>NO</td>
+<td>NO</td>
+<td>NO</td>
+</tr>
+<tr>
+<td><strong>Unknown keys</strong>​</td>
+<td>YES (mitigable)</td>
+<td>YES (mitigable)</td>
+<td>YES</td>
+<td>YES (mitigable)</td>
+</tr>
+<tr>
+<td><strong>Garbage leading data</strong>​</td>
+<td>NO</td>
+<td>NO</td>
+<td>YES</td>
+<td>NO</td>
+</tr>
+<tr>
+<td><strong>Garbage trailing data</strong>​</td>
+<td>YES (with Decoder)</td>
+<td>NO</td>
+<td>YES</td>
+<td>NO</td>
+</tr>
+</tbody>
+</table>
+<h2 id="在go中进行解析">在Go中进行解析</h2>
+<p>让我们看看在Go如何解析JSON、XML和YAML结构化文档。Go的标准库向开发者提供了JSON和XML解析器，但没有提供YAML解析器，有几种第三方的替代方案。在我们的分析中，我们将重点关注：</p>
+<ul>
+<li><a href="https://pkg.go.dev/encoding/json" title="encoding/json" target="_blank" rel="noopener noreffer ">encoding/json</a>版本go1.24.1</li>
+<li><a href="encoding/xml" title="encoding/xml" rel="">encoding/xml</a>版本go1.24.1</li>
+<li><a href="https://pkg.go.dev/gopkg.in/yaml.v3" title="yaml.v3" target="_blank" rel="noopener noreffer ">yaml.v3</a>版本3.0.1（最流行的第三方Go YAML库）</li>
+</ul>
+<p>我们将使用JSON格式作为后续示例，但所有三种解析器都有与我们看到的API等效的API。</p>
+<p>这些解析器提供两个核心功能：</p>
+<ol>
+<li><code>Marshal</code>（序列化）：将Go结构体转换为各自结构的字符串</li>
+<li><code>Unmarshal</code>（反序列化）：将结构字符串转换回Go结构体</li>
+</ol>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705233634415.png" title="https://image.p1nant0m.xyz/20250705233634415.png" data-thumbnail="https://image.p1nant0m.xyz/20250705233634415.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705233634415.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705233634415.png, https://image.p1nant0m.xyz/20250705233634415.png 1.5x, https://image.p1nant0m.xyz/20250705233634415.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705233634415.png" />
+    </a>
+<p>Go使用结构体字段标签来帮助开发者自定义解析器如何处理各个字段。这些标签包括：</p>
+<ul>
+<li>用于决定序列化/反序列化的键名</li>
+<li>修改行为的可选逗号分隔指令（例如，<code>omitempty</code>标签选项告诉JSON序列化器如果字段为空则不包含在JSON输出字符串中）</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Username</span> <span class="kt">string</span> <span class="s">`json:&#34;username_json_key,omitempty&#34;`</span>
+    <span class="nx">Password</span> <span class="kt">string</span> <span class="s">`json:&#34;password&#34;`</span>
+    <span class="nx">IsAdmin</span>  <span class="kt">bool</span>   <span class="s">`json:&#34;is_admin&#34;`</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>要将JSON字符串反序列化为上面显示的User结构，我们必须对Username字段使用<code>username_json_key</code>键，对Password字段使用<code>password</code>键，对IsAdmin字段使用<code>is_admin</code>键。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">u</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{}</span>
+<span class="nx">_</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">`{
+</span><span class="s">    &#34;username_json_key&#34;: &#34;jofra&#34;,
+</span><span class="s">    &#34;password&#34;: &#34;qwerty123!&#34;,
+</span><span class="s">    &#34;is_admin&#34;: &#34;false&#34;
+</span><span class="s">}`</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">u</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Result: %#v\n&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">)</span>
+<span class="c1">// 输出: User{Username:&#34;jofra&#34;, Password:&#34;qwerty123!&#34;, IsAdmin:false}
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这些解析器还提供了基于流的替代方案，这些方案在<code>io.Reader</code>接口上操作，而不是字节切片。这个API非常适合解析流数据，如HTTP请求体，使其成为HTTP请求处理的首选。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705233804958.png" title="https://image.p1nant0m.xyz/20250705233804958.png" data-thumbnail="https://image.p1nant0m.xyz/20250705233804958.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705233804958.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705233804958.png, https://image.p1nant0m.xyz/20250705233804958.png 1.5x, https://image.p1nant0m.xyz/20250705233804958.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705233804958.png" />
+    </a>
+<h2 id="攻击场景1反序列化意料之外数据">攻击场景1：(反)序列化意料之外数据</h2>
+<p>在某一些应用场景下，开发者需要决定哪一些字段需要进行序列化而哪一些不需要。</p>
+<p>让我们考虑一个简单的例子，其中后端服务器有一个用于创建用户的HTTP处理程序，另一个用于在身份验证后检索该用户。</p>
+<p>当创建用户时，您可能不希望用户能够设置<code>IsAdmin</code>字段（即从不受信任的用户输入中反序列化该字段）。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705233913322.png" title="https://image.p1nant0m.xyz/20250705233913322.png" data-thumbnail="https://image.p1nant0m.xyz/20250705233913322.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705233913322.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705233913322.png, https://image.p1nant0m.xyz/20250705233913322.png 1.5x, https://image.p1nant0m.xyz/20250705233913322.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705233913322.png" />
+    </a>
+<p>同样，当获取用户时，您可能不希望返回用户的<code>Password</code>或其他秘密值。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234207826.png" title="https://image.p1nant0m.xyz/20250705234207826.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234207826.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234207826.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234207826.png, https://image.p1nant0m.xyz/20250705234207826.png 1.5x, https://image.p1nant0m.xyz/20250705234207826.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234207826.png" />
+    </a>
+<p>我们应该如何指示解析器不要序列化或反序列化哪些字段？</p>
+<h3 id="没有标签的字段">没有标签的字段</h3>
+<p>首先看看如果不设置JSON标签会发生什么。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Username</span> <span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在这种情况下，您可以使用其名称反序列化<code>Username</code>字段，如下所示。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">_</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">`{&#34;Username&#34;: &#34;jofra&#34;}`</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">u</span><span class="p">)</span>
+<span class="c1">// 输出: User{Username:&#34;jofra&#34;}
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这是有文档记录的，大多数Go开发者都知道。让我们看另一个例子：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Username</span> <span class="kt">string</span> <span class="s">`json:&#34;username,omitempty&#34;`</span>
+    <span class="nx">Password</span> <span class="kt">string</span> <span class="s">`json:&#34;password,omitempty&#34;`</span>
+    <span class="nx">IsAdmin</span>  <span class="kt">bool</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面的IsAdmin字段是否会被反序列化？一个不太资深或大意的开发者可能会认为不会，而实际上，这个字段是会被进行反序列化的，从而引入安全漏洞。</p>
+<p>如果您希望扫描代码库中​<strong>​部分字段带有JSON/XML/YAML标签而其他字段没有​</strong>​的模式，可以使用以下Semgrep规则。该规则未发布在我们的Semgrep官方规则集中，因为根据代码库的不同，它可能会产生较多误报。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">rules</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">unmarshaling-tag-in-only-some-fields</span><span class="w">
+</span><span class="w">      </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="p">&gt;-</span><span class="sd">
+</span><span class="sd">          </span><span class="w">          </span><span class="l">Type $T1 has fields with json/yml/xml tags on some but not other fields. This field can still be (un)marshaled using its name. To prevent a field from being (un)marshaled, use the - tag.</span><span class="w">
+</span><span class="w">      </span><span class="nt">languages</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">go]</span><span class="w">
+</span><span class="w">      </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">WARNING</span><span class="w">
+</span><span class="w">      </span><span class="nt">patterns</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">pattern-inside</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">                type $T1 struct {
+</span><span class="sd">                  ...
+</span><span class="sd">                  $_ $_ `$TAG`
+</span><span class="sd">                  ...
+</span><span class="sd">                }</span><span class="w">                
+</span><span class="w">          </span><span class="c"># This regex attempts to remove some false positives such as structs declared inside structs</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">pattern-regex</span><span class="p">:</span><span class="w"> </span><span class="p">&gt;-</span><span class="sd">
+</span><span class="sd">                </span><span class="w">                </span><span class="l">^[ \t]+[A-Z]+[a-zA-Z0-9]*[ \t]+[a-zA-Z0-9]+[^{`\n\r]*$</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">metavariable-regex</span><span class="p">:</span><span class="w">
+</span><span class="w">                </span><span class="nt">metavariable</span><span class="p">:</span><span class="w"> </span><span class="l">$TAG</span><span class="w">
+</span><span class="w">                </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="p">&gt;-</span><span class="sd">
+</span><span class="sd">                    </span><span class="w">                    </span><span class="l">.*(json|yaml|xml):&#34;[^,-]</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="错误地使用---标签">错误地使用 <code>-</code> 标签</h3>
+<p>要告诉解析器不要（反）序列化特定字段，我们必须添加特殊的 <code>-</code> JSON标签！</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Username</span> <span class="kt">string</span> <span class="s">`json:&#34;username,omitempty&#34;`</span>
+    <span class="nx">Password</span> <span class="kt">string</span> <span class="s">`json:&#34;password,omitempty&#34;`</span>
+    <span class="nx">IsAdmin</span>  <span class="kt">bool</span>   <span class="s">`json:&#34;-,omitempty&#34;`</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>让我们试试！</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">_</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">`{&#34;-&#34;: true}`</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">u</span><span class="p">)</span>
+<span class="c1">// 输出: main.User{Username:&#34;&#34;, Password:&#34;&#34;, IsAdmin:true}
+</span></code></pre></td></tr></table>
+</div>
+</div><p>哦，糟糕，我们仍然能够设置<code>IsAdmin</code>字段。我们错误地复制粘贴了<code>,omitempty</code>的部分，这导致解析器在提供的JSON输入中查找<code>-</code>键。我在 GitHub 上按 star 数排名前 1,000 的 Go 仓库中搜索了这种模式，发现并报告了以下两个案例（均已修复）：</p>
+<ol>
+<li><a href="https://github.com/flipt-io/flipt/blob/f2e1b1ce08a0627c44947c20b8dcbcda8f36437a/internal/config/authentication.go#L482-L483" title="Flipt 在 OIDC 配置中暴露了" target="_blank" rel="noopener noreffer "><strong>Flipt 在 OIDC 配置中暴露了</strong></a><a href="https://github.com/flipt-io/flipt/blob/f2e1b1ce08a0627c44947c20b8dcbcda8f36437a/internal/config/authentication.go#L482-L483" title="ClientID" target="_blank" rel="noopener noreffer "><strong>ClientID</strong></a><a href="https://github.com/flipt-io/flipt/blob/f2e1b1ce08a0627c44947c20b8dcbcda8f36437a/internal/config/authentication.go#L482-L483" title="字段，错误地使用了" target="_blank" rel="noopener noreffer "><strong>字段，错误地使用了</strong></a><a href="https://github.com/flipt-io/flipt/blob/f2e1b1ce08a0627c44947c20b8dcbcda8f36437a/internal/config/authentication.go#L482-L483" title="-" target="_blank" rel="noopener noreffer "><strong>-</strong></a><a href="https://github.com/flipt-io/flipt/blob/f2e1b1ce08a0627c44947c20b8dcbcda8f36437a/internal/config/authentication.go#L482-L483" title="作为字段名" target="_blank" rel="noopener noreffer "><strong>作为字段名</strong></a><strong>（修复 <strong><a href="https://github.com/flipt-io/flipt/pull/3658/files" title="PR #3658" target="_blank" rel="noopener noreffer "><strong>PR #3658</strong></a></strong>）</strong></li>
+<li><a href="https://github.com/tmc/langchaingo/issues/1162" title="langchaingo 暴露了" target="_blank" rel="noopener noreffer "><strong>langchaingo 暴露了</strong></a><a href="https://github.com/tmc/langchaingo/issues/1162" title="MaxTokens" target="_blank" rel="noopener noreffer "><strong>MaxTokens</strong></a><a href="https://github.com/tmc/langchaingo/issues/1162" title="字段，错误地使用了" target="_blank" rel="noopener noreffer "><strong>字段，错误地使用了</strong></a><a href="https://github.com/tmc/langchaingo/issues/1162" title="-" target="_blank" rel="noopener noreffer "><strong>-</strong></a><a href="https://github.com/tmc/langchaingo/issues/1162" title="作为字段名" target="_blank" rel="noopener noreffer "><strong>作为字段名</strong></a><strong>（修复 <strong><a href="https://github.com/tmc/langchaingo/pull/1163" title="PR #1163" target="_blank" rel="noopener noreffer "><strong>PR #1163</strong></a></strong>）</strong></li>
+</ol>
+<p>尽管这种行为容易出错且几乎没什么实际用途（允许将字段命名为<code>-</code>），但它确实在 <strong>Go 的</strong>**<code>encoding/json</code>**<strong>官方文档</strong> 中有明确说明：</p>
+<blockquote>
+<p>As a special case, if the field tag is “-”, the field is always omitted. Note that a field with name “-” can still be generated using the tag “-,”.</p>
+</blockquote>
+<p>XML 和 YAML 解析器的工作方式类似，但有一个关键区别：XML 解析器将<code>&lt;-&gt;</code> 标签视为无效。为了解决这个问题，我们必须在 <code>-</code> 符号前加上 XML 命名空间，例如 <code>&lt;A：-&gt;</code> 。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234356675.png" title="https://image.p1nant0m.xyz/20250705234356675.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234356675.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234356675.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234356675.png, https://image.p1nant0m.xyz/20250705234356675.png 1.5x, https://image.p1nant0m.xyz/20250705234356675.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234356675.png" />
+    </a>
+<p>这次咱们就做得妥妥当当的，正确标注JSON结构的字段标签</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Username</span> <span class="kt">string</span>  <span class="s">`json:&#34;username,omitempty&#34;`</span>
+    <span class="nx">Password</span> <span class="kt">string</span>  <span class="s">`json:&#34;password,omitempty&#34;`</span>
+    <span class="nx">IsAdmin</span>  <span class="kt">bool</span>    <span class="s">`json:&#34;-&#34;`</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>终于！现在，<code>IsAdmin </code>字段不可能被反序列化了。</p>
+<p>但我听到您在问：这些错误配置是如何导致安全漏洞的？最常见的途径就像我们上面的例子那样，将<code> -,...</code> 作为诸如 <code>IsAdmin </code>这样的字段的 JSON 标签——这是一个用户不应控制的字段。这种错误很难通过单元测试检测出来，因为除非您有一个明确的测试，能够对包含 <code>-</code> 这个键的输入进行反序列化，并检测是否有任何字段被写入，否则您无法发现它。您需要您的集成开发环境（IDE）或外部工具来检测它。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234454744.png" title="https://image.p1nant0m.xyz/20250705234454744.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234454744.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234454744.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234454744.png, https://image.p1nant0m.xyz/20250705234454744.png 1.5x, https://image.p1nant0m.xyz/20250705234454744.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234454744.png" />
+    </a>
+<p>我们创建了一条公共的 Semgrep 规则，以帮助你在代码库中查找类似的问题。可以使用以下命令尝试：<code>semgrep -c r/trailofbits.go.unmarshal-tag-is-dash</code>。</p>
+<h3 id="错误地使用omitempty">错误地使用<code>omitempty</code></h3>
+<p>我们还发现了一个非常简单的错误配置，开发人员错误地将字段名设置为<code>omitempty</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Username</span> <span class="kt">string</span> <span class="s">`json:&#34;omitempty&#34;`</span>
+<span class="p">}</span>
+<span class="nx">u</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{}</span>
+<span class="nx">_</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">`{&#34;omitempty&#34;: &#34;a_user&#34;}`</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">u</span><span class="p">)</span>
+<span class="c1">// Result: User{Username:&#34;a_user&#34;}
+</span></code></pre></td></tr></table>
+</div>
+</div><p>如果将 JSON 标签设置为<code>omitempty</code>，解析器会将<code>omitempty</code>用作字段的名称（如预期）。当然，有些开发人员试图使用它来为字段设置<code>omitempty</code>选项，同时保留默认名称。我在 GitHub 上搜索了按星数排名前 1000 的 Go 仓库，发现了以下结果：</p>
+<ul>
+<li><a href="https://github.com/go-gitea/gitea/blob/cd225d7034f905f73319b5a9024f6f9d5b6a01c7/models/admin/task.go#L47" title="Gitea 将" target="_blank" rel="noopener noreffer ">Gitea 将</a><a href="https://github.com/go-gitea/gitea/blob/cd225d7034f905f73319b5a9024f6f9d5b6a01c7/models/admin/task.go#L47" title="TranslatableMessage" target="_blank" rel="noopener noreffer ">TranslatableMessage</a><a href="https://github.com/go-gitea/gitea/blob/cd225d7034f905f73319b5a9024f6f9d5b6a01c7/models/admin/task.go#L47" title="结构体的" target="_blank" rel="noopener noreffer ">结构体的</a><a href="https://github.com/go-gitea/gitea/blob/cd225d7034f905f73319b5a9024f6f9d5b6a01c7/models/admin/task.go#L47" title="Args" target="_blank" rel="noopener noreffer ">Args</a><a href="https://github.com/go-gitea/gitea/blob/cd225d7034f905f73319b5a9024f6f9d5b6a01c7/models/admin/task.go#L47" title="字段暴露为" target="_blank" rel="noopener noreffer ">字段暴露为</a><a href="https://github.com/go-gitea/gitea/blob/cd225d7034f905f73319b5a9024f6f9d5b6a01c7/models/admin/task.go#L47" title="omitempty" target="_blank" rel="noopener noreffer ">omitempty</a><a href="https://github.com/go-gitea/gitea/blob/cd225d7034f905f73319b5a9024f6f9d5b6a01c7/models/admin/task.go#L47" title="键" target="_blank" rel="noopener noreffer ">键</a>（已在 <a href="https://github.com/go-gitea/gitea/pull/33663" title="#33663" target="_blank" rel="noopener noreffer ">#33663</a> 中修复）</li>
+<li><a href="https://github.com/kubernetes-sigs/kustomize/blob/bb7a28070905adae77c6f82b912a862de2b3a052/plugin/builtin/replacementtransformer/ReplacementTransformer.go#L20" title="Kustomize 将" target="_blank" rel="noopener noreffer ">Kustomize 将</a><a href="https://github.com/kubernetes-sigs/kustomize/blob/bb7a28070905adae77c6f82b912a862de2b3a052/plugin/builtin/replacementtransformer/ReplacementTransformer.go#L20" title="plugin" target="_blank" rel="noopener noreffer ">plugin</a><a href="https://github.com/kubernetes-sigs/kustomize/blob/bb7a28070905adae77c6f82b912a862de2b3a052/plugin/builtin/replacementtransformer/ReplacementTransformer.go#L20" title="结构体的" target="_blank" rel="noopener noreffer ">结构体的</a><a href="https://github.com/kubernetes-sigs/kustomize/blob/bb7a28070905adae77c6f82b912a862de2b3a052/plugin/builtin/replacementtransformer/ReplacementTransformer.go#L20" title="Replacements" target="_blank" rel="noopener noreffer ">Replacements</a><a href="https://github.com/kubernetes-sigs/kustomize/blob/bb7a28070905adae77c6f82b912a862de2b3a052/plugin/builtin/replacementtransformer/ReplacementTransformer.go#L20" title="字段暴露为" target="_blank" rel="noopener noreffer ">字段暴露为</a><a href="https://github.com/kubernetes-sigs/kustomize/blob/bb7a28070905adae77c6f82b912a862de2b3a052/plugin/builtin/replacementtransformer/ReplacementTransformer.go#L20" title="omitempty" target="_blank" rel="noopener noreffer ">omitempty</a><a href="https://github.com/kubernetes-sigs/kustomize/blob/bb7a28070905adae77c6f82b912a862de2b3a052/plugin/builtin/replacementtransformer/ReplacementTransformer.go#L20" title="键" target="_blank" rel="noopener noreffer ">键</a>（已在<a href="https://github.com/kubernetes-sigs/kustomize/pull/5877" title=" #5877" target="_blank" rel="noopener noreffer "> #5877</a> 中修复）</li>
+<li><a href="https://github.com/btcsuite/btcd/blob/e9d95eed43d2c7e8afb2c3b7d1165dffe713e132/btcjson/chainsvrcmds.go#L1052-L1059" title="Btcd 将" target="_blank" rel="noopener noreffer ">Btcd 将</a><a href="https://github.com/btcsuite/btcd/blob/e9d95eed43d2c7e8afb2c3b7d1165dffe713e132/btcjson/chainsvrcmds.go#L1052-L1059" title="TestMempoolAcceptCmd" target="_blank" rel="noopener noreffer ">TestMempoolAcceptCmd</a><a href="https://github.com/btcsuite/btcd/blob/e9d95eed43d2c7e8afb2c3b7d1165dffe713e132/btcjson/chainsvrcmds.go#L1052-L1059" title="结构体的" target="_blank" rel="noopener noreffer ">结构体的</a><a href="https://github.com/btcsuite/btcd/blob/e9d95eed43d2c7e8afb2c3b7d1165dffe713e132/btcjson/chainsvrcmds.go#L1052-L1059" title="MaxFeeRate" target="_blank" rel="noopener noreffer ">MaxFeeRate</a><a href="https://github.com/btcsuite/btcd/blob/e9d95eed43d2c7e8afb2c3b7d1165dffe713e132/btcjson/chainsvrcmds.go#L1052-L1059" title="字段暴露为" target="_blank" rel="noopener noreffer ">字段暴露为</a><a href="https://github.com/btcsuite/btcd/blob/e9d95eed43d2c7e8afb2c3b7d1165dffe713e132/btcjson/chainsvrcmds.go#L1052-L1059" title="omitempty" target="_blank" rel="noopener noreffer ">omitempty</a><a href="https://github.com/btcsuite/btcd/blob/e9d95eed43d2c7e8afb2c3b7d1165dffe713e132/btcjson/chainsvrcmds.go#L1052-L1059" title="键" target="_blank" rel="noopener noreffer ">键</a></li>
+<li><a href="https://github.com/evcc-io/evcc/blob/da4a79730d7b30a5700f2404bf802caee9dca4ea/charger/nrg/connect/types.go#L9-L17" title="Evcc 将" target="_blank" rel="noopener noreffer ">Evcc 将</a><a href="https://github.com/evcc-io/evcc/blob/da4a79730d7b30a5700f2404bf802caee9dca4ea/charger/nrg/connect/types.go#L9-L17" title="Measurements" target="_blank" rel="noopener noreffer ">Measurements</a><a href="https://github.com/evcc-io/evcc/blob/da4a79730d7b30a5700f2404bf802caee9dca4ea/charger/nrg/connect/types.go#L9-L17" title="结构体的" target="_blank" rel="noopener noreffer ">结构体的</a><a href="https://github.com/evcc-io/evcc/blob/da4a79730d7b30a5700f2404bf802caee9dca4ea/charger/nrg/connect/types.go#L9-L17" title="Message" target="_blank" rel="noopener noreffer ">Message</a><a href="https://github.com/evcc-io/evcc/blob/da4a79730d7b30a5700f2404bf802caee9dca4ea/charger/nrg/connect/types.go#L9-L17" title="字段暴露为" target="_blank" rel="noopener noreffer ">字段暴露为</a><a href="https://github.com/evcc-io/evcc/blob/da4a79730d7b30a5700f2404bf802caee9dca4ea/charger/nrg/connect/types.go#L9-L17" title="omitempty" target="_blank" rel="noopener noreffer ">omitempty</a><a href="https://github.com/evcc-io/evcc/blob/da4a79730d7b30a5700f2404bf802caee9dca4ea/charger/nrg/connect/types.go#L9-L17" title="键" target="_blank" rel="noopener noreffer ">键</a></li>
+</ul>
+<p>在这些情况下，开发人员通常希望将标签设置为<code>json:&quot;,omitempty&quot;</code>，这将保留默认名称，并添加<code>omitempty</code>标签选项。</p>
+<p>与前面的例子不同，这个例子不太可能产生安全影响，并且应该可以通过测试轻松检测到，因为任何尝试序列化或反序列化带有预期字段名的外部输入都会失败。然而，正如我们所见，它仍然出现在流行的开源仓库中。我们创建了一条公共的 Semgrep 规则，帮助你在代码库中查找类似的问题。可以使用以下命令尝试：<code>semgrep -c r/trailofbits.go.unmarshal-tag-is-omitempty</code>！</p>
+<h2 id="攻击场景-2解析器差异">攻击场景 2：解析器差异</h2>
+<p>如果你使用不同的 JSON 解析器解析相同的输入，而它们对结果的看法不一致，会发生什么？更具体地说，Go 解析器中的哪些行为允许攻击者“可靠地”触发这些差异？</p>
+<p>例如，让我们使用以下使用微服务架构的应用程序：</p>
+<ul>
+<li>一个<strong>代理服务</strong>，接收所有用户请求。</li>
+<li>一个<strong>授权服务</strong>，由代理服务调用以确定用户是否有足够的权限完成其请求。</li>
+<li>多个<strong>业务逻辑服务</strong>，由代理服务调用以执行业务逻辑。</li>
+</ul>
+<p>在第一个流程中，一个普通非管理员用户尝试执行一个<code>UserAction</code>，这是一个他们<strong>被允许</strong>执行的操作。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234537160.png" title="https://image.p1nant0m.xyz/20250705234537160.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234537160.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234537160.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234537160.png, https://image.p1nant0m.xyz/20250705234537160.png 1.5x, https://image.p1nant0m.xyz/20250705234537160.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234537160.png" />
+    </a>
+<p>在第二个流程中，同一个普通用户尝试执行一个<code>AdminAction</code>，这是一个他们<strong>被禁止</strong>执行的操作。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234600587.png" title="https://image.p1nant0m.xyz/20250705234600587.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234600587.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234600587.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234600587.png, https://image.p1nant0m.xyz/20250705234600587.png 1.5x, https://image.p1nant0m.xyz/20250705234600587.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234600587.png" />
+    </a>
+<p>最后，以下流程展示的是服务对用户尝试执行的操作意见不一致。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234630835.png" title="https://image.p1nant0m.xyz/20250705234630835.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234630835.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234630835.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234630835.png, https://image.p1nant0m.xyz/20250705234630835.png 1.5x, https://image.p1nant0m.xyz/20250705234630835.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234630835.png" />
+    </a>
+<p>我们多次在审计中遇到这种常见架构，并且由于我们将在下文中描述的问题，我们发现了身份验证绕过的问题。还有其他例子，但大多数遵循相同的模式：执行安全检查的组件和执行操作的组件对输入数据的看法不同。以下是各种场景中的一些例子：</p>
+<ul>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2017-12635" title="CVE-2017-12635：Apache CouchDB 中由于 JSON 解析器差异导致的授权绕过" target="_blank" rel="noopener noreffer ">CVE-2017-12635：Apache CouchDB 中由于 JSON 解析器差异导致的授权绕过</a>（非常类似于我们上面的例子）</li>
+<li><a href="https://blog.siguza.net/psychicpaper/" title="MacOS 沙箱逃逸，由 XML 解析器差异导致（2020 年）" target="_blank" rel="noopener noreffer ">MacOS 沙箱逃逸，由 XML 解析器差异导致（2020 年）</a></li>
+<li><a href="https://i.blackhat.com/USA-22/Thursday/US-22-Fratric-XMPP-Stanza-Smuggling.pdf" title="Zoom 0 点击 RCE，由 XMPP 中的 XML 解析器差异导致（2022 年）" target="_blank" rel="noopener noreffer ">Zoom 0 点击 RCE，由 XMPP 中的 XML 解析器差异导致（2022 年）</a></li>
+<li><a href="https://github.blog/security/sign-in-as-anyone-bypassing-saml-sso-authentication-with-parser-differentials/" title="GitLab SAML 身份验证绕过，由 XML 解析器差异导致（2025 年）" target="_blank" rel="noopener noreffer ">GitLab SAML 身份验证绕过，由 XML 解析器差异导致（2025 年）</a></li>
+</ul>
+<h3 id="重复字段">重复字段</h3>
+<p>我们首先探讨的第一个差异攻击向量是重复键（Key）。当你的 JSON 输入中同一个键出现两次时会发生什么？这取决于解析器的默认设计行为！</p>
+<p>在 Go 中，JSON 解析器将始终<strong>取最后一个</strong>。没有办法阻止这种行为。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="err">_</span> <span class="err">=</span> <span class="err">json.Unmarshal(</span><span class="p">[]</span><span class="err">byte(`</span><span class="p">{</span>
+    <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="s2">&#34;Action1&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="s2">&#34;Action2&#34;</span>
+<span class="p">}</span><span class="err">`),</span> <span class="err">&amp;a)</span>
+<span class="c1">// Result: ActionRequest{Action:&#34;Action2&#34;}
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这是大多数解析器的默认行为。然而，正如 Bishop Fox 的 JSON 互操作性漏洞博客文章中所展示的那样，测试的 49 个解析器中有 7 个取第一个键：</p>
+<ul>
+<li>Go：jsonparser 和 gojay</li>
+<li>C++：rapidjson</li>
+<li>Java：json-iterator</li>
+<li>Elixir：Jason 和 Poison</li>
+<li>Erlang：jsone</li>
+</ul>
+<p>这些都不是它们对应语言中最常用的 JSON 解析器，尽管有些是常见的替代品。</p>
+<p>因此，如果我们的代理服务使用 Go JSON 解析器，而授权服务使用上述这些解析器之一，我们就会得到在这种架构下产生的各微服务对用户输入的释意不一致，如下图所示。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234705186.png" title="https://image.p1nant0m.xyz/20250705234705186.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234705186.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234705186.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234705186.png, https://image.p1nant0m.xyz/20250705234705186.png 1.5x, https://image.p1nant0m.xyz/20250705234705186.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234705186.png" />
+    </a>
+<p>XML 解析器的行为与JSON解析器相同，而 YAML 解析器会在重复字段上返回错误——我们认为所有这些解析器都应该实现的安全默认行为。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234742067.png" title="https://image.p1nant0m.xyz/20250705234742067.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234742067.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234742067.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234742067.png, https://image.p1nant0m.xyz/20250705234742067.png 1.5x, https://image.p1nant0m.xyz/20250705234742067.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234742067.png" />
+    </a>
+<p>尽管并不理想，但至少这种行为与最常用的 JSON 和 XML 解析器一致。现在让我们来看一个更糟糕的行为，这几乎总是会在 Go 的默认解析器和任何其他解析器之间产生差异。</p>
+<h3 id="不区分大小写的键匹配">不区分大小写的键匹配</h3>
+<p>Go 的 JSON 解析器以不区分大小写的方式解析字段名。无论你写的是<code>action</code>、<code>ACTION</code>还是<code>aCtIoN</code>，解析器都将它们视为相同的字段！</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="err">_</span> <span class="err">=</span> <span class="err">json.Unmarshal(</span><span class="p">[]</span><span class="err">byte(`</span><span class="p">{</span>
+    <span class="nt">&#34;aCtIoN&#34;</span><span class="p">:</span> <span class="s2">&#34;Action2&#34;</span>
+<span class="p">}</span><span class="err">`),</span> <span class="err">&amp;a)</span>
+<span class="c1">// 结果：ActionRequest{Action:&#34;Action2&#34;}
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这是有文档说明的，但非常不符合直觉，没有办法禁用它，而且几乎没有其他解析器具有这种行为。</p>
+<p>更糟糕的是，正如我们上面看到的，你可以有重复的字段，而最后一个仍然被选择，即使大小写不匹配。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">_</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">`{
+</span><span class="s">    &#34;action&#34;: &#34;Action1&#34;,
+</span><span class="s">    &#34;aCtIoN&#34;: &#34;Action2&#34;
+</span><span class="s">}`</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">a</span><span class="p">)</span>
+<span class="c1">// 结果：ActionRequest{Action:&#34;Action2&#34;}
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这与文档相悖，文档中说：</p>
+<blockquote>
+<p>“To unmarshal JSON into a struct, Unmarshal matches incoming object keys to the keys used by Marshal (either the struct field name or its tag),<strong>preferring an exact match but also accepting a case-insensitive match</strong>.”</p>
+</blockquote>
+<p>你甚至可以使用 Unicode 字符！在下面的例子中，我们使用<code>ſ</code>（名为拉丁小写字母长 s 的 Unicode 字符）作为<code>s</code>，使用<code>K</code>（开尔文符号的 Unicode 字符）作为<code>k</code>。从我们对执行比较的 JSON 库代码的测试来看，只有这两个 Unicode 字符与 ASCII 字符匹配。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">ActionRequest</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Action</span> <span class="kt">string</span> <span class="s">`json:&#34;aktions&#34;`</span>
+<span class="p">}</span>
+<span class="nx">a</span> <span class="o">:=</span> <span class="nx">ActionRequest</span><span class="p">{}</span>
+<span class="nx">_</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">`
+</span><span class="s">{
+</span><span class="s">    &#34;aktions&#34;: &#34;Action1&#34;,
+</span><span class="s">    &#34;aKtionſ&#34;: &#34;Action2&#34;
+</span><span class="s">}
+</span><span class="s">`</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">a</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Result: %#v\n&#34;</span><span class="p">,</span> <span class="nx">a</span><span class="p">)</span>
+<span class="c1">// 结果：main.ActionRequest{Action:&#34;Action2&#34;}
+</span></code></pre></td></tr></table>
+</div>
+</div><p>将其应用于我们正在进行的攻击场景中，下图是该攻击场景看起来的样子：</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234910339.png" title="https://image.p1nant0m.xyz/20250705234910339.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234910339.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234910339.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234910339.png, https://image.p1nant0m.xyz/20250705234910339.png 1.5x, https://image.p1nant0m.xyz/20250705234910339.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234910339.png" />
+    </a>
+<p>在我们看来，这是 Go JSON 解析器中最关键的陷阱，因为它与我们测试的 JavaScript、Python、Rust、Ruby、Java 等所有其他语言的默认解析器不同。这已经导致了许多高影响的安全漏洞，包括我们在审计中发现的漏洞。</p>
+<p>令人感到遗憾的是，没有办法禁用这种行为，尽管自 2016 年以来，人们一直在抱怨这种行为导致的安全漏洞。</p>
+<p>这仅影响 JSON 解析器。XML 和 YAML 解析器使用精确匹配。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705234941826.png" title="https://image.p1nant0m.xyz/20250705234941826.png" data-thumbnail="https://image.p1nant0m.xyz/20250705234941826.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705234941826.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705234941826.png, https://image.p1nant0m.xyz/20250705234941826.png 1.5x, https://image.p1nant0m.xyz/20250705234941826.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705234941826.png" />
+    </a>
+<p>如果你对许多解析器之间的 JSON 解析差异感兴趣，我们推荐以下两篇博客文章：</p>
+<ul>
+<li><a href="https://seriot.ch/projects/parsing_json.html" title="Parsing JSON is a Minefield" target="_blank" rel="noopener noreffer ">Parsing JSON is a Minefield</a>by Nicolas Seriot</li>
+<li><a href="https://bishopfox.com/blog/json-interoperability-vulnerabilities" title="JSON Interoperability Vulnerabilities" target="_blank" rel="noopener noreffer ">JSON Interoperability Vulnerabilities</a>by Bishop Fox</li>
+</ul>
+<h2 id="攻击场景-3数据格式混淆">攻击场景 3：数据格式混淆</h2>
+<p>在最后一个攻击场景中，让我们看看如果用 XML 解析器解析 JSON 文件，或者用错误的解析器解析其他格式会发生什么。</p>
+<p>例如，让我们使用 <a href="https://nvd.nist.gov/vuln/detail/cve-2020-16250" title="CVE-2020-16250" target="_blank" rel="noopener noreffer ">CVE-2020-16250</a>，这是 Hashicorp Vault 的 AWS IAM 身份验证方法中的一个绕过漏洞。这个漏洞是由谷歌 Project Zero 团队发现的，如果你感兴趣，可以在他们的 &ldquo;<a href="https://googleprojectzero.blogspot.com/2020/10/enter-the-vault-auth-issues-hashicorp-vault.html" title="Enter the Vault: Authentication Issues in HashiCorp Vault" target="_blank" rel="noopener noreffer ">Enter the Vault: Authentication Issues in HashiCorp Vault</a>&rdquo; 博客文章中找到详细分析。我们不会在这篇文章中详细介绍所有细节，但总结来说，正常的 Hashicorp Vault AWS IAM 身份验证流程如下：</p>
+<ol>
+<li>一个 AWS 资源（例如，AWS Lambda 函数）预签名了一个 GetCallerIdentity 请求。</li>
+<li>AWS 资源将其发送到 Vault 服务器。</li>
+<li>Vault 服务器构建该请求并将其发送到 AWS 安全令牌服务（STS）。</li>
+<li>AWS STS 验证签名。</li>
+<li>验证成功后，AWS STS 以 XML 文档的形式返回与角色关联的身份。</li>
+<li>Vault 服务器解析 XML，提取身份，如果该 AWS 角色应该有权访问请求的机密，则返回机密。</li>
+<li>AWS 资源现在可以使用机密，例如，用于对数据库进行身份验证。</li>
+</ol>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705235015119.png" title="https://image.p1nant0m.xyz/20250705235015119.png" data-thumbnail="https://image.p1nant0m.xyz/20250705235015119.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705235015119.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705235015119.png, https://image.p1nant0m.xyz/20250705235015119.png 1.5x, https://image.p1nant0m.xyz/20250705235015119.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705235015119.png" />
+    </a>
+<p>谷歌 Project Zero 团队发现，攻击者可以在第 2 步中控制大多数内容，包括控制 Vault 在第 3 步中构建的请求的所有头信息。特别是，通过将<code>Accept</code>头设置为<code>application/json</code>，AWS STS 现在将在第 5 步中返回一个 JSON 文档，而不是预期的 XML 文档。因此，Vault 服务器会用 Go 的 XML 解析器解析一个 JSON 文档。由于 XML 解析器非常宽松，它会在大量其他“垃圾”数据之间解析任何看起来像 XML 的内容，这在与对 JSON 响应的部分控制相结合时，足以实现完整的身份验证绕过。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705235036417.png" title="https://image.p1nant0m.xyz/20250705235036417.png" data-thumbnail="https://image.p1nant0m.xyz/20250705235036417.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705235036417.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705235036417.png, https://image.p1nant0m.xyz/20250705235036417.png 1.5x, https://image.p1nant0m.xyz/20250705235036417.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705235036417.png" />
+    </a>
+<p>让我们来看三种不同的行为，这些行为使得用错误的 Go 解析器解析文件成为可能，并构建一个可以被 Go 的 JSON、XML 和 YAML 解析器解析并为每种解析器返回不同结果的多语言文件。</p>
+<h3 id="unknown-keys">Unknown keys</h3>
+<p>默认情况下，JSON、XML 和 YAML 解析器不会阻止未知字段——传入数据中与目标结构体字段不匹配的属性。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705235159369.png" title="https://image.p1nant0m.xyz/20250705235159369.png" data-thumbnail="https://image.p1nant0m.xyz/20250705235159369.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705235159369.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705235159369.png, https://image.p1nant0m.xyz/20250705235159369.png 1.5x, https://image.p1nant0m.xyz/20250705235159369.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705235159369.png" />
+    </a>
+<h3 id="前置垃圾数据">前置垃圾数据</h3>
+<p>在三种解析器中，只有 XML 解析器接受前置垃圾数据。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705235105498.png" title="https://image.p1nant0m.xyz/20250705235105498.png" data-thumbnail="https://image.p1nant0m.xyz/20250705235105498.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705235105498.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705235105498.png, https://image.p1nant0m.xyz/20250705235105498.png 1.5x, https://image.p1nant0m.xyz/20250705235105498.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705235105498.png" />
+    </a>
+<h3 id="后置垃圾数据">后置垃圾数据</h3>
+<p>同样，只有 XML 解析器接受任意的后置垃圾数据。</p>
+<p>唯一的例外是使用解析器的 Decoder API 与流式数据一起使用时，此时 JSON 解析器会接受后置垃圾数据。这是一个尚未计划修复的已知问题。</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705235249244.png" title="https://image.p1nant0m.xyz/20250705235249244.png" data-thumbnail="https://image.p1nant0m.xyz/20250705235249244.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705235249244.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705235249244.png, https://image.p1nant0m.xyz/20250705235249244.png 1.5x, https://image.p1nant0m.xyz/20250705235249244.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705235249244.png" />
+    </a>
+<h3 id="构建多语言文件">构建多语言文件</h3>
+<p>我们如何结合我们迄今为止看到的所有行为来构建一个多语言文件，使其：</p>
+<ul>
+<li>可以被 Go 的 JSON、XML 和 YAML 解析器解析</li>
+<li>为每种解析器返回不同的结果</li>
+</ul>
+<p>一个非常有用的信息是 JSON 是 YAML 的一个子集：</p>
+<blockquote>
+<p>每个 JSON 文件也是一个有效的 YAML 文件</p>
+</blockquote>
+<p>考虑到这一点，我们可以构建以下多语言文件：</p>
+<a class="lightgallery" href="https://image.p1nant0m.xyz/20250705235341649.png" title="https://image.p1nant0m.xyz/20250705235341649.png" data-thumbnail="https://image.p1nant0m.xyz/20250705235341649.png">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="https://image.p1nant0m.xyz/20250705235341649.png"
+            data-srcset="https://image.p1nant0m.xyz/20250705235341649.png, https://image.p1nant0m.xyz/20250705235341649.png 1.5x, https://image.p1nant0m.xyz/20250705235341649.png 2x"
+            data-sizes="auto"
+            alt="https://image.p1nant0m.xyz/20250705235341649.png" />
+    </a>
+<p>JSON 解析器可以解析多语言文件，因为输入是有效的 JSON，它忽略未知键，并允许重复键。它取<code>Action_2</code>的值，因为它的字段匹配不区分大小写，并且它取最后一个匹配的值。</p>
+<p>YAML 解析器可以解析多语言文件，因为输入是有效的 JSON（每个 JSON 文件也是一个有效的 YAML 文件），并且它忽略未知键。它取<code>Action_1</code>的值，<strong>因为与 JSON 解析器不同，它进行精确的字段名匹配</strong>。</p>
+<p>最后，XML 解析器可以解析多语言文件，因为它忽略所有周围的数据，只寻找看起来像 XML 的内容，而在这个多语言文件中，我们将这些内容隐藏在 JSON 值中。因此，它取<code>Action_3</code>的值。</p>
+<p>我们构建的多语言文件是利用数据格式混淆攻击的强大初始载荷，类似于我们在上面探讨的 HashiCorp Vault 绕过（CVE-2020-16250）。</p>
+<h2 id="缓解措施">缓解措施</h2>
+<p>我们如何最小化这些风险，使 JSON 解析更加严格？我们希望：</p>
+<ul>
+<li>在 JSON、XML 和 YAML 中<strong>禁止解析未知键</strong>。</li>
+<li>在 JSON 和 XML 中<strong>禁止解析重复键</strong>。</li>
+<li>在 JSON 中<strong>禁止不区分大小写的键匹配</strong>（这一点尤其重要！）。</li>
+<li>在 XML 中<strong>禁止前置垃圾数据</strong>。</li>
+<li>在 JSON 和 XML 中<strong>禁止后置垃圾数据</strong>。</li>
+</ul>
+<p>遗憾的是，JSON 只提供了一个选项来使其解析更加严格：<strong><code>DisallowUnknownFields</code></strong>。顾名思义，这个选项禁止输入 JSON 中存在未知字段。YAML 通过<code>KnownFields(true)</code>函数支持相同的功能，尽管曾有提议为 XML 实现相同功能，但被拒绝了。</p>
+<p>为了防止其余的不安全默认行为，我们必须创建一个自定义的“临时”解决方案。下面的代码块展示了<code>strictJSONParse</code>函数，这是一个尝试使 JSON 解析更加严格的尝试，但它存在以下限制：</p>
+<ol>
+<li><strong>性能不佳</strong>：它需要两次解析 JSON 输入，这会显著降低性能。</li>
+<li><strong>检测不完整</strong>：一些边缘情况仍然无法被检测到，具体细节在函数注释中有说明。</li>
+<li><strong>难以广泛采用</strong>：由于这些安全措施没有作为安全默认值或可配置选项集成到库中，因此广泛采用的可能性不大。</li>
+</ol>
+<p>尽管如此，如果你在代码库中发现了一个漏洞，也许这个不完美的解决方案可以帮助你暂时填补漏洞，直到你找到更持久的解决方案。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// DetectCaseInsensitiveKeyCollisions 检查 JSON 数据中是否存在仅大小写不同的键。
+</span><span class="c1">// 这有助于防止两个不同的键拼写可能指向相同数据的微妙错误。
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">DetectCaseInsensitiveKeyCollisions</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c1">// 创建一个映射来保存解码后的 JSON 数据，并尝试解析 JSON 数据。
+</span><span class="c1"></span>    <span class="c1">// 这样可以保留不同大小写形式的键。
+</span><span class="c1"></span>    <span class="kd">var</span> <span class="nx">res</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">NewDecoder</span><span class="p">(</span><span class="nx">bytes</span><span class="p">.</span><span class="nf">NewReader</span><span class="p">(</span><span class="nx">data</span><span class="p">)).</span><span class="nf">Decode</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">res</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+
+    <span class="nx">seenKeys</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">res</span><span class="p">))</span>
+
+    <span class="c1">// 遍历解析后的 JSON 中的所有键并检测重复项
+</span><span class="c1"></span>    <span class="k">for</span> <span class="nx">newKey</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">res</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">existingKey</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">seenKeys</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">EqualFold</span><span class="p">(</span><span class="nx">existingKey</span><span class="p">,</span> <span class="nx">newKey</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// 当发现不区分大小写的重复键时返回错误
+</span><span class="c1"></span>                <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;case-insensitive duplicate keys detected: %q and %q&#34;</span><span class="p">,</span> <span class="nx">existingKey</span><span class="p">,</span> <span class="nx">newKey</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nx">seenKeys</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">seenKeys</span><span class="p">,</span> <span class="nx">newKey</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// strictJSONParse 提供更严格的 JSON 解析，包含额外的验证：
+</span><span class="c1">//   1. 拒绝目标结构体中不存在的字段
+</span><span class="c1">//   2. 检测不区分大小写的键冲突
+</span><span class="c1">//   3. 确保完整解析，不允许尾随内容
+</span><span class="c1">// strictJSONParse 不会：
+</span><span class="c1">//   - 确保没有具有相同大小写的重复键
+</span><span class="c1">//   - 确保输入中的大小写与目标结构体中的预期大小写一致
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">strictJSONParse</span><span class="p">(</span><span class="nx">jsonData</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">target</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">decoder</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">NewDecoder</span><span class="p">(</span><span class="nx">bytes</span><span class="p">.</span><span class="nf">NewReader</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">))</span>
+
+    <span class="c1">// 1. 禁止未知字段
+</span><span class="c1"></span>    <span class="nx">decoder</span><span class="p">.</span><span class="nf">DisallowUnknownFields</span><span class="p">()</span>
+
+    <span class="c1">// 2. 禁止大小写不同的重复键
+</span><span class="c1"></span>    <span class="nx">err</span> <span class="o">:=</span> <span class="nf">DetectCaseInsensitiveKeyCollisions</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;strictJSONParse: %w&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 解析 JSON 到提供的结构体
+</span><span class="c1"></span>    <span class="nx">err</span> <span class="p">=</span> <span class="nx">decoder</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">target</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;strictJSONParse: %w&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 3. 确保 JSON 对象之后没有尾随数据
+</span><span class="c1"></span>    <span class="nx">token</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">decoder</span><span class="p">.</span><span class="nf">Token</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;strictJSONParse: unexpected trailing data after JSON: token: %v, err: %v&#34;</span><span class="p">,</span> <span class="nx">token</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="json-v2">JSON v2</h3>
+<p>要被广泛采用并从根本上解决问题，这种功能需要在库级别实现并默认启用。这就是 <a href="https://pkg.go.dev/github.com/go-json-experiment/json#section-readme" title="JSON v2" target="_blank" rel="noopener noreffer ">JSON v2</a> 的作用。它目前只是一个提议，但已经投入了大量工作，希望它能尽快发布。它在许多方面都优于 JSON v1，包括：</p>
+<ul>
+<li>禁止重复名称：“在 v2 中，具有重复名称的 JSON 对象会导致错误。<code>jsontext.AllowDuplicateNames</code>选项控制这种行为差异。”</li>
+<li>进行区分大小写的匹配：“在 v2 中，字段匹配使用精确的、区分大小写的匹配。<code>MatchCaseInsensitiveNames</code>和<code>jsonv1.MatchCaseSensitiveDelimiter</code>选项控制这种行为差异。”</li>
+<li>它包含了一个<code>RejectUnknownMembers</code>选项，尽管它没有默认启用（类似于<code>DisallowUnknownFields</code>）。</li>
+<li>它包含了一个<code>UnmarshalRead</code>函数，用于处理来自<code>io.Reader</code>的数据，验证是否找到 EOF，禁止尾随垃圾数据。</li>
+</ul>
+<p>尽管这个提议解决了本文讨论的许多问题，但在 Go 生态系统中，这些挑战将持续存在，因为广泛采用需要时间。在正式接受提议之后，开发人员必须将其集成到所有现有的 Go JSON 解析代码中。在此之前，这些漏洞将继续构成风险。</p>
+<h2 id="go-开发者需要关注的关键要点">Go 开发者需要关注的关键要点</h2>
+<ol>
+<li><strong>默认实现严格解析</strong>。对于 JSON，使用<code>DisallowUnknownFields</code>；对于 YAML，使用<code>KnownFields(true)</code>。遗憾的是，这是你直接使用 Go 解析器原生API 能做到的全部。</li>
+<li><strong>在边界处保持一致性</strong>。当输入在多个服务中被处理时，通过始终使用相同的解析器或实现额外的验证层（例如上面展示的<code>strictJSONParse</code>函数）来确保一致的解析行为。</li>
+<li><strong>关注 JSON v2</strong>。密切关注 Go 的 JSON v2 库的开发，它通过更安全的默认设置解决了许多这些问题。</li>
+<li><strong>利用静态分析</strong>。使用我们提供的 Semgrep 规则来检测代码库中的某些易受攻击的模式，特别是错误使用<code>-</code>标签和<code>omitempty</code>字段。可以使用以下命令尝试：<code>semgrep -c r/trailofbits.go.unmarshal-tag-is-dash</code>和<code>semgrep -c r/trailofbits.go.unmarshal-tag-is-omitempty</code>！</li>
+</ol>
+<p>尽管我们提供了缓解和检测策略，但长期解决方案需要对这些解析器的工作方式做出根本性改变。在解析器库采用安全默认设置之前，开发人员必须保持警惕。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2025-07-05</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2025-07-05-trans-zh.cn/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.xyz/2025-07-05-trans-zh.cn/" data-title="（译）在 Go 解析器中因误用引发的意料之外的安全问题" data-via="p1nant0m" data-hashtags="Go,Application Security"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.xyz/2025-07-05-trans-zh.cn/" data-hashtag="Go"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.xyz/2025-07-05-trans-zh.cn/" data-title="（译）在 Go 解析器中因误用引发的意料之外的安全问题"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.xyz/2025-07-05-trans-zh.cn/" data-title="（译）在 Go 解析器中因误用引发的意料之外的安全问题"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.xyz/2025-07-05-trans-zh.cn/" data-title="（译）在 Go 解析器中因误用引发的意料之外的安全问题"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/go/">Go</a>,&nbsp;<a href="/tags/application-security/">Application Security</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2024-07-21-gvisor/" class="prev" rel="prev" title="[✨Exploration Series] gVisor: 以 GoogleCTF2023 赛题为契机，深入了解 gVisor - 其 1"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>[✨Exploration Series] gVisor: 以 GoogleCTF2023 赛题为契机，深入了解 gVisor - 其 1</a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/valine/Valine.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{"valine":{"appId":"UnWumtTxnhlvaMmfKV6lZwUy-gzGzoHsz","appKey":"egg4vgYXZCZTW8f4QbS5bDpL","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@14.0.0/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-CN","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"visitor":true}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"🙂P1nant0m","id-2":"🙂P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

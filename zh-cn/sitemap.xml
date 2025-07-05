@@ -2,9 +2,9 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://p1nant0m.xyz/2024-07-21-gvisor/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.xyz/tags/googlectf20231/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.xyz/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://p1nant0m.xyz/tags/application-security/</loc><lastmod>2025-07-05T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.xyz/tags/go/</loc><lastmod>2025-07-05T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.xyz/</loc><lastmod>2025-07-05T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.xyz/en/"
@@ -13,7 +13,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.xyz/"
                     /></url><url>
-            <loc>https://p1nant0m.xyz/posts/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://p1nant0m.xyz/posts/</loc><lastmod>2025-07-05T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.xyz/en/posts/"
@@ -22,9 +22,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.xyz/posts/"
                     /></url><url>
-            <loc>https://p1nant0m.xyz/tags/sandbox/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.xyz/tags/security/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://p1nant0m.xyz/tags/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://p1nant0m.xyz/tags/</loc><lastmod>2025-07-05T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.xyz/en/tags/"
@@ -33,6 +31,11 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.xyz/tags/"
                     /></url><url>
+            <loc>https://p1nant0m.xyz/2025-07-05-trans-zh.cn/</loc><lastmod>2025-07-05T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://p1nant0m.xyz/2024-07-21-gvisor/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.xyz/tags/googlectf20231/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.xyz/tags/sandbox/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://p1nant0m.xyz/tags/security/</loc><lastmod>2024-07-04T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.xyz/exploration-series-kubernetes-authenticationsa/</loc><lastmod>2023-08-30T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.xyz/tags/auth-authz/</loc><lastmod>2023-08-30T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.xyz/tags/kubernetes/</loc><lastmod>2023-08-30T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link

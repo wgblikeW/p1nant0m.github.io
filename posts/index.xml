@@ -4,7 +4,15 @@
         <link>https://p1nant0m.xyz/posts/</link>
         <description>所有文章 | p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Thu, 04 Jul 2024 12:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.xyz/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sat, 05 Jul 2025 12:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.xyz/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>（译）在 Go 解析器中因误用引发的意料之外的安全问题</title>
+    <link>https://p1nant0m.xyz/2025-07-05-trans-zh.cn/</link>
+    <pubDate>Sat, 05 Jul 2025 12:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.xyz/2025-07-05-trans-zh.cn/</guid>
+    <description><![CDATA[（译）Unexpected security footguns in Go&rsquo;s parsers - 在 Go 解析器中因误用引发的意料之外的安全问题 目录 （译）Unexpected security footguns in Go&rsquo;s parsers - 在 Go 解析器中因误用引发的意料之外的安全问题 目录 在Go中进行解析 攻击场景1：(反)序列化意料之外数据 没有标签的字段 错误地使用 - 标签 错误地使用omitempty 攻击场景 2：解析器差异 重复字段 不区分大小写的键匹配 攻击场景 3：数据格式混淆 Unknown keys 前置垃圾数据 后置垃圾数据 构建多语言文件 缓解措]]></description>
+</item>
+<item>
     <title>[✨Exploration Series] gVisor: 以 GoogleCTF2023 赛题为契机，深入了解 gVisor - 其 1</title>
     <link>https://p1nant0m.xyz/2024-07-21-gvisor/</link>
     <pubDate>Thu, 04 Jul 2024 12:00:00 &#43;0000</pubDate>
@@ -75,14 +83,6 @@
     <author>p1nant0m</author>
     <guid>https://p1nant0m.xyz/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/</guid>
     <description><![CDATA[云原生安全——攻防实践与体系构建 1云原生安全 在本章节中我们首先介绍云原生的含义和特性，然后介绍云原生安全的含义、体系、关键问题和现状。 1.1云原生：云计算下半场 CNCF对云原生的见解是：“云原生技术有利于各组织在公有云、私有云和混合云等新型动态环境中，构建和运行可弹性扩展的应用。云原生的代表技术包括容器、服务网络、微服务、不可变基础设施和声明式API。这些技术能够构建容错性好、易于管理和便于观察的]]></description>
-</item>
-<item>
-    <title>Tracee 漫游指北</title>
-    <link>https://p1nant0m.xyz/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/</link>
-    <pubDate>Mon, 05 Sep 2022 09:29:17 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.xyz/2022-09-05-tracee-%E6%BC%AB%E6%B8%B8%E6%8C%87%E5%8C%97/</guid>
-    <description><![CDATA[项目仓库地址：https://github.com/aquasecurity/tracee 前言 这段时间准备看看开源世界中安全平台层面的产品以及主机安全、运行时安全等技术现阶段业界的实现，为即将到来的毕业设计或论文作准备。eBPF 技术仍是目前我最为看好的云原生世界可观测性、网络以及安全领域最为强有力的技术解决方案，许多老牌的云原生开源项目也都基于 eBPF 提出了一系列 proposals 用于改进产品性能，增强功能性。基于 eBPF 技]]></description>
 </item>
 </channel>
 </rss>
