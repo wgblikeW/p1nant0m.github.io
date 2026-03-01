@@ -4,9 +4,17 @@
         <link>https://p1nant0m.xyz/</link>
         <description>p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sat, 05 Jul 2025 12:00:00 &#43;0000</lastBuildDate>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sat, 28 Feb 2026 00:00:00 &#43;0000</lastBuildDate>
             <atom:link href="https://p1nant0m.xyz/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>玩转 OpenClaw 之——接入滴答清单实现个人日程/项目管理</title>
+    <link>https://p1nant0m.xyz/2026-02-28-openclaw-dida365/</link>
+    <pubDate>Sat, 28 Feb 2026 00:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.xyz/2026-02-28-openclaw-dida365/</guid>
+    <description><![CDATA[文章概要 本文旨在探讨利用 OpenClaw 对接 Dida365 (滴答清单) Open API 的技术实践，以构建更为智能的个人日程规划与项目管理系统。文中将详细解析系统的整体技术架构，展示核心 API 的调用逻辑，并阐述如何通过配置定时任务（Cron Jobs）实现数据的每日自动化汇总与处理。本文内容侧重于工程落地，非常适合滴答清单的高级用户以及致力于 AI Agent 自动化工作流开发的开发者参考。 背景与动机 你是否有过这样的困扰？每天早上打开任务管理工具，面对一堆待]]></description>
+</item>
+<item>
     <title>（译）在 Go 解析器中因误用引发的意料之外的安全问题</title>
     <link>https://p1nant0m.xyz/2025-07-05-trans-zh.cn/</link>
     <pubDate>Sat, 05 Jul 2025 12:00:00 &#43;0000</pubDate>
@@ -77,14 +85,6 @@
     <author>p1nant0m</author>
     <guid>https://p1nant0m.xyz/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/</guid>
     <description><![CDATA[文章概要 本文准备以一种轻快、对话式的口吻来描述笔者在计算机相关领域学习过程中感悟体会，其中包括一些回顾、一些建议、一些反思以及对未来的一些思考。这些内容并不是对某一领域的具体讨论，因此不会涉及相关的技术细节，读者可以抱着一种来看看故事、吹吹牛的心态阅读本篇文章，因而你不需要有任何认知上的压力。如果你在阅读完本篇文章后，能够有所收获与思考，笔者将感到由衷的高兴。 🤔 优秀程序员的特质：黑客与画家 OR 哲学家]]></description>
-</item>
-<item>
-    <title>云原生安全：攻防实践与体系构建阅读笔记</title>
-    <link>https://p1nant0m.xyz/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/</link>
-    <pubDate>Wed, 07 Sep 2022 21:12:13 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.xyz/2022-09-08-%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%89%E5%85%A8-%E6%94%BB%E9%98%B2%E5%AE%9E%E8%B7%B5%E4%B8%8E%E4%BD%93%E7%B3%BB%E6%9E%84%E5%BB%BA/</guid>
-    <description><![CDATA[云原生安全——攻防实践与体系构建 1云原生安全 在本章节中我们首先介绍云原生的含义和特性，然后介绍云原生安全的含义、体系、关键问题和现状。 1.1云原生：云计算下半场 CNCF对云原生的见解是：“云原生技术有利于各组织在公有云、私有云和混合云等新型动态环境中，构建和运行可弹性扩展的应用。云原生的代表技术包括容器、服务网络、微服务、不可变基础设施和声明式API。这些技术能够构建容错性好、易于管理和便于观察的]]></description>
 </item>
 </channel>
 </rss>
