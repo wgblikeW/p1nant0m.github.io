@@ -439,7 +439,7 @@ Trello = false
 Mix = false
 #  评论系统设置
 [params.page.comment]
-enable = true
+enable = false
 # Disqus 评论系统设置
 [params.page.comment.disqus]
 # 
@@ -509,18 +509,18 @@ darkTheme = "github-dark"
 # giscus comment 评论系统设置 (https://giscus.app/zh-CN)
 [params.page.comment.giscus]
 # 你可以参考官方文档来使用下列配置
-enable = false
-repo = ""
-repoId = ""
+enable = true
+repo = "wgblikeW/p1nant0m.github.io"
+repoId = "R_kgDOHstUYA"
 category = "Announcements"
-categoryId = ""
+categoryId = "DIC_kwDOHstUYM4C370G"
 # 为空时自动适配当前主题 i18n 配置
 lang = ""
 mapping = "pathname"
 reactionsEnabled = "1"
 emitMetadata = "0"
 inputPosition = "bottom"
-lazyLoading = false
+lazyLoading = true
 lightTheme = "light"
 darkTheme = "dark"
 #  第三方库配置
