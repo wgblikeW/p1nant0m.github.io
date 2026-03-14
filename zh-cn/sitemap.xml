@@ -2,9 +2,9 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://p1nant0m.xyz/tags/ai-agent/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url><url>
-            <loc>https://p1nant0m.xyz/categories/ai-agent/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url><url>
-            <loc>https://p1nant0m.xyz/categories/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority><xhtml:link
+            <loc>https://p1nant0m.xyz/tags/ai-agent/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url><url>
+            <loc>https://p1nant0m.xyz/categories/ai-agent/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url><url>
+            <loc>https://p1nant0m.xyz/categories/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.xyz/en/categories/"
@@ -13,9 +13,9 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.xyz/categories/"
                     /></url><url>
-            <loc>https://p1nant0m.xyz/tags/dida365/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url><url>
-            <loc>https://p1nant0m.xyz/tags/openclaw/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url><url>
-            <loc>https://p1nant0m.xyz/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority><xhtml:link
+            <loc>https://p1nant0m.xyz/tags/dida365/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url><url>
+            <loc>https://p1nant0m.xyz/tags/openclaw/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url><url>
+            <loc>https://p1nant0m.xyz/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.xyz/en/"
@@ -24,7 +24,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.xyz/"
                     /></url><url>
-            <loc>https://p1nant0m.xyz/posts/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority><xhtml:link
+            <loc>https://p1nant0m.xyz/posts/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.xyz/en/posts/"
@@ -33,7 +33,7 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.xyz/posts/"
                     /></url><url>
-            <loc>https://p1nant0m.xyz/tags/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority><xhtml:link
+            <loc>https://p1nant0m.xyz/tags/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
                         href="https://p1nant0m.xyz/en/tags/"
@@ -42,9 +42,9 @@
                     hreflang="zh-cn"
                     href="https://p1nant0m.xyz/tags/"
                     /></url><url>
-            <loc>https://p1nant0m.xyz/tags/%E6%BB%B4%E7%AD%94%E6%B8%85%E5%8D%95/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url><url>
-            <loc>https://p1nant0m.xyz/2026-02-28-openclaw-dida365/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url><url>
-            <loc>https://p1nant0m.xyz/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url><url>
+            <loc>https://p1nant0m.xyz/tags/%E6%BB%B4%E7%AD%94%E6%B8%85%E5%8D%95/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url><url>
+            <loc>https://p1nant0m.xyz/2026-02-28-openclaw-dida365/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url><url>
+            <loc>https://p1nant0m.xyz/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/</loc><lastmod>2026-02-28T00:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url><url>
             <loc>https://p1nant0m.xyz/tags/application-security/</loc><lastmod>2025-07-05T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.xyz/tags/go/</loc><lastmod>2025-07-05T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://p1nant0m.xyz/2025-07-05-trans-zh.cn/</loc><lastmod>2025-07-05T12:00:00&#43;00:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
