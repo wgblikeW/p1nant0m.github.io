@@ -4,6 +4,8 @@ subtitle:   "从数据集构建到推理部署的完整实践"
 date:       2026-03-08
 author:     "p1nant0m"
 draft: true
+comment:
+  enable: true
 tags:
     - 安全
     - 大语言模型
