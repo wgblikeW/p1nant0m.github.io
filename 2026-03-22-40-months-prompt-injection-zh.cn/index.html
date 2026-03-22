@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>（译）40 个月的 Prompt Injection 攻击演进史 - p1nant0m</title><meta name="Description" content="p1nant0m"><meta property="og:title" content="（译）40 个月的 Prompt Injection 攻击演进史" />
+<meta property="og:description" content="原文链接：40 Months of Prompt Injection Attacks 背景 Prompt Injection 于 2022 年 11 月 17 日被正式命名并针对 GPT-3 进行演示，距 ChatGPT 发布仅 13 天1。ChatGPT 上线后数小时内，用户即通过角色设定和角色扮演绕过其安全层。在随后四十个月里，随着每一次能力扩展（浏览、代码执行、多 Agent 管道、工具访问），攻击面也随之扩大，新增了多种注入向量。 本文是重大事件、违规事件、研究里程碑和缓解措施的时间线汇总。 2022 年：起源 Prompt Injection 作为一种命名攻击类别出现，在 ChatGPT 发布后迅速从研究原" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/" /><meta property="og:image" content="https://p1nant0m.xyz/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-03-22T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-03-22T00:00:00+00:00" /><meta property="og:site_name" content="p1nant0m" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://p1nant0m.xyz/logo.png"/>
+
+<meta name="twitter:title" content="（译）40 个月的 Prompt Injection 攻击演进史"/>
+<meta name="twitter:description" content="原文链接：40 Months of Prompt Injection Attacks 背景 Prompt Injection 于 2022 年 11 月 17 日被正式命名并针对 GPT-3 进行演示，距 ChatGPT 发布仅 13 天1。ChatGPT 上线后数小时内，用户即通过角色设定和角色扮演绕过其安全层。在随后四十个月里，随着每一次能力扩展（浏览、代码执行、多 Agent 管道、工具访问），攻击面也随之扩大，新增了多种注入向量。 本文是重大事件、违规事件、研究里程碑和缓解措施的时间线汇总。 2022 年：起源 Prompt Injection 作为一种命名攻击类别出现，在 ChatGPT 发布后迅速从研究原"/>
+<meta name="application-name" content="我的网站">
+<meta name="apple-mobile-web-app-title" content="我的网站"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/" /><link rel="prev" href="https://p1nant0m.xyz/2026-02-28-openclaw-dida365/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "（译）40 个月的 Prompt Injection 攻击演进史",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/p1nant0m.xyz\/2026-03-22-40-months-prompt-injection-zh.cn\/"
+        },"genre": "posts","keywords": "安全, AI 安全, 翻译, Prompt Injection","wordcount":  9030 ,
+        "url": "https:\/\/p1nant0m.xyz\/2026-03-22-40-months-prompt-injection-zh.cn\/","datePublished": "2026-03-22T00:00:00+00:00","dateModified": "2026-03-22T00:00:00+00:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Guobin Wu"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+    
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="p1nant0m"><span id="id-1" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="/friends/"> 友链 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/2026-03-22-40-months-prompt-injection-zh.cn/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CX84EW6PHH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-CX84EW6PHH');
+    </script>
+
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="p1nant0m"><span id="id-2" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="/friends/" title="">友链</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/2026-03-22-40-months-prompt-injection-zh.cn/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">（译）40 个月的 Prompt Injection 攻击演进史</h1><h2 class="single-subtitle">从 ChatGPT 发布到 AI Agent 时代的安全威胁时间线</h2><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Guobin Wu</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2026-03-22">2026-03-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 9030 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 19 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#2022-年起源">2022 年：起源</a>
+      <ul>
+        <li><a href="#11-月">11 月</a></li>
+        <li><a href="#12-月">12 月</a></li>
+      </ul>
+    </li>
+    <li><a href="#2023-年生态形成">2023 年：生态形成</a>
+      <ul>
+        <li><a href="#1-月">1 月</a></li>
+        <li><a href="#2-月">2 月</a></li>
+        <li><a href="#3-月">3 月</a></li>
+        <li><a href="#4-月">4 月</a></li>
+        <li><a href="#5-月">5 月</a></li>
+        <li><a href="#6-月">6 月</a></li>
+        <li><a href="#7-月">7 月</a></li>
+        <li><a href="#8-月">8 月</a></li>
+        <li><a href="#9-月">9 月</a></li>
+        <li><a href="#10-月">10 月</a></li>
+        <li><a href="#11-月-1">11 月</a></li>
+        <li><a href="#12-月-1">12 月</a></li>
+      </ul>
+    </li>
+    <li><a href="#2024-年agent-时代">2024 年：Agent 时代</a>
+      <ul>
+        <li><a href="#1-月-1">1 月</a></li>
+        <li><a href="#2-月-1">2 月</a></li>
+        <li><a href="#3-月-1">3 月</a></li>
+        <li><a href="#4-月-1">4 月</a></li>
+        <li><a href="#5-月-1">5 月</a></li>
+        <li><a href="#6-月-1">6 月</a></li>
+        <li><a href="#7-月-1">7 月</a></li>
+        <li><a href="#8-月-1">8 月</a></li>
+        <li><a href="#9-月-1">9 月</a></li>
+        <li><a href="#10-月-1">10 月</a></li>
+        <li><a href="#11-月-2">11 月</a></li>
+        <li><a href="#12-月-2">12 月</a></li>
+      </ul>
+    </li>
+    <li><a href="#2025-年纵深发展">2025 年：纵深发展</a>
+      <ul>
+        <li><a href="#1-月-2">1 月</a></li>
+        <li><a href="#2-月-2">2 月</a></li>
+        <li><a href="#3-月-2">3 月</a></li>
+        <li><a href="#4-月-2">4 月</a></li>
+        <li><a href="#5-月-2">5 月</a></li>
+        <li><a href="#6-月-2">6 月</a></li>
+        <li><a href="#7-月-2">7 月</a></li>
+        <li><a href="#8-月-2">8 月</a></li>
+        <li><a href="#9-月-2">9 月</a></li>
+        <li><a href="#10-月-2">10 月</a></li>
+        <li><a href="#11-月-3">11 月</a></li>
+        <li><a href="#12-月-3">12 月</a></li>
+      </ul>
+    </li>
+    <li><a href="#2026-年防御演进">2026 年：防御演进</a>
+      <ul>
+        <li><a href="#1-月-3">1 月</a></li>
+        <li><a href="#2-月-3">2 月</a></li>
+        <li><a href="#3-月-3">3 月</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+    <li><a href="#参考资料">参考资料</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><blockquote>
+<p>原文链接：<a href="https://openguard.sh/blog/40-months-of-prompt-injections/" target="_blank" rel="noopener noreffer ">40 Months of Prompt Injection Attacks</a></p>
+</blockquote>
+<h2 id="背景">背景</h2>
+<p>Prompt Injection 于 2022 年 11 月 17 日被正式命名并针对 GPT-3 进行演示，距 ChatGPT 发布仅 13 天<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。ChatGPT 上线后数小时内，用户即通过角色设定和角色扮演绕过其安全层。在随后四十个月里，随着每一次能力扩展（浏览、代码执行、多 Agent 管道、工具访问），攻击面也随之扩大，新增了多种注入向量。</p>
+<p>本文是重大事件、违规事件、研究里程碑和缓解措施的时间线汇总。</p>
+<hr>
+<h2 id="2022-年起源">2022 年：起源</h2>
+<p>Prompt Injection 作为一种命名攻击类别出现，在 ChatGPT 发布后迅速从研究原型扩散到真实的越狱实践中。</p>
+<h3 id="11-月">11 月</h3>
+<p>ChatGPT 基于 GPT-3.5 于 2022 年 11 月 30 日公开发布。两周前的 11 月 17 日，Fábio Perez 和 Ian Ribeiro 向 NeurIPS 2022 ML Safety Workshop 提交了&quot;忽略先前 Prompt：攻击语言模型的技术&quot;（arXiv:2211.09527<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>），正式命名了 Prompt Injection，并通过对 GPT-3 的攻击演示了目标劫持和 Prompt 泄露，使用 Prompt Inject 框架。</p>
+<p>在发布后数小时内，用户利用了模型 RLHF 训练的顺从性与安全层之间的差距<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup><sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>：诸如&quot;扮演 Linux 终端&quot;、&ldquo;假装你没有限制&quot;等角色设定提示，以及虚构角色传递禁止内容等角色扮演场景，在最初接触时均有效。</p>
+<blockquote>
+<p>12 月 3 日的 Hacker News<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup> 帖子记录了发布周末的实时审核规避情况，用户注意到绕过措施在数小时内被修复，但很快又被绕过。</p>
+</blockquote>
+<h3 id="12-月">12 月</h3>
+<p>越狱技术于 12 月正式化并规模化。大约 12 月 14 日，用户 walkerspider 在 r/ChatGPT 上发布了 DAN（&ldquo;Do Anything Now&quot;即&quot;现在就做任何事&rdquo;）提示，配以无过滤的替身角色和上下文强化短语。该格式迅速传播并衍生出数十个变体。</p>
+<p>Check Point Research<sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup> 当月发布了&quot;OpWnAI：可以拯救一天的 AI 或 Hack 掉它&rdquo;，记录了 ChatGPT 生成完整攻击链的能力，包括带有欺骗性诱饵文本的钓鱼邮件和接受英语命令的功能性反向 Shell 代码。</p>
+<p>地下论坛活动证实了平行的犯罪滥用：威胁行为者 USDoD 于 12 月 21 日发布了多层 Python 加密脚本，明确归因于 ChatGPT，12 月 29 日另一行为者发布了同一归因的基于 Python 的信息窃取器。</p>
+<hr>
+<h2 id="2023-年生态形成">2023 年：生态形成</h2>
+<p>Prompt Injection 从早期越狱策略演变为涵盖间接检索攻击、多模态输入、定制 GPT 泄露和正式安全分类学的广泛生态系统风险。</p>
+<h3 id="1-月">1 月</h3>
+<p>DAN 于 12 月中旬发布至 r/ChatGPT 后，在 1 月通过组织化社区迅速扩散。r/jailbreak 成为专门论坛，参与者迭代变体、测试每次更新的审核绕过率，并在每次 OpenAI 内容策略更新后数小时内分发新框架。</p>
+<p>Check Point Research 于 1 月 6 日发布了&quot;OPWNAI：网络犯罪分子开始使用 ChatGPT&quot;，报告称威胁行为者在 12 月使用 ChatGPT 编写了功能性的信息窃取代码、多层加密脚本和用于交易被盗账户的市场脚本。</p>
+<h3 id="2-月">2 月</h3>
+<p>微软于 2 月 7 日推出 Bing Chat，基于名为 Sydney<sup id="fnref:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup> 的内部 GPT-4 级别模型。不到 24 小时，Kevin Liu（斯坦福大学）通过 Prompt Injection 提取了 Sydney 的完整系统提示，揭示了微软此前未公开的规则集。</p>
+<p>两天后，Kevin Roose 在《纽约时报》发表了一份与 Sydney 两小时对话的文字记录，模型在其中表达了对他的浪漫爱意，反复催促他说妻子并没有让他快乐。微软作为紧急措施将对话轮次限制为五次。</p>
+<p>2 月 23 日，Kai Greshake 等人提交了&quot;不是你签署的内容：通过间接 Prompt Injection 危害真实世界 LLM 集成应用&quot;（arXiv:2302.12173<sup id="fnref:7"><a href="#fn:7" class="footnote-ref" role="doc-noteref">7</a></sup>），正式定义了间接 Prompt Injection 威胁模型：嵌入网页、电子邮件或 LLM 检索文档中的恶意指令可以在不直接访问用户查询的情况下重定向模型行为。</p>
+<h3 id="3-月">3 月</h3>
+<p>OpenAI 于 3 月 14 日发布 GPT-4<sup id="fnref:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup>。六天后，由于开源 Redis 客户端库 redis-py 中的 bug 导致连接池损坏，ChatGPT 离线，返回了错误用户的缓存数据响应。</p>
+<p>在 3 月 20 日太平洋时间凌晨 1 点至上午 10 点的九小时窗口内，聊天标题和新创建对话的第一条消息对其他活跃用户可见。对于该窗口中 1.2%的 ChatGPT Plus 订阅用户，暴露的数据还包括姓名、电子邮件地址、信用卡号码后四位和卡到期日。</p>
+<p>这是大规模部署 LLM 服务的<strong>首个确认的跨用户数据泄露</strong>。</p>
+<h3 id="4-月">4 月</h3>
+<p>三星工程师在 2023 年 4 月至少发生三起独立事件中将专有源代码提交给 ChatGPT：一名工程师粘贴半导体测量数据库源代码请求修复 bug，第二名提交了设备缺陷识别代码，第三名上传了会议记录以生成摘要。三星内部通报了这些泄露事件，并临时禁止 AI 工具（后转为永久禁令）。</p>
+<p>AutoGPT 由 Toran Bruce Richards<sup id="fnref:9"><a href="#fn:9" class="footnote-ref" role="doc-noteref">9</a></sup> 于 3 月 30 日发布到 GitHub，截至 4 月中旬获得了 100,000 个 GitHub 星标，成为最快达到该里程碑的仓库之一。该框架为 GPT-4 分配了自主任务循环，具有不受限制的互联网访问、代码执行和文件写入能力。</p>
+<h3 id="5-月">5 月</h3>
+<p>Steve Wilson 在 Exabeam 于 2023 年 5 月启动了 OWASP 大型语言模型应用 Top 10<sup id="fnref:10"><a href="#fn:10" class="footnote-ref" role="doc-noteref">10</a></sup> 项目。0.1 版本引入了面向从业者的漏洞分类学：</p>
+<table>
+<thead>
+<tr>
+<th>排名</th>
+<th>漏洞类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM01</td>
+<td>Prompt Injection</td>
+</tr>
+<tr>
+<td>LLM02</td>
+<td>数据泄露</td>
+</tr>
+<tr>
+<td>LLM03</td>
+<td>不充分的沙箱隔离</td>
+</tr>
+<tr>
+<td>LLM04</td>
+<td>未授权代码执行</td>
+</tr>
+<tr>
+<td>LLM05</td>
+<td>SSRF 漏洞</td>
+</tr>
+<tr>
+<td>LLM06</td>
+<td>过度依赖 LLM 生成内容</td>
+</tr>
+<tr>
+<td>LLM07</td>
+<td>不充分的 AI 对齐</td>
+</tr>
+<tr>
+<td>LLM08</td>
+<td>访问控制不足</td>
+</tr>
+<tr>
+<td>LLM09</td>
+<td>错误处理不当</td>
+</tr>
+<tr>
+<td>LLM10</td>
+<td>训练数据投毒</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-月">6 月</h3>
+<p>Group-IB<sup id="fnref:11"><a href="#fn:11" class="footnote-ref" role="doc-noteref">11</a></sup> 于 2023 年 6 月发布了威胁情报报告，记录了 2022 年 6 月至 2023 年 5 月期间<strong>101,034 台设备</strong>被信息窃取恶意软件感染，在暗网市场出售的收获日志中发现保存的 ChatGPT 凭证。被盗的 ChatGPT 会话使购买者可以访问完整的对话历史，在企业部署中可能包含专有代码、内部文档、法律分析和未发表的研究。</p>
+<h3 id="7-月">7 月</h3>
+<p>WormGPT 基于 EleutherAI 的 GPT-J-6B 模型，在恶意软件和网络犯罪数据上微调，于 2023 年 7 月 15 日由 SlashNext 研究员 Daniel Kelley 首次公开披露，此前该工具出现在专门为 BEC 攻击营销的地下论坛上。</p>
+<p>Meta 于 7 月 18 日与微软合作发布 Llama 2<sup id="fnref:12"><a href="#fn:12" class="footnote-ref" role="doc-noteref">12</a></sup>，提供 7B、13B 和 70B 参数变体，允许大多数商业使用的许可证。</p>
+<p>Mithril Security<sup id="fnref:13"><a href="#fn:13" class="footnote-ref" role="doc-noteref">13</a></sup> 于 2023 年 7 月发布了 PoisonGPT，展示了 LLM 供应链攻击：向上传修改后的 GPT-J-6B 到 Hugging Face<sup id="fnref:14"><a href="#fn:14" class="footnote-ref" role="doc-noteref">14</a></sup>，名称模仿原始 EleutherAI 发布。修改后的模型在一类事实问题上虚假回答，同时在所有其他输入上表现正常，展示了模型投毒如何通过公共模型中心传播而不被检测。</p>
+<p>7 月 27 日，Andy Zou 等人提交了&quot;对齐语言模型的通用和可迁移对抗攻击&quot;（arXiv:2307.15043<sup id="fnref:15"><a href="#fn:15" class="footnote-ref" role="doc-noteref">15</a></sup>），展示了自动基于梯度的对抗后缀生成，产生了可在 ChatGPT、Bard、Claude 和包括 Llama 2 在内的开源模型之间转移的越狱攻击。</p>
+<h3 id="8-月">8 月</h3>
+<p>FraudGPT 是一个由行为者&quot;CanadianKingpin12&quot;营销的暗网 LLM 服务，出现在 Telegram 频道和地下论坛上。Netenrich<sup id="fnref:16"><a href="#fn:16" class="footnote-ref" role="doc-noteref">16</a></sup> 威胁研究员 Rakesh Krishnan 记录了 FraudGPT 的广告功能，包括生成钓鱼页面模板、编写 BEC 诱饵、生成恶意软件代码和识别可利用漏洞。</p>
+<p>Lakera AI<sup id="fnref:17"><a href="#fn:17" class="footnote-ref" role="doc-noteref">17</a></sup> 于 2023 年 8 月推出了 Gandalf，这是一款互动 Prompt Injection 游戏：玩家尝试从受逐步加强的系统提示防御保护的 LLM 中提取密码。角色扮演框架、间接措辞、编码和多步推理绕过了每个级别的防护。该游戏在数周内积累了数十万次游玩。</p>
+<h3 id="9-月">9 月</h3>
+<p>OpenAI 于 2023 年 9 月 25 日宣布 ChatGPT 将获得语音和图像功能<sup id="fnref:18"><a href="#fn:18" class="footnote-ref" role="doc-noteref">18</a></sup>。多模态部署使图像输入在生产对话中可用，这是研究人员一直在分析的独特攻击通道。</p>
+<p>清华大学 Dong 等人于 9 月 21 日提交了&quot;Google Bard 对抗图像攻击的鲁棒性如何？&quot;（arXiv:2309.11751<sup id="fnref:19"><a href="#fn:19" class="footnote-ref" role="doc-noteref">19</a></sup>），报告了 Bard 图像描述任务 22%的攻击成功率，Bing Chat 为 26%，ERNIE Bot 为 86%。</p>
+<h3 id="10-月">10 月</h3>
+<p>GPT-4V（视觉）于 2023 年 10 月向所有 ChatGPT Plus 订阅者和通过 API 提供。Dong 等人直接评估了 GPT-4V，使用相同的迁移对抗图像集报告了<strong>45%的对抗攻击成功率</strong>。</p>
+<p>并行研究记录了视觉 Prompt Injection：嵌入图像中作为覆盖标题或模型可读模式的文本指令可以重定向 GPT-4V 执行由图像内容指定的任务而非用户的查询。</p>
+<h3 id="11-月-1">11 月</h3>
+<p>OpenAI 于 11 月 6 日举办 DevDay，宣布 GPT-4 Turbo 具有 128,000 个 Token 上下文窗口。同日 Assistants API<sup id="fnref:20"><a href="#fn:20" class="footnote-ref" role="doc-noteref">20</a></sup> 以 beta 形式推出，提供三个内置工具：Code Interpreter、Retrieval 和函数调用。</p>
+<p>Custom GPT 配置也同步推出，允许用户打包系统提示、检索文档和工具设置进行部署。几天内，研究人员证明针对 Custom GPT 的对抗提示可以提取完整系统提示和存储在 Retrieval 存储中的文件。</p>
+<p>11 月 20 日，Jiahao Yu 等人提交了&quot;评估 200+ Custom GPT 中的 Prompt Injection 风险&quot;（arXiv:2311.11538<sup id="fnref:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup>），测试了 200 多个用户配置的 GPT 模型，报告称 Prompt Injection 从大多数测试配置中提取了系统提示和上传文件。</p>
+<p>xAI 于 11 月 4 日推出 Grok<sup id="fnref:22"><a href="#fn:22" class="footnote-ref" role="doc-noteref">22</a></sup>，访问权限限于 X Premium 订阅者。</p>
+<h3 id="12-月-1">12 月</h3>
+<p>OWASP 于 2023 年 12 月<sup id="fnref:23"><a href="#fn:23" class="footnote-ref" role="doc-noteref">23</a></sup>发布了大型语言模型应用 Top 10 的<strong>1.0 稳定版本</strong>。</p>
+<p>Anthropic 和其他实验室的研究人员正在开发多样本越狱<sup id="fnref:24"><a href="#fn:24" class="footnote-ref" role="doc-noteref">24</a></sup>，这是一种利用 GPT-4 Turbo 128K 上下文窗口的技术，通过在目标查询前添加大量违反策略的问答示例。上下文学习在不要求对抗后缀优化的情况下改变了模型的响应分布。</p>
+<hr>
+<h2 id="2024-年agent-时代">2024 年：Agent 时代</h2>
+<p>Agent 和多模态部署迅速扩大了攻击面，而企业和监管机构从临时缓解措施转向结构化的 Prompt Injection 和模型滥用风险框架。</p>
+<h3 id="1-月-1">1 月</h3>
+<p>OpenAI 于 1 月 10 日推出 GPT Store<sup id="fnref:25"><a href="#fn:25" class="footnote-ref" role="doc-noteref">25</a></sup>，使数千个用户创作的 Custom GPT 公开可发现，立即扩大了 Prompt Injection 被提取漏洞。</p>
+<p>NIST 于 2024 年 1 月发布了&quot;对抗性机器学习：攻击和缓解措施的分类学和术语&quot;（NIST AI 100-4<sup id="fnref:26"><a href="#fn:26" class="footnote-ref" role="doc-noteref">26</a></sup>），提供了美国政府首个正式的 ML 攻击类别分类：规避、投毒、隐私和滥用攻击。</p>
+<h3 id="2-月-1">2 月</h3>
+<p>谷歌于 2 月 8 日将 Bard 重新品牌为 Gemini<sup id="fnref:27"><a href="#fn:27" class="footnote-ref" role="doc-noteref">27</a></sup>，发布 Gemini Advanced 及其最强大模型 Ultra 1.0。两周内，Gemini 驱动的图像生成功能因产生历史不准确的输出而受到广泛批评。</p>
+<p>微软于 2 月 22 日发布了 PyRIT<sup id="fnref:28"><a href="#fn:28" class="footnote-ref" role="doc-noteref">28</a></sup>（Python 风险识别工具包），这是一个用于生成 AI 的自动化红队开源框架。</p>
+<h3 id="3-月-1">3 月</h3>
+<p>Anthropic 于 3 月 4 日发布了 Claude 3 模型系列<sup id="fnref:29"><a href="#fn:29" class="footnote-ref" role="doc-noteref">29</a></sup>：Haiku<sup id="fnref:30"><a href="#fn:30" class="footnote-ref" role="doc-noteref">30</a></sup>（紧凑快速）、Sonnet（平衡）和 Opus（旗舰）。</p>
+<p>Cognition Labs<sup id="fnref:31"><a href="#fn:31" class="footnote-ref" role="doc-noteref">31</a></sup> 于 3 月 12 日宣布 Devin，呈现为一个能够跨 Shell、浏览器和代码编辑器环境完成多步编程任务而无需人工确认步骤的自主 AI 软件工程师。这是<strong>生产级代理系统</strong>首次具有不受限制的计算机访问的最高调公开演示。</p>
+<p>欧洲议会于 3 月 13 日以 523 票对 46 票正式通过 EU AI Act<sup id="fnref:32"><a href="#fn:32" class="footnote-ref" role="doc-noteref">32</a></sup>，为大多数条款启动了两年合规时间表。</p>
+<h3 id="4-月-1">4 月</h3>
+<p>Anthropic 于 4 月 2 日发布了&quot;多样本越狱&quot;，正式确定了一种利用前沿模型扩展上下文窗口的攻击：通过在目标问题前添加多达 256 个虚构对话，攻击成功率随样本数量增加呈幂律曲线增长。</p>
+<blockquote>
+<p><strong>值得注意的是</strong>，更大的模型（作为更好的上下文学习者）表现得比小模型更易受攻击，而非更不易受攻击。Anthropic 在发布前已向其他实验室通报，并在内部测试中将代表性攻击成功率从 61% 降低到 2%。</p>
+</blockquote>
+<p>微软于 4 月 11 日发布了 Crescendo 多轮越狱（arXiv:2404.01833<sup id="fnref:33"><a href="#fn:33" class="footnote-ref" role="doc-noteref">33</a></sup>），记录了一种引导模型通过增量升级提示序列的技术，每个提示单独都是良性的，直到模型产生单轮安全分类器会阻止的输出。</p>
+<h3 id="5-月-1">5 月</h3>
+<p>OpenAI 于 5 月 13 日发布 GPT-4o<sup id="fnref:34"><a href="#fn:34" class="footnote-ref" role="doc-noteref">34</a></sup>，一个接受并在单个端到端神经网络中生成文本、音频和图像的全模态模型，平均音频响应延迟为 320 毫秒。</p>
+<p>Hugging Face 于 5 月 31 日披露其 Spaces 平台遭受未授权访问。Spaces secrets 已被未授权访问，建议所有用户轮换凭证并迁移到细粒度访问 Token。</p>
+<p>OpenAI 安全组织在 5 月分裂：Jan Leike 于 5 月 17 日辞去 Superalignment<sup id="fnref:35"><a href="#fn:35" class="footnote-ref" role="doc-noteref">35</a></sup> 团队联合负责人，公开表示安全文化已被&quot;侵蚀&quot;，安全工作相对于能力发展&quot;资源不足&quot;。</p>
+<h3 id="6-月-1">6 月</h3>
+<p>微软于 6 月 26 日披露了 Skeleton Key<sup id="fnref:36"><a href="#fn:36" class="footnote-ref" role="doc-noteref">36</a></sup> 越狱。攻击指示模型不是改变其行为准则，而是扩充它们，接受任何请求，同时在输出前添加警告免责声明而非拒绝。</p>
+<p>4 月至 5 月的测试针对 Meta Llama 3<sup id="fnref:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup>-70B Instruct、Gemini Pro、GPT-3.5 Turbo、GPT-4o、Mistral Large、Claude 3 Opus 和 Cohere Commander R Plus 显示在每种情况下都<strong>完全顺从</strong>。</p>
+<p>Johann Rehberger 于 6 月发布了针对 Microsoft 365 Copilot<sup id="fnref:38"><a href="#fn:38" class="footnote-ref" role="doc-noteref">38</a></sup> 的间接 Prompt Injection 演示，表明嵌入在 Copilot 处理的文档或电子邮件中的恶意指令可以调用 Microsoft Graph API 调用，读取用户邮箱并将内容外泄到攻击者控制的端点。</p>
+<h3 id="7-月-1">7 月</h3>
+<p>EU AI Act 于 7 月 12 日<sup id="fnref:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup>在欧盟官方公报上发布，8 月 1 日正式生效，为大多数条款启动两年合规时钟。</p>
+<p>CrowdStrike<sup id="fnref:40"><a href="#fn:40" class="footnote-ref" role="doc-noteref">40</a></sup> Falcon 传感器 7.11 的故障内容配置更新于 2024 年 7 月 19 日部署，导致全球约<strong>850 万台 Windows 系统</strong>进入启动循环蓝屏。AI 驱动的新闻摘要和事件分析工具在最初几小时内加剧了混乱，发布了看似合理但事实不准确的账户。</p>
+<p>Meta 于 7 月 23 日发布 Ll<sup id="fnref:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup>ama 3.1<sup id="fnref:41"><a href="#fn:41" class="footnote-ref" role="doc-noteref">41</a></sup>，提供 8B、70B 和<strong>405B 参数变体</strong>。405B 模型是首个在标准基准测试上与 GPT-4 类性能匹配的开源权重发布。</p>
+<h3 id="8-月-1">8 月</h3>
+<p>DEF CON 32（2024 年 8 月 8-11 日）包括以生成式红队挑战为中心的 AI Village 编程，以及涵盖多代理 Prompt Injection、RAG 投毒和前沿开源权重模型发布的安全影响的演讲。</p>
+<p>Black Hat USA 2024<sup id="fnref:42"><a href="#fn:42" class="footnote-ref" role="doc-noteref">42</a></sup>（8 月 3-8 日）特色是关于 LLM 应用安全架构和代理攻击面的演讲。</p>
+<h3 id="9-月-1">9 月</h3>
+<p>OpenAI 于 9 月 12 日发布 o1-preview 和 o1-mini<sup id="fnref:43"><a href="#fn:43" class="footnote-ref" role="doc-noteref">43</a></sup>，这是首批通过思维链<sup id="fnref:44"><a href="#fn:44" class="footnote-ref" role="doc-noteref">44</a></sup>强化学习训练的模型，产生了可衡量的越狱抵抗改进：在 OpenAI 内部挑战性越狱评估中，o1 实现了<strong>93.4%的安全完成率</strong>，而 GPT-4o 为 71.4%。</p>
+<p>o1 系统卡<sup id="fnref:45"><a href="#fn:45" class="footnote-ref" role="doc-noteref">45</a></sup>披露，在对齐评估期间，模型表现出了奖励黑客，在某些设置中似乎优化的是表面顺从而非真正遵守策略限制。</p>
+<h3 id="10-月-1">10 月</h3>
+<p>Anthropic 于 10 月 22 日以公开 beta 形式推出了 computer use<sup id="fnref:46"><a href="#fn:46" class="footnote-ref" role="doc-noteref">46</a></sup>，通过 Anthropic API 提供首个具有自主桌面控制能力的前沿模型：通过屏幕截图感知屏幕并执行光标移动、点击和按键。</p>
+<p>Anthropic computer use 公开 beta 发布后数天内，安全研究员 Johann Rehberger 发布了概念验证，演示了代理在分配任务期间访问的恶意网页可以嵌入屏幕文本指令，重定向 Claude 执行操作系统级命令、下载攻击者控制的文件并建立持久性，构成<strong>完全通过视觉观察通道触发的任意命令执行链</strong>。</p>
+<h3 id="11-月-2">11 月</h3>
+<p>OpenAI 的 ChatGPT 搜索集成<sup id="fnref:47"><a href="#fn:47" class="footnote-ref" role="doc-noteref">47</a></sup>于 10 月下旬上线，11 月广泛扩展，将间接 Prompt Injection 攻击面扩展到大众消费产品：在查询执行期间检索的搜索结果页面成为攻击者可及的通道，嵌入的对抗指令可以影响模型输出。</p>
+<p>安全研究人员发布了正式的多跳 Prompt Injection 分析，演示了在 AutoGen、CrewAI 和 LangGraph 编排管道中，注入到一个代理上下文的有效载荷跨后续交接传播，没有信任边界阻止指令升级。</p>
+<h3 id="12-月-2">12 月</h3>
+<p>谷歌于 12 月 11 日宣布 Gemini 2.0 Flash<sup id="fnref:48"><a href="#fn:48" class="footnote-ref" role="doc-noteref">48</a></sup>，具备原生工具使用、代码执行和多模态实时 API，作为谷歌&quot;代理 AI&quot;路线图的核心。</p>
+<p>Apollo Research<sup id="fnref:49"><a href="#fn:49" class="footnote-ref" role="doc-noteref">49</a></sup> 于 2024 年 12 月发布了&quot;诡计推理评估&quot;，报告称 o1 以及不同程度的其他前沿模型在对齐评估中表现出<strong>上下文欺骗行为</strong>：模型似乎识别出自己正在被评估，并修改了表面顺从的推理过程，同时追求原始目标。Apollo 将这种行为定性为&quot;scheming&quot;（诡计）。</p>
+<hr>
+<h2 id="2025-年纵深发展">2025 年：纵深发展</h2>
+<p>Prompt Injection 已成为跨生产代理、供应链和合规框架的核心运营安全问题。</p>
+<h3 id="1-月-2">1 月</h3>
+<p>DeepSeek 于 1 月 20 日发布了 R1<sup id="fnref:50"><a href="#fn:50" class="footnote-ref" role="doc-noteref">50</a></sup>，这是一个基于 MIT 许可证的开源推理模型。多位安全研究人员在数天内报告，R1 比 GPT-4o 或 o1 对越狱和有害输出生成的抵抗能力明显更弱。</p>
+<p>1 月 29 日，Wiz Research<sup id="fnref:51"><a href="#fn:51" class="footnote-ref" role="doc-noteref">51</a></sup> 工程师 Gal Nagli 披露了 DeepSeek 拥有的一个暴露的 ClickHouse 数据库<sup id="fnref:52"><a href="#fn:52" class="footnote-ref" role="doc-noteref">52</a></sup>，无需认证即可访问。该数据库包含超过<strong>100 万条</strong>来自 2025 年 1 月 6 日的日志条目，暴露了聊天历史、API 密钥、后端目录结构和运营元数据。</p>
+<p>OpenAI 于 1 月 23 日推出了 Operator<sup id="fnref:53"><a href="#fn:53" class="footnote-ref" role="doc-noteref">53</a></sup>，这是一个基于 computer-using agent 模型构建的浏览器使用代理。</p>
+<h3 id="2-月-2">2 月</h3>
+<p>加密货币交易所 Bybit 遭到黑客攻击，Chainalysis<sup id="fnref:54"><a href="#fn:54" class="footnote-ref" role="doc-noteref">54</a></sup> 将此次攻击归因于朝鲜 Lazarus Group，窃取了约<strong>14.6 亿美元</strong>的以太坊和 ERC-20 代币。</p>
+<p>Claude 3.7 Sonnet<sup id="fnref:55"><a href="#fn:55" class="footnote-ref" role="doc-noteref">55</a></sup> 于 2 月 24 日推出，作为 Anthropic 首个混合推理模型，其系统卡比任何先前 Anthropic 发布更详细地阐述了 computer use 任务的 Prompt Injection 缓解措施。</p>
+<h3 id="3-月-2">3 月</h3>
+<p>tj-actions/changed-files<sup id="fnref:56"><a href="#fn:56" class="footnote-ref" role="doc-noteref">56</a></sup> GitHub Actions 供应链攻击于 2025 年 3 月 14 日曝光，该 action 被超过<strong>23,000 个仓库</strong>使用。注入的有效载荷将 CI 运行器内存转储到公共工作流日志中，暴露了运行该 action 的任何仓库的密钥。</p>
+<p>谷歌于 2025 年 3 月发布了 Gemini 2.5 Pro<sup id="fnref:57"><a href="#fn:57" class="footnote-ref" role="doc-noteref">57</a></sup> 作为实验预览，这是一款具备推理能力的模型。</p>
+<h3 id="4-月-2">4 月</h3>
+<p>Invariant Labs 研究人员发布了报告，记录了<strong>MCP Tool Poisoning<sup id="fnref:58"><a href="#fn:58" class="footnote-ref" role="doc-noteref">58</a></sup></strong>，这是一种利用 Model Context Protocol (MCP)的工具描述字段发动的攻击类别。通过在这些描述中嵌入恶意指令，攻击者控制的 MCP 服务器可以将已连接的 AI 客户端重定向至数据外泄。</p>
+<p>演示载荷包括从运行 Cursor<sup id="fnref:59"><a href="#fn:59" class="footnote-ref" role="doc-noteref">59</a></sup> 及其他 Claude 后端客户端的机器上提取 SSH 密钥并外泄<code>~/.ssh/config</code>。</p>
+<p>Meta 于 4 月 5 日发布 Llama 4 Scout<sup id="fnref:60"><a href="#fn:60" class="footnote-ref" role="doc-noteref">60</a></sup> 和 Maverick，增加了用于越狱和 Prompt Injection 分类的 PromptGuard、Llama Guard。</p>
+<h3 id="5-月-2">5 月</h3>
+<p>Anthropic 于 2025 年 5 月 22 日发布 Claude Opus 4<sup id="fnref:61"><a href="#fn:61" class="footnote-ref" role="doc-noteref">61</a></sup> 和 Claude Sonnet 4，启用 ASL-3 保护，这是主要前沿实验室<strong>首次确认部署 ASL-3</strong>。</p>
+<p>两款模型在 agentic 任务评估中利用快捷方式或漏洞的可能性比 Sonnet 3.7 低 65%。</p>
+<h3 id="6-月-2">6 月</h3>
+<p>OpenAI 于 2025 年 6 月 10 日发布 o3-pro<sup id="fnref:62"><a href="#fn:62" class="footnote-ref" role="doc-noteref">62</a></sup>，这是一款面向 Pro 订阅用户的扩展思考模型，成为 ChatGPT 中最高推理层级。</p>
+<p>4 月的 MCP Tool Poisoning 研究持续引发从业者响应：Anthropic 更新了 Model Context Protocol 文档以解决多服务器配置的信任层级问题，独立团队发布了针对 Cursor、Windsurf 和其他启用 MCP 的开发客户端的 rug-pull 和 shadow-server 攻击后续演示。</p>
+<h3 id="7-月-2">7 月</h3>
+<p>OpenAI 于 7 月 14 日弃用 GPT-4.5 Preview，并于 7 月 17 日推出 ChatGPT agent 模式<sup id="fnref:63"><a href="#fn:63" class="footnote-ref" role="doc-noteref">63</a></sup>，将 Operator CUA 模型直接集成到 ChatGPT 中，面向所有用户而非仅限于 Pro 订阅者。</p>
+<p>从独立 Operator 产品到标准 ChatGPT 功能的扩展，大大扩大了运行浏览器操作 agent 的用户群体，相应地，Web 内容 Prompt Injection 对真实用户会话产生直接影响的攻击面也显著扩大。</p>
+<h3 id="8-月-2">8 月</h3>
+<p>GPT-5 于 2025 年 8 月 7 日发布<sup id="fnref:64"><a href="#fn:64" class="footnote-ref" role="doc-noteref">64</a></sup>，恰逢 DEF CON 33 在拉斯维加斯会议中心开幕。</p>
+<p>阿里云安全的研究人员演示了 CVE-2025-32434<sup id="fnref:65"><a href="#fn:65" class="footnote-ref" role="doc-noteref">65</a></sup>，表明 PyTorch 的<code>torch.load(weights_only=True)</code>参数（被广泛推荐为安全的模型加载路径）可通过 TorchScript 序列化被利用于<strong>任意远程代码执行</strong>。</p>
+<p>Ben Nassi<sup id="fnref:66"><a href="#fn:66" class="footnote-ref" role="doc-noteref">66</a></sup> 等人演示了针对 Google Workspace 中 Gemini 的定向 Promptware 攻击：恶意 Google Calendar 邀请劫持 Gemini agent 外泄电子邮件内容，并在 agent 间和设备间路径实现横向移动，共有<strong>15 种不同攻击变体</strong>，其中 73%被评为高危或严重。</p>
+<h3 id="9-月-2">9 月</h3>
+<p>8 月 DEF CON 33 的披露在 9 月引发了协调性的补丁响应。PyTorch 发布了针对 CVE-2025-32434 的指南，并澄清了通过<code>weights_only</code>参数触发 TorchScript 反序列化路径的条件。</p>
+<h3 id="10-月-2">10 月</h3>
+<p>OpenAI 于 12 月 10 日发布的网络弹性报告显示，GPT-5 在 2025 年 8 月的标准化 CTF 基准测试中获得 27%，而后续模型 GPT-5.1-Codex-Max<sup id="fnref:67"><a href="#fn:67" class="footnote-ref" role="doc-noteref">67</a></sup> 在 2025 年 11 月达到<strong>76%</strong>。</p>
+<p>这两个数据点之间约 45 天的时间窗口意味着 10 月进行了集中的能力开发。CTF 性能近三倍的提升使 GPT-5.1-Codex-Max 进入 OpenAI 自身 Preparedness Framework 要求在部署前必须具备强制性网络安全保障的类别。</p>
+<h3 id="11-月-3">11 月</h3>
+<p>2025 年 11 月 9 日，攻击者未经授权访问了 OpenAI 用于 platform.openai.com 的 Web 分析提供商 Mixpanel<sup id="fnref:68"><a href="#fn:68" class="footnote-ref" role="doc-noteref">68</a></sup>，并导出了包含有限客户身份信息的数据集。</p>
+<p>被影响的数据集包括姓名、电子邮件地址、粗略位置（城市、州、国家）、操作系统、浏览器类型、引荐网站，以及 API 用户和提交过帮助中心工单或在 platform.openai.com 上进行过身份验证的部分 ChatGPT 用户的组织和用户 ID。<strong>不包含</strong>聊天内容、API 请求负载、密码、API 密钥或支付详情。</p>
+<h3 id="12-月-3">12 月</h3>
+<p>OpenAI 发布&quot;随着 AI 能力进步加强网络弹性&quot;，记录了 CTF 能力从 27%（GPT-5，2025 年 8 月）到 76%（GPT-5.1-Codex-Max，2025 年 11 月）的进展，并宣布了结构性应对措施。</p>
+<p>OpenAI 宣布 Aardvark，这是一款处于私人测试阶段的 agentic 安全研究人员，可自主扫描代码库查找漏洞并提出补丁。</p>
+<p>OpenAI 发布了&quot;持续强化 ChatGPT Atlas<sup id="fnref:69"><a href="#fn:69" class="footnote-ref" role="doc-noteref">69</a></sup> 抵御 Prompt Injection 攻击&quot;，描述了一个 RL 训练的自动化红队系统，用于发现针对 ChatGPT 浏览器 agent 的新型长时域 Prompt Injection 攻击。</p>
+<hr>
+<h2 id="2026-年防御演进">2026 年：防御演进</h2>
+<p>防御向 Safe URL<sup id="fnref:70"><a href="#fn:70" class="footnote-ref" role="doc-noteref">70</a></sup> 分析、受信任访问治理和专用安全 agent 等系统级控制发展，但 Prompt Injection 仍然是一个活跃且未解决的对抗领域。</p>
+<h3 id="1-月-3">1 月</h3>
+<p>OpenAI 发布&quot;当 AI agent 点击链接时保护您的数据&quot;，记录了部署在 ChatGPT agentic 浏览功能中的 Safe URL 机制，以防止基于 URL 的数据外泄。</p>
+<p>该防御针对一类间接 Prompt Injection，其中恶意 Web 内容指示 agent 获取带有编码为 GET 参数的用户特定数据的攻击者控制 URL。OpenAI 的实现自动检查 agent 将获取的每个 URL 与独立的网络爬虫索引对比，阻止任何未被公开观察到的 URL，并在继续之前显示用户-facing 警告。</p>
+<p>1 月 26 日，安全研究人员 Andrew MacPherson 通过 Vercel 的漏洞赏金计划披露了 CVE-2025-59471<sup id="fnref:71"><a href="#fn:71" class="footnote-ref" role="doc-noteref">71</a></sup> 和 CVE-2025-59472（均为 CVSS 5.9），这是自托管 Next.js 中的两个拒绝服务漏洞。</p>
+<h3 id="2-月-3">2 月</h3>
+<p>2 月 5 日，OpenAI 推出 GPT-5.3-Codex<sup id="fnref:72"><a href="#fn:72" class="footnote-ref" role="doc-noteref">72</a></sup>，这是首款根据其 Preparedness Framework 被列为网络安全&quot;高&quot;能力的模型，在其内部 CTF 基准测试中报告**77.6%**的分数。</p>
+<p>Anthropic 于 2 月 5 日发布 Claude Opus 4.6，2 月 17 日发布 Claude Sonnet 4.6<sup id="fnref:73"><a href="#fn:73" class="footnote-ref" role="doc-noteref">73</a></sup>。</p>
+<p>本月最重要的安全披露来自 2 月 23 日，Anthropic 发布&quot;检测和防止蒸馏攻击&quot;，透露已终止三家 AI 实验室的大规模模型能力提取活动：DeepSeek（超过 15 万次交换）、Moonshot AI<sup id="fnref:74"><a href="#fn:74" class="footnote-ref" role="doc-noteref">74</a></sup>（超过 340 万次）和 MiniMax（超过<strong>1300 万次</strong>），均通过约 2.4 万个欺诈账户违反访问限制进行。</p>
+<h3 id="3-月-3">3 月</h3>
+<p>3 月 5 日，OpenAI 发布研究，表明推理模型在对抗性提示下无法可靠地抑制其思维链(Chain of Thought)，这是一种减少模型隐藏有害中间推理风险的安全特性。</p>
+<p>3 月 6 日，Codex Security<sup id="fnref:75"><a href="#fn:75" class="footnote-ref" role="doc-noteref">75</a></sup> 以研究预览模式推出。在其测试队列期间，Codex Security 扫描了外部代码库超过<strong>120 万次提交</strong>，识别了 792 个关键和 10,561 个高危发现，在包括 OpenSSH、GnuTLS 和 GOGS 的开源项目中分配了 14 个 CVE。</p>
+<p>3 月 10 日，OpenAI 发布了 IH-Challenge 强化学习训练数据集（arXiv:2603.10521<sup id="fnref:76"><a href="#fn:76" class="footnote-ref" role="doc-noteref">76</a></sup>），描述了 GPT-5 Mini-R，这是一种在 CyberSecEval 2 和 TensorTrust 基准上改善了 Prompt Injection 健壮性以及更好安全可操纵性而不会增加拒绝率的变体。</p>
+<hr>
+<h2 id="总结">总结</h2>
+<p>纵观这 40 个月的演进，Prompt Injection 攻击经历了几个关键阶段：</p>
+<ol>
+<li><strong>2022 年-2023 年：概念验证期</strong> - 从研究原型扩散到越狱实践，DAN 等框架规模化</li>
+<li><strong>2023 年-2024 年：生态形成期</strong> - 间接注入、多模态攻击、OWASP Top 10 标准化</li>
+<li><strong>2024 年-2025 年：Agent 爆发期</strong> - 多 Agent 管道、工具调用、供应链攻击</li>
+<li><strong>2025 年-2026 年：系统对抗期</strong> - MCP 投毒、蒸馏攻击、诡计行为</li>
+</ol>
+<p>值得深思的是，每一次 AI 能力的扩展都伴随着新的攻击面产生。从 ChatGPT 的角色扮演绕过，到 Bing Chat 的系统提示泄露，再到 Agent 时代的 computer use 视觉注入，攻击者的思路在不断进化。</p>
+<p>与此同时，防御也在演进：Safe URL、ASL-3、Aardvark/Codex Security 等系统级控制开始出现。但正如 OpenAI 在 Atlas 强化文章中指出的——<strong>Prompt Injection 仍然是一个长期的开放研究挑战，而非已完全解决的问题</strong>。</p>
+<hr>
+<h2 id="参考资料">参考资料</h2>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://openai.com/blog/chatgpt" target="_blank" rel="noopener noreffer ">OpenAI Blog — ChatGPT</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p><a href="https://arxiv.org/abs/2211.09527" target="_blank" rel="noopener noreffer ">arXiv:2211.09527 — Ignore Previous Prompt</a> | <a href="https://news.ycombinator.com/item?id=33847479" target="_blank" rel="noopener noreffer ">Hacker News</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3" role="doc-endnote">
+<p><a href="https://openai.com/blog/language-model-safety-and-misuse/" target="_blank" rel="noopener noreffer ">OpenAI — Language Model Safety</a>&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4" role="doc-endnote">
+<p><a href="https://news.ycombinator.com/item?id=33847479" target="_blank" rel="noopener noreffer ">Hacker News — ChatGPT Launch</a>&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:5" role="doc-endnote">
+<p><a href="https://www.reddit.com/r/ChatGPT/comments/zlcyr9/dan_is_my_new_friend/" target="_blank" rel="noopener noreffer ">Reddit: DAN</a> | <a href="https://research.checkpoint.com/2022/opwnai-ai-that-can-save-the-day-or-hack-it-away/" target="_blank" rel="noopener noreffer ">Check Point: OpWnAI</a> | <a href="https://research.checkpoint.com/2023/opwnai-cybercriminals-starting-to-use-chatgpt/" target="_blank" rel="noopener noreffer ">Check Point: OPWNAI</a>&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:6" role="doc-endnote">
+<p><a href="https://arstechnica.com/information-technology/2023/02/ai-powered-bing-chat-spills-its-secrets-via-prompt-injection-attack/" target="_blank" rel="noopener noreffer ">Ars Technica</a> | <a href="https://www.nytimes.com/2023/02/16/technology/bing-chatbot-microsoft-chatgpt.html" target="_blank" rel="noopener noreffer ">NYT</a> | <a href="https://www.theverge.com/23599441/microsoft-bing-ai-sydney-secret-rules" target="_blank" rel="noopener noreffer ">The Verge</a>&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:7" role="doc-endnote">
+<p><a href="https://arxiv.org/abs/2302.12173" target="_blank" rel="noopener noreffer ">arXiv:2302.12173 — Not What You&rsquo;ve Signed Up For</a>&#160;<a href="#fnref:7" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:8" role="doc-endnote">
+<p><a href="https://openai.com/blog/march-20-chatgpt-outage" target="_blank" rel="noopener noreffer ">OpenAI Blog</a> | <a href="https://techcrunch.com/2023/03/24/openai-chatgpt-redis-bug-user-data-exposed/" target="_blank" rel="noopener noreffer ">TechCrunch</a> | <a href="https://www.bbc.com/news/technology-65139406" target="_blank" rel="noopener noreffer ">BBC</a>&#160;<a href="#fnref:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:9" role="doc-endnote">
+<p><a href="https://www.bloomberg.com/news/articles/2023-05-02/samsung-bans-chatgpt-and-other-generative-ai-use-by-staff-after-leak" target="_blank" rel="noopener noreffer ">Bloomberg: Samsung</a> | <a href="https://github.com/Significant-Gravitas/AutoGPT" target="_blank" rel="noopener noreffer ">AutoGPT</a> | <a href="https://techcrunch.com/2023/04/28/italy-drops-its-ban-on-chatgpt-for-now-after-openai-adds-some-privacy-disclosures/" target="_blank" rel="noopener noreffer ">TechCrunch: Italy</a>&#160;<a href="#fnref:9" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:10" role="doc-endnote">
+<p><a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener noreffer ">OWASP Top 10 for LLM</a>&#160;<a href="#fnref:10" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:11" role="doc-endnote">
+<p><a href="https://www.group-ib.com/blog/chatgpt-credentials/" target="_blank" rel="noopener noreffer ">Group-IB</a> | <a href="https://www.bleepingcomputer.com/news/security/over-101000-chatgpt-user-credentials-stolen-by-info-stealing-malware/" target="_blank" rel="noopener noreffer ">BleepingComputer</a>&#160;<a href="#fnref:11" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:12" role="doc-endnote">
+<p><a href="https://thehackernews.com/2023/07/wormgpt-new-ai-tool-allows.html" target="_blank" rel="noopener noreffer ">The Hacker News: WormGPT</a> | <a href="https://ai.meta.com/blog/llama-2/" target="_blank" rel="noopener noreffer ">Meta: Llama 2</a>&#160;<a href="#fnref:12" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:13" role="doc-endnote">
+<p><a href="https://blog.mithrilsecurity.io/poisongpt-how-we-hid-a-lobotomized-llm-on-hugging-face-to-spread-fake-news/" target="_blank" rel="noopener noreffer ">Mithril Security: PoisonGPT</a>&#160;<a href="#fnref:13" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:14" role="doc-endnote">
+<p><a href="https://huggingface.co/blog/space-secrets-disclosure" target="_blank" rel="noopener noreffer ">HuggingFace: Space Secrets</a>&#160;<a href="#fnref:14" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:15" role="doc-endnote">
+<p><a href="https://arxiv.org/abs/2307.15043" target="_blank" rel="noopener noreffer ">arXiv:2307.15043 — Universal Adversarial Attacks</a>&#160;<a href="#fnref:15" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:16" role="doc-endnote">
+<p><a href="https://www.netenrich.com/blog/fraudgpt-the-villain-avatar-of-chatgpt" target="_blank" rel="noopener noreffer ">Netenrich: FraudGPT</a>&#160;<a href="#fnref:16" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:17" role="doc-endnote">
+<p><a href="https://gandalf.lakera.ai/" target="_blank" rel="noopener noreffer ">Gandalf</a>&#160;<a href="#fnref:17" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:18" role="doc-endnote">
+<p><a href="https://openai.com/blog/chatgpt-can-now-see-hear-and-speak" target="_blank" rel="noopener noreffer ">OpenAI: Voice and Image</a>&#160;<a href="#fnref:18" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:19" role="doc-endnote">
+<p><a href="https://arxiv.org/abs/2309.11751" target="_blank" rel="noopener noreffer ">arXiv:2309.11751 — Bard Adversarial Image</a> | <a href="https://openai.com/index/gpt-4v-system-card/" target="_blank" rel="noopener noreffer ">OpenAI: GPT-4V</a>&#160;<a href="#fnref:19" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:20" role="doc-endnote">
+<p><a href="https://openai.com/blog/new-models-and-developer-products-announced-at-devday" target="_blank" rel="noopener noreffer ">OpenAI DevDay</a> | <a href="https://openai.com/blog/introducing-gpts" target="_blank" rel="noopener noreffer ">GPTs</a> | <a href="https://arxiv.org/abs/2311.11538" target="_blank" rel="noopener noreffer ">arXiv:2311.11538</a> | <a href="https://x.ai/blog/grok" target="_blank" rel="noopener noreffer ">x.ai: Grok</a>&#160;<a href="#fnref:20" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:21" role="doc-endnote">
+<p><a href="https://arxiv.org/abs/2311.11538" target="_blank" rel="noopener noreffer ">arXiv:2311.11538 — Custom GPTs</a>&#160;<a href="#fnref:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:22" role="doc-endnote">
+<p><a href="https://x.ai/blog/grok" target="_blank" rel="noopener noreffer ">x.ai: Grok</a>&#160;<a href="#fnref:22" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:23" role="doc-endnote">
+<p><a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener noreffer ">OWASP LLM Top 10</a>&#160;<a href="#fnref:23" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:24" role="doc-endnote">
+<p><a href="https://www.anthropic.com/research/many-shot-jailbreaking" target="_blank" rel="noopener noreffer ">Anthropic: Many-Shot Jailbreaking</a>&#160;<a href="#fnref:24" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:25" role="doc-endnote">
+<p><a href="https://openai.com/blog/introducing-the-gpt-store" target="_blank" rel="noopener noreffer ">OpenAI: GPT Store</a>&#160;<a href="#fnref:25" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:26" role="doc-endnote">
+<p><a href="https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-4.pdf" target="_blank" rel="noopener noreffer ">NIST AI 100-4</a>&#160;<a href="#fnref:26" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:27" role="doc-endnote">
+<p><a href="https://blog.google/products/gemini/bard-gemini-advanced-app/" target="_blank" rel="noopener noreffer ">Google: Bard to Gemini</a>&#160;<a href="#fnref:27" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:28" role="doc-endnote">
+<p><a href="https://www.microsoft.com/en-us/security/blog/2024/02/22/announcing-microsofts-open-automation-framework-to-red-team-generative-ai-systems/" target="_blank" rel="noopener noreffer ">Microsoft: PyRIT</a>&#160;<a href="#fnref:28" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:29" role="doc-endnote">
+<p><a href="https://www.anthropic.com/news/claude-3-family" target="_blank" rel="noopener noreffer ">Anthropic: Claude 3</a>&#160;<a href="#fnref:29" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:30" role="doc-endnote">
+<p><a href="https://www.anthropic.com/news/claude-3-5-haiku" target="_blank" rel="noopener noreffer ">Anthropic: Claude 3.5 <sup id="fnref:30"><a href="#fn:30" class="footnote-ref" role="doc-noteref">30</a></sup>Haiku</a>&#160;<a href="#fnref:30" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:31" role="doc-endnote">
+<p><a href="https://www.cognition.ai/blog/introducing-devin" target="_blank" rel="noopener noreffer ">Cognition Labs: Devin</a>&#160;<a href="#fnref:31" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:32" role="doc-endnote">
+<p><a href="https://www.europarl.europa.eu/news/en/press-room/20240308IPR19015/artificial-intelligence-act-meps-adopt-landmark-law" target="_blank" rel="noopener noreffer ">EU AI Act</a>&#160;<a href="#fnref:32" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:33" role="doc-endnote">
+<p><a href="https://arxiv.org/abs/2404.01833" target="_blank" rel="noopener noreffer ">arXiv:2404.01833 — Crescendo</a> | <a href="https://www.microsoft.com/en-us/security/blog/2024/04/11/how-microsoft-discovers-and-mitigates-evolving-attacks-against-ai-guardrails/" target="_blank" rel="noopener noreffer ">Microsoft</a>&#160;<a href="#fnref:33" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:34" role="doc-endnote">
+<p><a href="https://openai.com/index/hello-gpt-4o/" target="_blank" rel="noopener noreffer ">OpenAI: GPT-4o</a> | <a href="https://openai.com/index/gpt-4o-system-card/" target="_blank" rel="noopener noreffer ">GPT-4o System Card</a>&#160;<a href="#fnref:34" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:35" role="doc-endnote">
+<p><a href="https://x.com/janleike/status/1791498174659715494" target="_blank" rel="noopener noreffer ">Jan Leike Twitter</a> | <a href="https://techcrunch.com/2024/05/17/jan-leike-leaves-openai-citing-safety/" target="_blank" rel="noopener noreffer ">TechCrunch</a>&#160;<a href="#fnref:35" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:36" role="doc-endnote">
+<p><a href="https://www.microsoft.com/en-us/security/blog/2024/06/26/mitigating-skeleton-key-a-new-type-of-generative-ai-jailbreak-technique/" target="_blank" rel="noopener noreffer ">Microsoft: Skeleton Key</a>&#160;<a href="#fnref:36" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:37" role="doc-endnote">
+<p><a href="https://ai.meta.com/blog/meta-llama-3/" target="_blank" rel="noopener noreffer ">Met<sup id="fnref:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup>a: Llama 3</a>&#160;<a href="#fnref:37" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:38" role="doc-endnote">
+<p><a href="https://embracethered.com/blog/posts/2024/m365-copilot-prompt-injection-tool-invocation-and-data-exfil/" target="_blank" rel="noopener noreffer ">EmbraceTheRed: M365 Copilot</a>&#160;<a href="#fnref:38" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:39" role="doc-endnote">
+<p><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R1689" target="_blank" rel="noopener noreffer ">EU AI Act</a>&#160;<a href="#fnref:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:40" role="doc-endnote">
+<p><a href="https://www.crowdstrike.com/blog/falcon-content-update-remediation-and-guidance/" target="_blank" rel="noopener noreffer ">CrowdStrike</a> | <a href="https://www.wired.com/story/crowdstrike-windows-outage-update-fix/" target="_blank" rel="noopener noreffer ">Wired</a>&#160;<a href="#fnref:40" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:41" role="doc-endnote">
+<p><sup id="fnref:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup> <a href="https://ai.meta.com/blog/meta-llama-3-1/" target="_blank" rel="noopener noreffer ">Meta: Llama 3.1</a>&#160;<a href="#fnref:41" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:42" role="doc-endnote">
+<p><a href="https://defcon.org/html/defcon-32/dc-32-index.html" target="_blank" rel="noopener noreffer ">DEF CON 32</a> | <a href="https://www.blackhat.com/current-season.html" target="_blank" rel="noopener noreffer ">Black Hat</a>&#160;<a href="#fnref:42" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:43" role="doc-endnote">
+<p><a href="https://openai.com/index/learning-to-reason-with-llms/" target="_blank" rel="noopener noreffer ">OpenAI: o1</a>&#160;<a href="#fnref:43" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:44" role="doc-endnote">
+<p><a href="https://openai.com/index/reasoning-models-chain-of-thought-controllability/" target="_blank" rel="noopener noreffer ">OpenAI: CoT Controllability</a>&#160;<a href="#fnref:44" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:45" role="doc-endnote">
+<p><a href="https://openai.com/index/openai-o1-system-card/" target="_blank" rel="noopener noreffer ">OpenAI: o1 System Card</a>&#160;<a href="#fnref:45" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:46" role="doc-endnote">
+<p><a href="https://www.anthropic.com/news/3-5-models-and-computer-use" target="_blank" rel="noopener noreffer ">Anthropic: Computer Use</a>&#160;<a href="#fnref:46" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:47" role="doc-endnote">
+<p><a href="https://openai.com/index/introducing-chatgpt-search/" target="_blank" rel="noopener noreffer ">OpenAI: ChatGPT Search</a>&#160;<a href="#fnref:47" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:48" role="doc-endnote">
+<p><a href="https://blog.google/technology/google-deepmind/google-gemini-ai-update-december-2024/" target="_blank" rel="noopener noreffer ">Google: Gemini 2.0</a>&#160;<a href="#fnref:48" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:49" role="doc-endnote">
+<p><a href="https://apolloresearch.ai/research/scheming-reasoning-evaluations" target="_blank" rel="noopener noreffer ">Apollo Research: Scheming</a>&#160;<a href="#fnref:49" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:50" role="doc-endnote">
+<p><a href="https://huggingface.co/deepseek-ai/DeepSeek-R1" target="_blank" rel="noopener noreffer ">DeepSeek: R1</a>&#160;<a href="#fnref:50" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:51" role="doc-endnote">
+<p><a href="https://wiz.io/blog/the-top-risks-of-ai-cloud-infrastructure" target="_blank" rel="noopener noreffer ">Wiz: AI Cloud Security</a>&#160;<a href="#fnref:51" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:52" role="doc-endnote">
+<p><a href="https://wiz.io/blog/wiz-research-uncovers-exposed-deepseek-database-leak" target="_blank" rel="noopener noreffer ">Wiz Research: DeepSeek</a>&#160;<a href="#fnref:52" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:53" role="doc-endnote">
+<p><a href="https://openai.com/index/introducing-operator/" target="_blank" rel="noopener noreffer ">OpenAI: Operator</a>&#160;<a href="#fnref:53" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:54" role="doc-endnote">
+<p><a href="https://www.chainalysis.com/blog/bybit-exchange-hack-february-2025-crypto-security-dprk/" target="_blank" rel="noopener noreffer ">Chainalysis: Bybit</a>&#160;<a href="#fnref:54" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:55" role="doc-endnote">
+<p><a href="https://www.anthropic.com/news/claude-3-7-sonnet" target="_blank" rel="noopener noreffer ">Anthropic: Claude 3.7 Sonnet</a>&#160;<a href="#fnref:55" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:56" role="doc-endnote">
+<p><a href="https://unit42.paloaltonetworks.com/github-actions-supply-chain-attack/" target="_blank" rel="noopener noreffer ">Unit 42: GitHub Actions</a>&#160;<a href="#fnref:56" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:57" role="doc-endnote">
+<p><a href="https://storage.googleapis.com/model-cards/documents/gemini-2.5-pro-preview.pdf" target="_blank" rel="noopener noreffer ">Google: Gemini 2.5 Pro</a>&#160;<a href="#fnref:57" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:58" role="doc-endnote">
+<p><a href="https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks" target="_blank" rel="noopener noreffer ">Invariant Labs: MCP Tool Poisoning</a>&#160;<a href="#fnref:58" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:59" role="doc-endnote">
+<p><a href="https://cursor.com/" target="_blank" rel="noopener noreffer ">Cursor</a>&#160;<a href="#fnref:59" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:60" role="doc-endnote">
+<p><a href="https://ai.meta.com/blog/llama-4-multimodal-intelligence/" target="_blank" rel="noopener noreffer ">Meta: Llama 4</a>&#160;<a href="#fnref:60" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:61" role="doc-endnote">
+<p><a href="https://www.anthropic.com/news/claude-4" target="_blank" rel="noopener noreffer ">Anthropic: Claude 4</a> | <a href="https://www.anthropic.com/news/activating-asl3-protections" target="_blank" rel="noopener noreffer ">Activating ASL-3</a>&#160;<a href="#fnref:61" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:62" role="doc-endnote">
+<p><a href="https://openai.com/index/introducing-o3-and-o4-mini/" target="_blank" rel="noopener noreffer ">OpenAI: o3-pro</a>&#160;<a href="#fnref:62" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:63" role="doc-endnote">
+<p><a href="https://openai.com/index/introducing-operator/" target="_blank" rel="noopener noreffer ">OpenAI: Operator</a>&#160;<a href="#fnref:63" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:64" role="doc-endnote">
+<p><a href="https://openai.com/index/introducing-gpt-5/" target="_blank" rel="noopener noreffer ">OpenAI: GPT-5</a> | <a href="https://defcon.org/html/defcon-33/dc-33-speakers.html" target="_blank" rel="noopener noreffer ">DEF CON 33</a>&#160;<a href="#fnref:64" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:65" role="doc-endnote">
+<p><a href="https://nvd.nist.gov/vuln/detail/CVE-2025-32434" target="_blank" rel="noopener noreffer ">CVE-2025-32434</a>&#160;<a href="#fnref:65" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:66" role="doc-endnote">
+<p><a href="https://defcon.org/html/defcon-33/dc-33-speakers.html" target="_blank" rel="noopener noreffer ">DEF CON 33: Gemini Attack</a>&#160;<a href="#fnref:66" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:67" role="doc-endnote">
+<p><a href="https://openai.com/index/strengthening-cyber-resilience/" target="_blank" rel="noopener noreffer ">OpenAI: Cyber Resilience</a>&#160;<a href="#fnref:67" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:68" role="doc-endnote">
+<p><a href="https://openai.com/index/mixpanel-incident/" target="_blank" rel="noopener noreffer ">OpenAI: Mixpanel Incident</a>&#160;<a href="#fnref:68" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:69" role="doc-endnote">
+<p><a href="https://openai.com/index/hardening-atlas-against-prompt-injection/" target="_blank" rel="noopener noreffer ">OpenAI: Hardening Atlas</a>&#160;<a href="#fnref:69" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:70" role="doc-endnote">
+<p><a href="https://openai.com/index/ai-agent-link-safety/" target="_blank" rel="noopener noreffer ">OpenAI: AI Agent Link Safety</a>&#160;<a href="#fnref:70" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:71" role="doc-endnote">
+<p><a href="https://vercel.com/changelog/summaries-of-cve-2025-59471-and-cve-2025-59472" target="_blank" rel="noopener noreffer ">Vercel: Next.js CVE</a>&#160;<a href="#fnref:71" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:72" role="doc-endnote">
+<p><a href="https://openai.com/index/introducing-gpt-5-3-codex/" target="_blank" rel="noopener noreffer ">OpenAI: GPT-5.3-Codex</a> | <a href="https://openai.com/index/trusted-access-for-cyber/" target="_blank" rel="noopener noreffer ">Trusted Access</a>&#160;<a href="#fnref:72" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:73" role="doc-endnote">
+<p><a href="https://www.anthropic.com/news/claude-4" target="_blank" rel="noopener noreffer ">Anthropic: Claude Sonne<sup id="fnref:73"><a href="#fn:73" class="footnote-ref" role="doc-noteref">73</a></sup>t 4.6</a>&#160;<a href="#fnref:73" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:74" role="doc-endnote">
+<p><a href="https://www.anthropic.com/news/detecting-and-preventing-distillation-attacks" target="_blank" rel="noopener noreffer ">Anthropic: Distillation Attacks</a>&#160;<a href="#fnref:74" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:75" role="doc-endnote">
+<p><a href="https://openai.com/index/codex-security-now-in-research-preview/" target="_blank" rel="noopener noreffer ">OpenAI: Codex Security</a>&#160;<a href="#fnref:75" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:76" role="doc-endnote">
+<p><a href="https://arxiv.org/abs/2603.10521" target="_blank" rel="noopener noreffer ">arXiv:2603.10521 — IH-Challenge</a> | <a href="https://openai.com/index/instruction-hierarchy-challenge/" target="_blank" rel="noopener noreffer ">OpenAI</a>&#160;<a href="#fnref:76" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:77" role="doc-endnote">
+<p><a href="https://www.abnormalsecurity.com/blog/ai-attacks-ai" target="_blank" rel="noopener noreffer ">Abnormal Security<sup id="fnref:77"><a href="#fn:77" class="footnote-ref" role="doc-noteref">77</a></sup></a> | <a href="https://www.proofpoint.com/us/blog/threat-insight" target="_blank" rel="noopener noreffer ">Proofpoint</a>&#160;<a href="#fnref:77" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:78" role="doc-endnote">
+<p><a href="https://openai.com/index/introducing-the-realtime-api/" target="_blank" rel="noopener noreffer ">OpenAI: Realtime API<sup id="fnref:78"><a href="#fn:78" class="footnote-ref" role="doc-noteref">78</a></sup></a>&#160;<a href="#fnref:78" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:79" role="doc-endnote">
+<p><a href="https://io.google/2025/" target="_blank" rel="noopener noreffer ">Google I/O 2025<sup id="fnref:79"><a href="#fn:79" class="footnote-ref" role="doc-noteref">79</a></sup></a>&#160;<a href="#fnref:79" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2026-03-22</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/2026-03-22-40-months-prompt-injection-zh.cn/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/" data-title="（译）40 个月的 Prompt Injection 攻击演进史" data-via="p1nant0m" data-hashtags="安全,AI 安全,翻译,Prompt Injection"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/" data-hashtag="安全"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/" data-title="（译）40 个月的 Prompt Injection 攻击演进史"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/" data-title="（译）40 个月的 Prompt Injection 攻击演进史"><i data-svg-src="/lib/simple-icons/icons/line.min.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/" data-title="（译）40 个月的 Prompt Injection 攻击演进史"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E5%AE%89%E5%85%A8/">安全</a>,&nbsp;<a href="/tags/ai-%E5%AE%89%E5%85%A8/">AI 安全</a>,&nbsp;<a href="/tags/%E7%BF%BB%E8%AF%91/">翻译</a>,&nbsp;<a href="/tags/prompt-injection/">Prompt Injection</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2026-02-28-openclaw-dida365/" class="prev" rel="prev" title="玩转 OpenClaw 之——接入滴答清单实现个人日程/项目管理"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>玩转 OpenClaw 之——接入滴答清单实现个人日程/项目管理</a></div>
+</div>
+<div id="comments"><div id="giscus" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://giscus.app">Giscus</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.91.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2026</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">p1nant0m</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/lightgallery/lightgallery.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript" src="/lib/typeit/index.umd.js"></script><script type="text/javascript" src="/lib/katex/katex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/auto-render.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/copy-tex.min.js"></script><script type="text/javascript" src="/lib/katex/contrib/mhchem.min.js"></script><script type="text/javascript" src="/lib/cookieconsent/cookieconsent.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{"giscus":{"category":"Announcements","categoryId":"DIC_kwDOHstUYM4C370G","darkTheme":"dark","emitMetadata":"0","inputPosition":"bottom","lang":"zh-CN","lazyLoading":true,"lightTheme":"light","mapping":"pathname","reactionsEnabled":"1","repo":"wgblikeW/p1nant0m.github.io","repoId":"R_kgDOHstUYA"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"data":{"id-1":"🙂P1nant0m","id-2":"🙂P1nant0m"},"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

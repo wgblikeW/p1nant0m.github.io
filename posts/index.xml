@@ -4,7 +4,15 @@
         <link>https://p1nant0m.xyz/posts/</link>
         <description>所有文章 | p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sat, 28 Feb 2026 00:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.xyz/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sun, 22 Mar 2026 00:00:00 &#43;0000</lastBuildDate><atom:link href="https://p1nant0m.xyz/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>（译）40 个月的 Prompt Injection 攻击演进史</title>
+    <link>https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/</link>
+    <pubDate>Sun, 22 Mar 2026 00:00:00 &#43;0000</pubDate>
+    <author>Guobin Wu</author>
+    <guid>https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/</guid>
+    <description><![CDATA[原文链接：40 Months of Prompt Injection Attacks 背景 Prompt Injection 于 2022 年 11 月 17 日被正式命名并针对 GPT-3 进行演示，距 ChatGPT 发布仅 13 天1。ChatGPT 上线后数小时内，用户即通过角色设定和角色扮演绕过其安全层。在随后四十个月里，随着每一次能力扩展（浏览、代码执行、多 Agent 管道、工具访问），攻击面也随之扩大，新增了多种注入向量。 本文是重大事件、违规事件、研究里程碑和缓解措施的时间线汇总。 2022 年：起源 Prompt Injection 作为一种命名攻击类别出现，在 ChatGPT 发布后迅速从研究原]]></description>
+</item>
+<item>
     <title>玩转 OpenClaw 之——接入滴答清单实现个人日程/项目管理</title>
     <link>https://p1nant0m.xyz/2026-02-28-openclaw-dida365/</link>
     <pubDate>Sat, 28 Feb 2026 00:00:00 &#43;0000</pubDate>
@@ -75,14 +83,6 @@
     <author>p1nant0m</author>
     <guid>https://p1nant0m.xyz/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/</guid>
     <description><![CDATA[说在前面 🐹 WIP Go 运行时行为 🐹 WIP GC 触发时机 GC 触发的入口为 runtime.gcStart() 垃圾收集被触发后会通过 runtime.gcTrigger.test() 方法检测当前是否需要触发垃圾收集，该方法会根据三种方式触发不同的检查， gcTriggerHeap：堆内存分配达到控制器计算的触发堆大小 gcTriggerTime：如果一段时间内没有触发，就会触发新一轮的循环，该触发条件由 runtime.forcegcperiod 变量控制，默认时间为 2 分钟 gcTriggerperiod：如果当前没有开启垃圾收集，则触发新的循环 所]]></description>
-</item>
-<item>
-    <title>程序员修炼指南</title>
-    <link>https://p1nant0m.xyz/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/</link>
-    <pubDate>Sat, 10 Sep 2022 18:36:36 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.xyz/2022-09-11-%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E6%8C%87%E5%8D%97/</guid>
-    <description><![CDATA[文章概要 本文准备以一种轻快、对话式的口吻来描述笔者在计算机相关领域学习过程中感悟体会，其中包括一些回顾、一些建议、一些反思以及对未来的一些思考。这些内容并不是对某一领域的具体讨论，因此不会涉及相关的技术细节，读者可以抱着一种来看看故事、吹吹牛的心态阅读本篇文章，因而你不需要有任何认知上的压力。如果你在阅读完本篇文章后，能够有所收获与思考，笔者将感到由衷的高兴。 🤔 优秀程序员的特质：黑客与画家 OR 哲学家]]></description>
 </item>
 </channel>
 </rss>
