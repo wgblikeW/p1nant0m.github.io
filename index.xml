@@ -4,9 +4,17 @@
         <link>https://p1nant0m.xyz/</link>
         <description>p1nant0m</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>wgblike@gmail.com (p1nant0m)</managingEditor>
-            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Sun, 22 Mar 2026 00:00:00 &#43;0000</lastBuildDate>
+            <webMaster>wgblike@gmail.com (p1nant0m)</webMaster><lastBuildDate>Tue, 31 Mar 2026 00:00:00 &#43;0000</lastBuildDate>
             <atom:link href="https://p1nant0m.xyz/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Prompt Injection 深度剖析：从攻击原理到企业级防御实践</title>
+    <link>https://p1nant0m.xyz/2026-03-31-prompt-injection-deep-dive-zh.cn/</link>
+    <pubDate>Tue, 31 Mar 2026 00:00:00 &#43;0000</pubDate>
+    <author>p1nant0m</author>
+    <guid>https://p1nant0m.xyz/2026-03-31-prompt-injection-deep-dive-zh.cn/</guid>
+    <description><![CDATA[背景与动机 要说 2025 年最让安全工程师睡不着觉的新威胁，Prompt Injection 绝对排得上号。这玩意儿厉害的地方在于：它不靠缓冲区溢出、不靠 SQL 注入、也不靠任何传统的安全漏洞——它 exploit 的是 AI 系统最核心的设计缺陷：指令与数据的边界模糊。 这意味着什么？传统的安全模型里，数据就是数据，指令就是指令，你永远不应该让用户控制的内容摇身一变成为系统要执行的命令。但在 LLM 系统里，这个假设从根本上就不成立了——用户的输入本身就是指令的]]></description>
+</item>
+<item>
     <title>（译）40 个月的 Prompt Injection 攻击演进史</title>
     <link>https://p1nant0m.xyz/2026-03-22-40-months-prompt-injection-zh.cn/</link>
     <pubDate>Sun, 22 Mar 2026 00:00:00 &#43;0000</pubDate>
@@ -77,14 +85,6 @@
     <author>p1nant0m</author>
     <guid>https://p1nant0m.xyz/2022-09-28-%E5%9C%A8k8s%E9%9B%86%E7%BE%A4%E4%B8%8A%E9%83%A8%E7%BD%B2cilium%E4%B8%8Ehubble/</guid>
     <description><![CDATA[关于笔者 目前，笔者还是一名在校大学生，就读于信息安全专业，对云原生安全、分布式系统、观测领域有较大的兴趣。因而小站上的很多文章都是萌新学习踩坑的经验分享，更多的是“玩”的心态向优秀、有趣的项目，学习其设计思路、编码风格、文档编写、开源社区/团队协作方面的知识，并辅以自己小小的见解。作为一名还未有充分经验的用户，文章中难免有所纰漏，还望能够与大家交流学习，共勉。 在 K8s 集群上部署 Cilium 与 Hubble 近段时间一直在思考]]></description>
-</item>
-<item>
-    <title>Golang 面试驱动学习</title>
-    <link>https://p1nant0m.xyz/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/</link>
-    <pubDate>Sun, 25 Sep 2022 10:16:38 &#43;0000</pubDate>
-    <author>p1nant0m</author>
-    <guid>https://p1nant0m.xyz/2022-09-26-golang-%E9%9D%A2%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%AD%A6%E4%B9%A0.zh-ch/</guid>
-    <description><![CDATA[说在前面 🐹 WIP Go 运行时行为 🐹 WIP GC 触发时机 GC 触发的入口为 runtime.gcStart() 垃圾收集被触发后会通过 runtime.gcTrigger.test() 方法检测当前是否需要触发垃圾收集，该方法会根据三种方式触发不同的检查， gcTriggerHeap：堆内存分配达到控制器计算的触发堆大小 gcTriggerTime：如果一段时间内没有触发，就会触发新一轮的循环，该触发条件由 runtime.forcegcperiod 变量控制，默认时间为 2 分钟 gcTriggerperiod：如果当前没有开启垃圾收集，则触发新的循环 所]]></description>
 </item>
 </channel>
 </rss>
