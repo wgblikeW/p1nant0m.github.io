@@ -30,7 +30,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/p1nant0m.xyz\/2026-03-31-prompt-injection-deep-dive-zh.cn\/"
-        },"genre": "posts","keywords": "安全, AI Security, LLM, Prompt Injection","wordcount":  5762 ,
+        },"genre": "posts","keywords": "安全, AI Security, LLM, Prompt Injection","wordcount":  5757 ,
         "url": "https:\/\/p1nant0m.xyz\/2026-03-31-prompt-injection-deep-dive-zh.cn\/","datePublished": "2026-03-31T00:00:00+00:00","dateModified": "2026-03-31T00:00:00+00:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -132,7 +132,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Prompt Injection 深度剖析：从攻击原理到企业级防御实践</h1><h2 class="single-subtitle">LLM 安全防线上的裂缝</h2><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>p1nant0m</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2026-03-31">2026-03-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5762 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2026-03-31">2026-03-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5757 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 12 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
@@ -150,14 +150,14 @@
         </li>
       </ul>
     </li>
-    <li><a href="#1-核心原理为什么-llm-无法区分指令与数据">1️⃣ 核心原理：为什么 LLM 无法区分指令与数据</a>
+    <li><a href="#一核心原理为什么-llm-无法区分指令与数据">一、核心原理：为什么 LLM 无法区分指令与数据</a>
       <ul>
         <li><a href="#11-传统安全模型的失效">1.1 传统安全模型的失效</a></li>
         <li><a href="#12-指令优先级的争夺">1.2 指令优先级的争夺</a></li>
         <li><a href="#13-信任边界的确立">1.3 信任边界的确立</a></li>
       </ul>
     </li>
-    <li><a href="#2-攻击面与利用路径">2️⃣ 攻击面与利用路径</a>
+    <li><a href="#二攻击面与利用路径">二、攻击面与利用路径</a>
       <ul>
         <li><a href="#21-rag-系统中的-indirect-prompt-injection">2.1 RAG 系统中的 Indirect Prompt Injection</a></li>
         <li><a href="#22-多模态攻击藏在图片里的指令">2.2 多模态攻击：藏在图片里的指令</a></li>
@@ -165,14 +165,14 @@
         <li><a href="#24-攻击面总结">2.4 攻击面总结</a></li>
       </ul>
     </li>
-    <li><a href="#3-真实攻击链分析chameleons-trap">3️⃣ 真实攻击链分析：Chameleon&rsquo;s Trap</a>
+    <li><a href="#三真实攻击链分析chameleons-trap">三、真实攻击链分析：Chameleon&rsquo;s Trap</a>
       <ul>
         <li><a href="#31-事件概述">3.1 事件概述</a></li>
         <li><a href="#32-攻击链拆解">3.2 攻击链拆解</a></li>
         <li><a href="#33-攻击逻辑分析">3.3 攻击逻辑分析</a></li>
       </ul>
     </li>
-    <li><a href="#4-企业级防御体系">4️⃣ 企业级防御体系</a>
+    <li><a href="#四企业级防御体系">四、企业级防御体系</a>
       <ul>
         <li><a href="#41-纵深防御五道防线">4.1 纵深防御：五道防线</a>
           <ul>
@@ -187,7 +187,7 @@
         <li><a href="#43-防御措施对照表">4.3 防御措施对照表</a></li>
       </ul>
     </li>
-    <li><a href="#5-总结与延伸思考">5️⃣ 总结与延伸思考</a>
+    <li><a href="#五总结与延伸思考">五、总结与延伸思考</a>
       <ul>
         <li><a href="#核心要点回顾">核心要点回顾</a></li>
         <li><a href="#延伸思考">延伸思考</a>
@@ -212,7 +212,7 @@
 <li>方面四：企业级防御体系——从输入过滤到治理框架的完整方案</li>
 </ul>
 <hr>
-<h2 id="1-核心原理为什么-llm-无法区分指令与数据">1️⃣ 核心原理：为什么 LLM 无法区分指令与数据</h2>
+<h2 id="一核心原理为什么-llm-无法区分指令与数据">一、核心原理：为什么 LLM 无法区分指令与数据</h2>
 <h3 id="11-传统安全模型的失效">1.1 传统安全模型的失效</h3>
 <p>在传统软件安全中，我们有清晰的边界：</p>
 <div class="highlight"><div class="chroma">
@@ -262,7 +262,7 @@
 </ul>
 <p>以上每一个来源，都可能成为攻击者植入恶意内容的通道。更重要的是，这些内容在被拼入 Prompt 之前，往往没有经过严格的安全验证。这就是为什么 OWASP 将&quot;Prompt Injection&quot;列为 LLM 应用的 Top 10 风险之首——它的攻击面实在太大了。</p>
 <hr>
-<h2 id="2-攻击面与利用路径">2️⃣ 攻击面与利用路径</h2>
+<h2 id="二攻击面与利用路径">二、攻击面与利用路径</h2>
 <h3 id="21-rag-系统中的-indirect-prompt-injection">2.1 RAG 系统中的 Indirect Prompt Injection</h3>
 <p>在所有攻击面中，RAG（Retrieval-Augmented Generation）系统是最容易被忽略但 exploit 潜力最大的一个。企业部署 LLM 应用时，最常见的架构就是 RAG：先从企业文档库中检索相关信息，然后把检索结果和问题一起交给模型生成答案。</p>
 <p>这个过程中，攻击者可能通过向文档库中植入恶意内容来实施攻击：</p>
@@ -354,7 +354,7 @@ LLM 生成响应
 </tbody>
 </table>
 <hr>
-<h2 id="3-真实攻击链分析chameleons-trap">3️⃣ 真实攻击链分析：Chameleon&rsquo;s Trap</h2>
+<h2 id="三真实攻击链分析chameleons-trap">三、真实攻击链分析：Chameleon&rsquo;s Trap</h2>
 <h3 id="31-事件概述">3.1 事件概述</h3>
 <p>2025 年 9 月，安全公司 StrongestLayer 披露了一起大规模 Prompt Injection 钓鱼活动，攻击者伪装成 Booking.com 向大量企业发送钓鱼邮件。这起攻击之所以值得深入分析，不仅因为它成功地将 Prompt Injection 技术集成到了传统的网络钓鱼攻击链中，更因为它展示了 AI 安全威胁正在从&quot;概念验证&quot;走向&quot;实战化&quot;。</p>
 <h3 id="32-攻击链拆解">3.2 攻击链拆解</h3>
@@ -385,7 +385,7 @@ AI 时代钓鱼攻击链：邮件 → AI 判断失误 → 绕过安全系统 →
 </div>
 </div><p>攻击者开始意识到：<strong>只要能骗过 AI 安全系统，就能绕过企业安全防线。</strong> 这直接催生了一个新的攻击趋势——<strong>针对 AI 的网络攻击</strong>（AI-Targeting Cyber Attacks）。Chameleon&rsquo;s Trap 为此提供了一个教科书级别的案例。</p>
 <hr>
-<h2 id="4-企业级防御体系">4️⃣ 企业级防御体系</h2>
+<h2 id="四企业级防御体系">四、企业级防御体系</h2>
 <h3 id="41-纵深防御五道防线">4.1 纵深防御：五道防线</h3>
 <p>防御 Prompt Injection 不存在银弹，需要建立纵深防御体系。以下是五道防线的具体实现策略：</p>
 <h4 id="第一道防线输入过滤与验证">第一道防线：输入过滤与验证</h4>
@@ -697,7 +697,7 @@ AI 时代钓鱼攻击链：邮件 → AI 判断失误 → 绕过安全系统 →
 </tbody>
 </table>
 <hr>
-<h2 id="5-总结与延伸思考">5️⃣ 总结与延伸思考</h2>
+<h2 id="五总结与延伸思考">五、总结与延伸思考</h2>
 <h3 id="核心要点回顾">核心要点回顾</h3>
 <ol>
 <li><strong>根本原因</strong>：LLM 无法在语义层面区分&quot;指令&quot;和&quot;数据&quot;，这是架构层面的缺陷，不是简单的 bug</li>
